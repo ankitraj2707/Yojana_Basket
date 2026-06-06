@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+model UserProfile {
+  id           String               @id @default(uuid())
+  name         String
+  email        String               @unique
+  age          Int?
+  gender       String?              // e.g. "Male", "Female", "Transgender", ""
+  state        String?
+  caste        String?              // e.g. "General", "OBC", "SC", "ST", ""
+  annualIncome Float?
+  occupation   String?
+  disability   Boolean?             @default(false)
+  avatarUrl    String?              @default("")
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  // Data Relations
+  savedSchemes SavedScheme[]
+  applications TrackedApplication[]
+  documents    UserDocument[]
+  feedbacks    SchemeFeedback[]
+}
+
+model SavedScheme {
+  id       String      @id @default(uuid())
+  userId   String
+  schemeId String
+  savedAt  DateTime    @default(now())
+
+  // Relations
+  user     UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, schemeId])
+}
+
+model TrackedApplication {
+  id             String      @id @default(uuid())
+  userId         String
+  schemeId       String
+  status         String      @default("Applied") // 'Draft', 'Applied', 'Under Review', 'Approved', 'Rejected'
+  applicationRef String      @unique
+  remarks        String?
+  appliedAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  user           UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, schemeId])
+}
+
+model UserDocument {
+  id         String      @id @default(uuid())
+  userId     String
+  docType    String      // e.g. 'Aadhaar', 'Pan Card', 'Income Certificate', 'Caste Certificate'
+  fileName   String
+  fileSize   String
+  uploadedAt DateTime    @default(now())
+  docUrl     String?     @default("#")
+
+  // Relations
+  user       UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SchemeFeedback {
+  id        String      @id @default(uuid())
+  userId    String
+  schemeId  String
+  rating    Int         // 1 to 5
+  comments  String?
+  createdAt DateTime    @default(now())
+
+  // Relations
+  user      UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, schemeId])
+}
+
