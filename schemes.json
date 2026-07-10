@@ -1,0 +1,36 @@
+[
+  {
+    "id": "pm-kisan",
+    "name": "PM-Kisan Samman Nidhi",
+    "hindiName": "प्रधानमंत्री किसान सम्मान निधि",
+    "category": "agriculture",
+    "description": "Providing financial assistance of ₹6,000 per year in three equal installments to small and marginal farmer families.",
+    "ministry": "Ministry of Agriculture",
+    "benefits": "₹6,000 per annum direct bank transfer",
+    "requiredDocuments": ["Aadhaar Card", "Land Papers"],
+    "minAge": 18,
+    "maxAge": 100,
+    "gender": "all",
+    "state": "central",
+    "caste": ["all"],
+    "maxIncome": null,
+    "requiresDisability": false
+  },
+  {
+    "id": "pm-jay",
+    "name": "Ayushman Bharat (PM-JAY)",
+    "hindiName": "आयुष्मान भारत योजना",
+    "category": "health",
+    "description": "The world's largest health insurance scheme providing a cover of ₹5 lakhs per family per year for secondary and tertiary care hospitalization.",
+    "ministry": "Ministry of Health",
+    "benefits": "₹5 Lakhs cashless health insurance per family per year",
+    "requiredDocuments": ["Aadhaar Card", "Ration Card"],
+    "minAge": 0,
+    "maxAge": 110,
+    "gender": "all",
+    "state": "central",
+    "caste": ["all"],
+    "maxIncome": 250000,
+    "requiresDisability": false
+  }
+]

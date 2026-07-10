@@ -1,38 +1,37 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+
+
+
 model UserProfile {
-  id           String               @id @default(uuid())
+  id           String    @id @default(uuid())
   name         String
-  email        String               @unique
+  email        String?    @unique
   age          Int?
-  gender       String?              // e.g. "Male", "Female", "Transgender", ""
+  gender       String?   // e.g. "Male", "Female", "Transgender", ""
   state        String?
-  caste        String?              // e.g. "General", "OBC", "SC", "ST", ""
+  caste        String?   // e.g. "General", "OBC", "SC", "ST", ""
   annualIncome Float?
   occupation   String?
-  disability   Boolean?             @default(false)
-  avatarUrl    String?              @default("")
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
+  disability   Boolean?  @default(false)
+  avatarUrl    String?   @default("")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   // Data Relations
   savedSchemes SavedScheme[]
   applications TrackedApplication[]
   documents    UserDocument[]
   feedbacks    SchemeFeedback[]
+  loginDetails UserLogin?           // One-to-one relation with credentials
 }
 
 model SavedScheme {
@@ -90,3 +89,27 @@ model SchemeFeedback {
   @@unique([userId, schemeId])
 }
 
+model UserLogin {
+  id           String   @id @default(uuid())
+  userId       String   @unique  // Ensures 1-to-1 relationship with profile
+  username     String   @unique
+  emailId      String?   @unique
+  mobileNumber String   @unique
+  password     String   // Hashed passwords should be stored here
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user         UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AdminLogin {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  emailId      String?   @unique
+  mobileNumber String   @unique
+  password     String   // Hashed passwords should be stored here
+  role         String   @default("ADMIN") // e.g., "SUPER_ADMIN", "MODERATOR"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+} 

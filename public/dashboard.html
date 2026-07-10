@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Citizen Dashboard - YojanaBasket</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#00113a",
+              "primary-container": "#002366",
+              secondary: "#8f4e00",
+              "secondary-container": "#fe9832",
+              background: "#f8f9ff",
+              surface: "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "on-surface": "#0b1c30",
+              "on-surface-variant": "#444650",
+              "outline-variant": "#c5c6d2",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-background text-on-surface">
+    <header class="bg-white shadow-sm border-b sticky top-0 z-50">
+      <div
+        class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center"
+      >
+        <div
+          class="text-xl font-bold text-primary tracking-tight cursor-pointer"
+          onclick="window.location.href = '/'"
+        >
+          YojanaBasket
+          <span
+            class="text-xs bg-secondary/10 text-secondary px-2 py-0.5 rounded ml-2"
+            >Citizen Workspace</span
+          >
+        </div>
+        <div class="flex items-center gap-4">
+          <span id="dashboardUserBadge" class="text-sm font-bold text-primary"
+            >Citizen</span
+          >
+          <button
+            onclick="terminateActiveSession()"
+            class="text-xs font-bold text-red-600 border bg-red-50 px-3 py-1.5 rounded-lg"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main
+      class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10"
+    >
+      <section
+        class="lg:col-span-1 bg-white rounded-2xl border p-6 shadow-sm h-fit space-y-6"
+      >
+        <div>
+          <h3 class="text-lg font-bold text-primary">
+            Sovereign Profile Matrix
+          </h3>
+          <p class="text-xs text-on-surface-variant">
+            Update credentials to run background matching checks.
+          </p>
+        </div>
+        <form
+          id="dashboardProfileForm"
+          class="space-y-4"
+          onsubmit="commitProfileParameters(event)"
+        >
+          <div>
+            <label
+              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
+              >Age (Years)</label
+            >
+            <input
+              type="number"
+              id="profAge"
+              required
+              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
+              >Gender Group</label
+            >
+            <select
+              id="profGender"
+              required
+              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+            >
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
+              >Domicile State</label
+            >
+            <input
+              type="text"
+              id="profState"
+              required
+              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+              placeholder="Bihar"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
+              >Caste Group</label
+            >
+            <select
+              id="profCaste"
+              required
+              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+            >
+              <option value="General">General</option>
+              <option value="OBC">OBC</option>
+              <option value="SC">SC</option>
+              <option value="ST">ST</option>
+            </select>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
+              >Annual Household Income (₹)</label
+            >
+            <input
+              type="number"
+              id="profIncome"
+              required
+              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
+              >Primary Occupation</label
+            >
+            <input
+              type="text"
+              id="profOccupation"
+              required
+              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+            />
+          </div>
+          <div class="flex items-center gap-3 py-2">
+            <input
+              type="checkbox"
+              id="profDisability"
+              class="rounded border-outline-variant text-primary w-5 h-5"
+            />
+            <label class="text-xs font-bold text-on-surface-variant uppercase"
+              >Physically Disabled (40%+)</label
+            >
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-primary text-white font-bold py-3 rounded-lg min-h-[48px]"
+          >
+            Commit Parameters
+          </button>
+        </form>
+      </section>
+
+      <section class="lg:col-span-2 space-y-10">
+        <div
+          class="bg-gradient-to-r from-primary-container to-primary p-6 rounded-2xl text-white flex justify-between items-center"
+        >
+          <div>
+            <h2 class="text-xl font-bold">Automated Recommender System</h2>
+            <p class="text-xs opacity-70 mt-0.5">
+              Live background evaluation matching your unique profile metrics
+              configuration.
+            </p>
+          </div>
+          <div
+            class="bg-white/10 px-4 py-2 rounded-xl border text-center flex items-center"
+          >
+            <span
+              id="recommendationCounter"
+              class="text-2xl font-black text-secondary-container"
+              >0</span
+            >
+            <span
+              class="text-[10px] uppercase font-bold tracking-wider ml-2 text-left"
+              >Matched</span
+            >
+          </div>
+        </div>
+        <div>
+          <h3
+            class="text-base font-bold text-primary mb-4 flex items-center gap-2"
+          >
+            Qualified Subsidies & Benefits
+          </h3>
+          <div id="recommendedSchemesContainer" class="space-y-4"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>

@@ -1,0 +1,495 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>YojanaBasket - Direct Access to Government Schemes</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght=300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#00113a",
+              "primary-container": "#002366",
+              secondary: "#8f4e00",
+              "secondary-container": "#fe9832",
+              "on-secondary-container": "#683700",
+              background: "#f8f9ff",
+              surface: "#f8f9ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "surface-container-high": "#dce9ff",
+              "on-surface": "#0b1c30",
+              "on-surface-variant": "#444650",
+              "outline-variant": "#c5c6d2",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-background text-on-surface">
+    <header class="bg-surface-container-lowest shadow-sm sticky top-0 z-50">
+      <nav
+        class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto"
+      >
+        <div
+          class="text-2xl font-bold text-primary tracking-tight cursor-pointer"
+          onclick="window.location.reload()"
+          data-i18n="brand"
+        >
+          YojanaBasket
+        </div>
+
+        <div
+          class="flex items-center ml-auto mr-6 border rounded-lg overflow-hidden bg-white shadow-sm"
+        >
+          <button
+            id="btnLangEn"
+            onclick="togglePlatformLanguage('en')"
+            class="text-xs font-bold px-3 py-1.5 bg-primary text-white transition-all"
+          >
+            EN
+          </button>
+          <button
+            id="btnLangHi"
+            onclick="togglePlatformLanguage('hi')"
+            class="text-xs font-bold px-3 py-1.5 text-primary transition-all"
+          >
+            हिंदी
+          </button>
+        </div>
+
+        <div class="flex items-center gap-8">
+          <span id="navAuthLinks" class="flex items-center gap-6"></span>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section
+        class="relative overflow-hidden pt-16 pb-20 bg-gradient-to-br from-surface via-surface-container-low to-surface-container-high"
+      >
+        <div
+          class="max-w-7xl mx-auto px-6 flex flex-col items-center text-center"
+        >
+          <h1
+            class="text-4xl md:text-5xl font-extrabold text-primary max-w-4xl mb-6 leading-tight"
+            data-i18n="subtitle"
+          >
+            Direct Access to Government Welfare Schemes
+          </h1>
+          <p
+            class="text-lg text-on-surface-variant max-w-2xl mb-10"
+            data-i18n="desc"
+          >
+            Discover, check customized matrix constraints eligibility, and
+            process requests instantly.
+          </p>
+
+          <div class="w-full max-w-3xl relative">
+            <div
+              class="flex items-center bg-surface-container-lowest rounded-full p-2 shadow-lg border border-outline-variant"
+            >
+              <span
+                class="material-symbols-outlined ml-4 text-on-surface-variant/70"
+                >search</span
+              >
+              <input
+                id="schemeSearchInput"
+                class="flex-grow bg-transparent border-none focus:ring-0 px-4 py-3 text-base text-on-surface"
+                data-i18n="searchPlace"
+                placeholder="Search parameters (e.g. Farming, Education)..."
+                type="text"
+              />
+              <button
+                id="searchExecutionBtn"
+                class="bg-secondary-container text-on-secondary-container font-bold px-8 py-3.5 rounded-full hover:bg-secondary hover:text-white transition-all min-h-[48px]"
+                data-i18n="searchBtn"
+              >
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="trending" class="py-16 max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-end mb-10">
+          <div>
+            <h2
+              class="text-3xl font-bold text-primary"
+              data-i18n="catalogHeading"
+            >
+              Explore Available Schemes
+            </h2>
+            <p class="text-sm text-on-surface-variant mt-1" id="schemeCounter">
+              Loading catalog registries...
+            </p>
+          </div>
+        </div>
+        <div
+          id="schemesGridDisplay"
+          class="grid grid-cols-1 md:grid-cols-3 gap-8"
+        ></div>
+      </section>
+    </main>
+
+    <div
+      id="authOverlayModal"
+      class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl border border-outline-variant flex flex-col"
+      >
+        <div
+          class="bg-primary-container p-6 text-white flex justify-between items-center"
+        >
+          <div>
+            <h3 class="text-xl font-bold">Access Portal Platform</h3>
+            <p class="text-xs opacity-80 mt-1">
+              Official Sovereign Framework Gateway
+            </p>
+          </div>
+          <button
+            onclick="toggleAuthModal(false)"
+            class="text-white/80 hover:text-white transition-colors"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div
+          class="flex border-b border-outline-variant bg-surface-container-low"
+        >
+          <button
+            id="tabLoginBtn"
+            onclick="switchAuthTab('LOGIN')"
+            class="w-1/2 py-3 text-sm font-bold text-primary border-b-2 border-primary bg-white"
+            data-i18n="signIn"
+          >
+            Sign In
+          </button>
+          <button
+            id="tabRegisterBtn"
+            onclick="switchAuthTab('REGISTER')"
+            class="w-1/2 py-3 text-sm font-semibold text-on-surface-variant"
+            data-i18n="registerTab"
+          >
+            New Registration
+          </button>
+        </div>
+
+        <div class="p-6">
+          <div
+            id="authAlertBanner"
+            class="mb-4 p-3 rounded-lg text-xs font-medium hidden"
+          ></div>
+
+          <form
+            id="portalLoginForm"
+            class="space-y-4"
+            onsubmit="executeUserLogin(event)"
+          >
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Account Credential</label
+              >
+              <input
+                type="text"
+                id="loginCredentialField"
+                required
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                placeholder="Username, Mobile, or Email ID"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                data-i18n="password"
+                >Password</label
+              >
+              <input
+                type="password"
+                id="loginPasswordField"
+                required
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              type="submit"
+              class="w-full bg-primary text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-primary-container transition-colors shadow"
+              data-i18n="signIn"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <form
+            id="portalRegisterForm"
+            class="space-y-3 hidden"
+            onsubmit="executeUserRegistration(event)"
+          >
+            <div id="registrationInputsWrapper" class="space-y-3">
+              <div>
+                <label
+                  class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                  data-i18n="fullName"
+                  >Full Legal Name</label
+                >
+                <input
+                  type="text"
+                  id="regNameField"
+                  required
+                  class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                  placeholder="As listed on Identity documentation"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                  data-i18n="username"
+                  >Target Username</label
+                >
+                <input
+                  type="text"
+                  id="regUsernameField"
+                  required
+                  class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                  placeholder="e.g., ankit_kumar"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                  data-i18n="email"
+                  >Email Identifier (Optional)</label
+                >
+                <input
+                  type="email"
+                  id="regEmailField"
+                  class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                  placeholder="name@domain.gov.in (Optional)"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                  data-i18n="mobile"
+                  >Mobile Contact Connection</label
+                >
+                <input
+                  type="tel"
+                  id="regMobileField"
+                  required
+                  class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                  placeholder="10-digit smartphone loop"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                  data-i18n="password"
+                  >Password</label
+                >
+                <input
+                  type="password"
+                  id="regPasswordField"
+                  required
+                  class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                  placeholder="Alphanumeric security complexity"
+                />
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-secondary-container text-on-secondary-container font-bold py-3 rounded-lg min-h-[48px] hover:bg-secondary hover:text-white transition-all shadow"
+                data-i18n="genOtpBtn"
+              >
+                Generate Security OTP
+              </button>
+            </div>
+
+            <div id="otpValidationWrapper" class="space-y-4 hidden pt-2">
+              <div
+                class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/60 text-center text-xs"
+              >
+                <span
+                  class="material-symbols-outlined text-primary text-2xl mb-1 block"
+                  >ad_units</span
+                >
+                <p class="font-bold text-primary" data-i18n="mobile">
+                  Verify Mobile Number Connection
+                </p>
+                <p class="text-on-surface-variant mt-1 text-[11px]">
+                  A secure 6-digit verification code token message has been
+                  dispatched onto your network cellular smartphone carrier
+                  connection string line.
+                </p>
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold uppercase text-secondary mb-1 text-center"
+                  >Enter Mobile SMS OTP</label
+                >
+                <input
+                  type="text"
+                  id="regOtpTokenField"
+                  maxlength="6"
+                  class="w-full text-center tracking-[0.5em] font-bold text-lg rounded-lg border-primary min-h-[46px] focus:ring-1 focus:ring-primary"
+                  placeholder="••••••"
+                />
+              </div>
+              <button
+                type="button"
+                onclick="commitSecureOtpVerification()"
+                class="w-full bg-primary text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-primary-container transition-all shadow"
+              >
+                Confirm Mobile Identity
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="fixed bottom-6 right-6 z-[90] flex flex-col items-end">
+      <div
+        id="sarthiWorkspacePanel"
+        class="w-80 md:w-96 h-[400px] bg-white rounded-2xl border border-outline-variant shadow-xl flex flex-col mb-4 hidden overflow-hidden transition-all"
+      >
+        <div
+          class="bg-primary p-4 text-white flex justify-between items-center text-xs font-bold"
+        >
+          <span class="flex items-center gap-2">
+            <img
+              src="icon.jpeg"
+              alt="Yojana Mitra"
+              class="w-5 h-5 rounded-full object-cover ring-1 ring-white/40"
+            />
+            <span data-i18n="sarthiTitle">Sarthi AI Assistant</span>
+          </span>
+          <button
+            onclick="toggleSarthiPanel(false)"
+            class="opacity-80 hover:opacity-100"
+          >
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+        <div
+          id="sarthiChatConsoleStream"
+          class="flex-grow p-4 overflow-y-auto space-y-3 bg-surface-container-low text-xs"
+        ></div>
+        <div class="p-3 border-t bg-white flex gap-2">
+          <input
+            type="text"
+            id="sarthiQueryConsoleInput"
+            class="flex-grow rounded-lg border-outline-variant text-xs min-h-[40px] focus:ring-primary focus:border-primary"
+            data-i18n="sarthiPlace"
+            placeholder="Ask anything regarding welfare services..."
+            onkeypress="handleSarthiKeyPress(event)"
+          />
+          <button
+            onclick="processSarthiQueryTransmission()"
+            class="bg-primary text-white px-3 rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors"
+          >
+            <span class="material-symbols-outlined text-sm">send</span>
+          </button>
+        </div>
+      </div>
+      <button
+        onclick="toggleSarthiPanel(true)"
+        class="w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center ring-4 ring-primary/20 hover:scale-105 transition-all overflow-hidden"
+      >
+        <img
+          src="icon.jpeg"
+          alt="Yojana Mitra Logo"
+          class="w-full h-full object-cover"
+        />
+      </button>
+    </div>
+
+    <script src="js/lang.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sarthi.js"></script>
+    <script>
+      let targetedCategoryFilter = "all";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        executeCatalogSync();
+        document
+          .getElementById("searchExecutionBtn")
+          .addEventListener("click", executeCatalogSync);
+      });
+
+      async function executeCatalogSync() {
+        const query = document.getElementById("schemeSearchInput").value;
+        const grid = document.getElementById("schemesGridDisplay");
+        try {
+          let url = `/api/schemes?category=${targetedCategoryFilter}`;
+          if (query) url += `&search=${encodeURIComponent(query)}`;
+          const res = await fetch(url);
+          const data = await res.json();
+
+          // Adjust label text string based on active language setting parameters
+          const dynamicCounterLabel =
+            currentSelectedLanguage === "hi"
+              ? "लक्षित योजनाएं पाई गईं"
+              : "Target Schemes Identified";
+          document.getElementById("schemeCounter").innerText =
+            `${data.schemes.length} ${dynamicCounterLabel}`;
+
+          if (data.schemes.length === 0) {
+            grid.innerHTML = `<div class="col-span-3 text-center py-10 text-on-surface-variant font-medium text-sm">No schemes match those parameters.</div>`;
+            return;
+          }
+
+          grid.innerHTML = data.schemes
+            .map((s) => {
+              // Read localization settings automatically to decide language layout output representation strings
+              const localizedSchemeName =
+                currentSelectedLanguage === "hi" && s.hindiName
+                  ? s.hindiName
+                  : s.name;
+              const localizedBtnText =
+                currentSelectedLanguage === "hi"
+                  ? "पात्रता की जांच करें"
+                  : "Evaluate Prerequisites";
+
+              return `
+                    <div class="bg-white rounded-xl border border-outline-variant p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-surface-container-high text-primary w-fit rounded mb-2">${s.category}</span>
+                        <h4 class="text-lg font-bold text-primary mb-1">${localizedSchemeName}</h4>
+                        <p class="text-xs text-on-surface-variant mb-4 line-clamp-3 flex-grow">${s.description}</p>
+                        <button onclick="handleApplicationRouting('${s.id}')" class="w-full min-h-[48px] border-2 border-primary text-primary font-bold text-sm rounded-lg hover:bg-primary hover:text-white transition-all">${localizedBtnText}</button>
+                    </div>
+                `;
+            })
+            .join("");
+        } catch (e) {
+          grid.innerHTML = `<div class="col-span-3 text-center text-red-600 font-bold text-sm p-4">Sync failure with administrative registries.</div>`;
+        }
+      }
+
+      function handleApplicationRouting(id) {
+        if (!localStorage.getItem("yojana_session_token")) {
+          const promptMsg =
+            currentSelectedLanguage === "hi"
+              ? "पात्रता मूल्यांकन कार्यों को पूरा करने के लिए साइन इन आवश्यक है।"
+              : "Authentication Required to perform qualification matrix evaluation tasks.";
+          alert(promptMsg);
+          toggleAuthModal(true, "LOGIN");
+        } else {
+          window.location.href = "/dashboard.html";
+        }
+      }
+    </script>
+  </body>
+</html>
