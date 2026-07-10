@@ -1,14 +1,16 @@
 <!doctype html>
-<html lang="en">
+<html class="light" lang="en">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Citizen Dashboard - YojanaBasket</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
     <link
-      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined&display=swap"
       rel="stylesheet"
     />
+
     <script>
       tailwind.config = {
         theme: {
@@ -18,9 +20,12 @@
               "primary-container": "#002366",
               secondary: "#8f4e00",
               "secondary-container": "#fe9832",
+              "on-secondary-container": "#683700",
               background: "#f8f9ff",
-              surface: "#ffffff",
+              surface: "#f8f9ff",
+              "surface-container-lowest": "#ffffff",
               "surface-container-low": "#eff4ff",
+              "surface-container-high": "#dce9ff",
               "on-surface": "#0b1c30",
               "on-surface-variant": "#444650",
               "outline-variant": "#c5c6d2",
@@ -31,188 +36,386 @@
     </script>
   </head>
   <body class="bg-background text-on-surface">
-    <header class="bg-white shadow-sm border-b sticky top-0 z-50">
-      <div
-        class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center"
+    <header class="bg-surface-container-lowest shadow-sm sticky top-0 z-50">
+      <nav
+        class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto"
       >
         <div
-          class="text-xl font-bold text-primary tracking-tight cursor-pointer"
-          onclick="window.location.href = '/'"
+          class="text-2xl font-bold text-primary tracking-tight cursor-pointer"
+          onclick="window.location.href = '/index.html'"
+          data-i18n="brand"
         >
           YojanaBasket
-          <span
-            class="text-xs bg-secondary/10 text-secondary px-2 py-0.5 rounded ml-2"
-            >Citizen Workspace</span
-          >
         </div>
-        <div class="flex items-center gap-4">
-          <span id="dashboardUserBadge" class="text-sm font-bold text-primary"
-            >Citizen</span
-          >
+
+        <div
+          class="flex items-center ml-auto mr-6 border rounded-lg overflow-hidden bg-white shadow-sm"
+        >
           <button
-            onclick="terminateActiveSession()"
-            class="text-xs font-bold text-red-600 border bg-red-50 px-3 py-1.5 rounded-lg"
+            id="btnLangEn"
+            onclick="togglePlatformLanguage('en')"
+            class="text-xs font-bold px-3 py-1.5 bg-primary text-white transition-all"
           >
-            Sign Out
+            EN
+          </button>
+          <button
+            id="btnLangHi"
+            onclick="togglePlatformLanguage('hi')"
+            class="text-xs font-bold px-3 py-1.5 text-primary transition-all"
+          >
+            हिंदी
           </button>
         </div>
-      </div>
+
+        <div class="flex items-center gap-8">
+          <span id="navAuthLinks" class="flex items-center gap-6"></span>
+        </div>
+      </nav>
     </header>
 
-    <main
-      class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10"
-    >
-      <section
-        class="lg:col-span-1 bg-white rounded-2xl border p-6 shadow-sm h-fit space-y-6"
+    <main class="max-w-7xl mx-auto px-6 py-10">
+      <div
+        class="mb-8 bg-primary-container text-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
       >
         <div>
-          <h3 class="text-lg font-bold text-primary">
-            Sovereign Profile Matrix
-          </h3>
-          <p class="text-xs text-on-surface-variant">
-            Update credentials to run background matching checks.
+          <h1
+            class="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined text-secondary-container"
+              >account_circle</span
+            >
+            <span id="welcomeCitizenName">Loading Account...</span>
+          </h1>
+          <p class="text-xs opacity-75 mt-1">
+            Manage demographic vectors and check auto-eligible parameters
+            dynamically.
           </p>
         </div>
-        <form
-          id="dashboardProfileForm"
-          class="space-y-4"
-          onsubmit="commitProfileParameters(event)"
-        >
-          <div>
-            <label
-              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
-              >Age (Years)</label
-            >
-            <input
-              type="number"
-              id="profAge"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
-              >Gender Group</label
-            >
-            <select
-              id="profGender"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
-              >Domicile State</label
-            >
-            <input
-              type="text"
-              id="profState"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              placeholder="Bihar"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
-              >Caste Group</label
-            >
-            <select
-              id="profCaste"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            >
-              <option value="General">General</option>
-              <option value="OBC">OBC</option>
-              <option value="SC">SC</option>
-              <option value="ST">ST</option>
-            </select>
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
-              >Annual Household Income (₹)</label
-            >
-            <input
-              type="number"
-              id="profIncome"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold text-on-surface-variant uppercase mb-1"
-              >Primary Occupation</label
-            >
-            <input
-              type="text"
-              id="profOccupation"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div class="flex items-center gap-3 py-2">
-            <input
-              type="checkbox"
-              id="profDisability"
-              class="rounded border-outline-variant text-primary w-5 h-5"
-            />
-            <label class="text-xs font-bold text-on-surface-variant uppercase"
-              >Physically Disabled (40%+)</label
-            >
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-primary text-white font-bold py-3 rounded-lg min-h-[48px]"
-          >
-            Commit Parameters
-          </button>
-        </form>
-      </section>
-
-      <section class="lg:col-span-2 space-y-10">
         <div
-          class="bg-gradient-to-r from-primary-container to-primary p-6 rounded-2xl text-white flex justify-between items-center"
+          class="bg-white/10 px-4 py-2 rounded-xl border border-white/20 text-xs font-medium"
         >
-          <div>
-            <h2 class="text-xl font-bold">Automated Recommender System</h2>
-            <p class="text-xs opacity-70 mt-0.5">
-              Live background evaluation matching your unique profile metrics
-              configuration.
-            </p>
-          </div>
-          <div
-            class="bg-white/10 px-4 py-2 rounded-xl border text-center flex items-center"
-          >
-            <span
-              id="recommendationCounter"
-              class="text-2xl font-black text-secondary-container"
-              >0</span
-            >
-            <span
-              class="text-[10px] uppercase font-bold tracking-wider ml-2 text-left"
-              >Matched</span
-            >
-          </div>
+          Username:
+          <span id="welcomeCitizenUsername" class="font-bold">...</span>
         </div>
-        <div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div
+          class="bg-white rounded-2xl border border-outline-variant p-6 shadow-sm h-fit"
+        >
           <h3
-            class="text-base font-bold text-primary mb-4 flex items-center gap-2"
+            class="text-lg font-bold text-primary mb-4 flex items-center gap-2 border-b pb-3"
           >
-            Qualified Subsidies & Benefits
+            <span class="material-symbols-outlined text-secondary">tune</span>
+            Demographic Metrics Matrix
           </h3>
-          <div id="recommendedSchemesContainer" class="space-y-4"></div>
+
+          <form
+            id="dashboardProfileOverrideForm"
+            class="space-y-4"
+            onsubmit="triggerMatrixEvaluationOverride(event)"
+          >
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Age Bracket (Years)</label
+              >
+              <input
+                type="number"
+                id="profileAgeInput"
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                min="0"
+                max="120"
+                placeholder="e.g. 25"
+              />
+            </div>
+
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Gender Representation</label
+              >
+              <select
+                id="profileGenderInput"
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >State / Domicile</label
+              >
+              <select
+                id="profileStateInput"
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+              >
+                <option value="Bihar">Bihar</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Karnataka">Karnataka</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Social Category (Caste)</label
+              >
+              <select
+                id="profileCasteInput"
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+              >
+                <option value="General">General</option>
+                <option value="OBC">OBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Annual Household Income (₹)</label
+              >
+              <input
+                type="number"
+                id="profileIncomeInput"
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                placeholder="e.g. 150000"
+              />
+            </div>
+
+            <div
+              class="flex items-center gap-3 bg-surface-container-low p-3 rounded-xl border border-outline-variant/50"
+            >
+              <input
+                type="checkbox"
+                id="profileDisabilityInput"
+                class="rounded text-primary focus:ring-primary w-5 h-5"
+              />
+              <label
+                for="profileDisabilityInput"
+                class="text-xs font-semibold text-primary cursor-pointer select-none"
+              >
+                Physically Disabled Category (40% or more)
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-primary text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-primary-container transition-colors shadow flex items-center justify-center gap-2"
+            >
+              <span class="material-symbols-outlined text-sm">analytics</span>
+              Evaluate Eligible Benefits
+            </button>
+          </form>
         </div>
-      </section>
+
+        <div class="lg:col-span-2 space-y-6">
+          <div
+            class="bg-white rounded-2xl border border-outline-variant p-6 shadow-sm"
+          >
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+              <div>
+                <h3
+                  class="text-xl font-bold text-primary flex items-center gap-2"
+                >
+                  <span
+                    class="material-symbols-outlined text-secondary-container text-xl"
+                    >workspace_premium</span
+                  >
+                  Personalized Welfare Match List
+                </h3>
+                <p class="text-xs text-on-surface-variant mt-1">
+                  Schemes automatically matched against your active parameters
+                  array matrix inputs.
+                </p>
+              </div>
+              <span
+                id="evaluationMatchBadge"
+                class="bg-surface-container-high text-primary font-bold text-xs px-3 py-1.5 rounded-full border border-primary/10"
+                >0 Matches Found</span
+              >
+            </div>
+
+            <div
+              id="dashboardRecommendationsStream"
+              class="grid grid-cols-1 md:grid-cols-2 gap-6"
+            ></div>
+          </div>
+        </div>
+      </div>
     </main>
 
-    <script src="js/dashboard.js"></script>
+    <script src="js/lang.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+      // Lifecycle hook: Validates session state context before running asset calculations
+      document.addEventListener("DOMContentLoaded", () => {
+        // Forces dashboard navigation bars to bind to login status state tokens instantly
+        if (typeof renderNavbarAuthenticationState === "function") {
+          renderNavbarAuthenticationState(); // cite: 567
+        }
+
+        const activeSessionData = localStorage.getItem("yojana_session_token");
+        if (!activeSessionData) {
+          alert(
+            "No active authentication token identified. Shifting viewport target to landing page.",
+          );
+          window.location.href = "/index.html";
+          return;
+        }
+
+        // Initialize display configuration using session parameters
+        try {
+          const parsedSessionObj = JSON.parse(activeSessionData);
+          const userProfile =
+            parsedSessionObj.user || parsedSessionObj.userProfile;
+          const accountDetails = parsedSessionObj;
+
+          const targetedUsername =
+            accountDetails.username ||
+            (userProfile ? userProfile.name : "Citizen");
+          document.getElementById("welcomeCitizenName").innerText = userProfile
+            ? userProfile.name
+            : "Valued Citizen";
+          document.getElementById("welcomeCitizenUsername").innerText =
+            targetedUsername;
+
+          // Pre-populate input variables cleanly from cached entity attributes if available
+          if (userProfile) {
+            if (userProfile.age)
+              document.getElementById("profileAgeInput").value =
+                userProfile.age;
+            if (userProfile.gender)
+              document.getElementById("profileGenderInput").value =
+                userProfile.gender;
+            if (userProfile.state)
+              document.getElementById("profileStateInput").value =
+                userProfile.state;
+            if (userProfile.caste)
+              document.getElementById("profileCasteInput").value =
+                userProfile.caste;
+            if (userProfile.annualIncome)
+              document.getElementById("profileIncomeInput").value =
+                userProfile.annualIncome;
+            document.getElementById("profileDisabilityInput").checked =
+              !!userProfile.disability;
+          }
+
+          // Fire initial request matching matrix mapping sweep automatically on boot
+          executeDemographicMatchResolution(targetedUsername, null);
+        } catch (err) {
+          console.error("Dashboard configuration parameter load fault:", err);
+          localStorage.removeItem("yojana_session_token");
+          window.location.href = "/index.html";
+        }
+      });
+
+      // Form execution override hook to capture interface variables
+      function triggerMatrixEvaluationOverride(event) {
+        event.preventDefault();
+        const targetedUsername = document.getElementById(
+          "welcomeCitizenUsername",
+        ).innerText;
+
+        // Assemble current modified payload constraints properties block
+        const profileOverrides = {
+          age:
+            parseInt(document.getElementById("profileAgeInput").value) || null,
+          gender: document.getElementById("profileGenderInput").value,
+          state: document.getElementById("profileStateInput").value,
+          caste: document.getElementById("profileCasteInput").value,
+          annualIncome:
+            parseFloat(document.getElementById("profileIncomeInput").value) ||
+            null,
+          disability: document.getElementById("profileDisabilityInput").checked,
+        };
+
+        executeDemographicMatchResolution(targetedUsername, profileOverrides);
+      }
+
+      // Direct AJAX dispatch pipeline checking matching entries against Express endpoints
+      async function executeDemographicMatchResolution(
+        username,
+        profileOverrides,
+      ) {
+        const streamContainer = document.getElementById(
+          "dashboardRecommendationsStream",
+        );
+        streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs py-8 italic text-on-surface-variant animate-pulse">Running matrix eligibility filters...</div>`;
+
+        try {
+          const response = await fetch("/api/schemes/recommend", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, profileOverrides }), // cite: 94
+          });
+
+          const output = await response.json();
+
+          if (!response.ok) {
+            streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs text-red-600 p-4 font-bold bg-red-50 rounded-xl border">${output.error || "Failed to match parameters."}</div>`;
+            return;
+          }
+
+          // Update balance indicator metrics text
+          const isHindi = localStorage.getItem("yojana_lang") === "hi";
+          const badgeLabel = isHindi ? "योजनाएं पाई गईं" : "Matches Found";
+          document.getElementById("evaluationMatchBadge").innerText =
+            `${output.matchCount} ${badgeLabel}`;
+
+          if (!output.eligibleSchemes || output.eligibleSchemes.length === 0) {
+            streamContainer.innerHTML = `
+                    <div class="col-span-2 text-center py-12 px-4 border border-dashed rounded-xl bg-surface-container-low text-on-surface-variant">
+                        <span class="material-symbols-outlined text-3xl opacity-40 mb-2">info</span>
+                        <p class="text-sm font-semibold">No schemes match your exact metrics combinations.</p>
+                        <p class="text-xs opacity-75 mt-1">Try adjusting income limits or age values inside the control panel grid.</p>
+                    </div>`;
+            return;
+          }
+
+          // Map and inject items smoothly onto container display cards
+          streamContainer.innerHTML = output.eligibleSchemes
+            .map((s) => {
+              const schemeTitle = isHindi && s.hindiName ? s.hindiName : s.name;
+              const benefitLabel = isHindi ? "मुख्य लाभ" : "Key Benefits";
+              const docLabel = isHindi ? "आवश्यक दस्तावेज" : "Required Papers";
+              const applyBtnText = isHindi
+                ? "आधिकारिक पोर्टल पर आवेदन करें ↗"
+                : "Apply on Official Portal ↗";
+
+              return `
+                    <div class="bg-white rounded-xl border border-outline-variant p-5 flex flex-col justify-between shadow-sm hover:border-primary/30 transition-all">
+                        <div>
+                            <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 bg-surface-container-high text-primary w-fit rounded block mb-2">${s.category}</span>
+                            <h4 class="text-base font-bold text-primary mb-2">${schemeTitle}</h4>
+                            <p class="text-xs text-on-surface-variant line-clamp-3 mb-4 opacity-90">${s.description}</p>
+                            
+                            <div class="space-y-2 border-t pt-3 text-[11px]">
+                                <p><strong class="text-primary">${benefitLabel}:</strong> <span class="text-on-surface-variant">${s.benefits}</span></p>
+                                <p><strong class="text-primary">${docLabel}:</strong> <span class="text-on-surface-variant">${s.requiredDocuments.join(", ")}</span></p>
+                            </div>
+                        </div>
+                        
+                        <a href="${s.officialLink || "#"}" target="_blank" rel="noopener noreferrer" class="w-full text-center mt-4 inline-flex min-h-[40px] bg-primary-container text-white font-bold text-xs rounded-lg hover:bg-primary transition-colors flex items-center justify-center gap-1.5 decoration-transparent select-none">
+                            <span class="material-symbols-outlined text-xs">open_in_new</span>
+                            ${applyBtnText}
+                        </a>
+                    </div>
+                `;
+            })
+            .join("");
+        } catch (err) {
+          streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs text-red-600 p-4 font-bold bg-red-50 rounded-xl border">Network connection dropped parsing recommendations mapping pipeline endpoints.</div>`;
+        }
+      }
+    </script>
   </body>
 </html>

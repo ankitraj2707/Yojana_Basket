@@ -1,24 +1,17 @@
 /**
  * YojanaBasket - Main Server Engine Application
- * Fully compatible with Node.js, Prisma v6, and CommonJS architecture.
+ * Version: CommonJS Architecture (Prisma v6 Native Bindings)
  */
-require("dotenv").config(); // Must be invoked immediately at line 1 to load secrets cleanly [cite: 2, 429]
+require("dotenv").config(); // Must be invoked immediately at line 1 to load environment configurations [cite: 2]
 
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcryptjs"); // Used for secure asynchronous credential hashing [cite: 3]
-const twilio = require("twilio"); // Used for active network SMS dispatch pipelines [cite: 378]
 
-// Initialize the Prisma Client instance (v6 natively resolves settings directly from your .env file) [cite: 3, 337, 340]
+// Initialize the Prisma Client instance (v6 natively resolves settings directly from your .env file) [cite: 3]
 const prisma = require("./config/prisma");
-
-// Initialize live Twilio communications instance using environment tokens [cite: 379, 428]
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN,
-);
 
 const app = express();
 const PORT = process.env.PORT || 5000; // cite: 4
@@ -27,7 +20,7 @@ app.use(cors()); // cite: 5
 app.use(express.json()); // cite: 5
 app.use(express.urlencoded({ extended: true })); // cite: 5
 
-// Serve your static frontend content directory path assets natively [cite: 128, 140]
+// Serve your static frontend content directory path assets natively [cite: 128]
 app.use(express.static(path.join(__dirname, "public")));
 
 // Fallback safety middleware to guarantee req.body resolves as an object inside every endpoint [cite: 5]
@@ -38,7 +31,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Dynamic adaptive catalog dataset data loader looking for 'schemes.json' [cite: 6, 7]
+// Dynamic adaptive catalog dataset data loader looking for 'schemes.json' [cite: 6]
 let SCHEMES_DATA = [];
 try {
   const possiblePaths = [
@@ -68,7 +61,7 @@ try {
   console.error("Error reading schemes.json file:", error); // cite: 11
 }
 
-// Global active memory tracking map to store unverified registration sessions [cite: 350, 413]
+// Global active memory tracking map to store unverified registration sessions [cite: 350]
 const pendingRegistrationsMap = new Map();
 
 // -------------------------------------------------------------
@@ -101,7 +94,7 @@ app.get("/api/schemes", (req, res) => {
   res.json({ schemes: filtered }); // cite: 13
 });
 
-// API: Bulletproof Zero-Crash AI Assistant Endpoint with Built-In Local Search Fallback
+// API: Bulletproof Zero-Crash AI Assistant Endpoint with Built-In Local Search Fallback [cite: 514]
 app.post("/api/assistant/chat", async (req, res) => {
   try {
     const { messages, userProfile } = req.body; // cite: 13
@@ -115,7 +108,7 @@ app.post("/api/assistant/chat", async (req, res) => {
     const apiKey = process.env.GEMINI_API_KEY; // cite: 13
 
     // -------------------------------------------------------------
-    // OPTION A: AUTOMATIC FALLBACK LOCAL DATA MATCHING (IF API KEY IS MISSING) [cite: 511]
+    // OPTION A: AUTOMATIC FALLBACK LOCAL DATA MATCHING (IF API KEY IS MISSING) [cite: 510]
     // -------------------------------------------------------------
     let matchedKeywords = [];
     if (
@@ -177,7 +170,7 @@ app.post("/api/assistant/chat", async (req, res) => {
     }
 
     // -------------------------------------------------------------
-    // OPTION B: LIVE AI DISPATCH VIA SECURE HTTP CALL (ZERO-DEPENDENCY PACKAGES) [cite: 511]
+    // OPTION B: LIVE AI DISPATCH VIA SECURE HTTP CALL (ZERO-DEPENDENCY PACKAGES) [cite: 510]
     // -------------------------------------------------------------
     try {
       let profileContext = ""; // cite: 31
@@ -188,7 +181,6 @@ app.post("/api/assistant/chat", async (req, res) => {
 
       const promptSystemPayload = `You are Yojana Mitra, an expert AI schemes assistant on YojanaBasket. Help the user with their prompt. ${profileContext} Local database schemes available: ${JSON.stringify(SCHEMES_DATA)}. User prompt: "${lastUserMessage}"`; // cite: 36, 37, 38
 
-      // Native HTTP fetch call avoids library version conflicts or initialization crashes [cite: 511]
       const gatewayApiResponse = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
@@ -229,24 +221,23 @@ app.post("/api/assistant/chat", async (req, res) => {
 });
 
 // -------------------------------------------------------------
-// SECURE REGISTER & VERIFICATION AUTHENTICATION PIPELINE
+// SECURE SIMULATED MOBILE OTP REGISTER & VERIFICATION PIPELINE
 // -------------------------------------------------------------
 
-// PHASE 1: Initiate Profile Creation & Dispatch Secure Twilio SMS OTP [cite: 379, 419]
+// PHASE 1: Initiate Profile Creation & Print Verification Token to Terminal Console [cite: 352]
 app.post("/api/auth/user/register/initiate", async (req, res) => {
   try {
-    // emailId is gathered but parsed conditionally to support rural citizens without emails [cite: 399, 408]
     const { username, emailId, mobileNumber, password, name } = req.body; // cite: 67
 
-    // Validate only core mandatory fields [cite: 408]
+    // Validate core mandatory parameters (emailId omitted from strict validation constraints) [cite: 67, 408]
     if (!username || !mobileNumber || !password || !name) {
-      // cite: 67, 408
+      // cite: 67
       return res
         .status(400)
         .json({ error: "Missing required registration parameters." }); // cite: 67
     }
 
-    // Adapt uniqueness boundaries based on fields provided [cite: 408]
+    // Adapt uniqueness boundaries dynamically based on filled values [cite: 409]
     const constraintCheckArray = [{ username }, { mobileNumber }];
 
     if (emailId && emailId.trim() !== "") {
@@ -255,24 +246,24 @@ app.post("/api/auth/user/register/initiate", async (req, res) => {
     }
 
     const existingLogin = await prisma.userLogin.findFirst({
-      where: { OR: constraintCheckArray }, // cite: 68, 410
+      where: { OR: constraintCheckArray }, // cite: 68
     });
 
     if (existingLogin) {
       // cite: 69
       return res
         .status(400)
-        .json({ error: "Username, mobile number, or email already exists." }); // cite: 69, 411
+        .json({ error: "Username, mobile number, or email already exists." }); // cite: 69
     }
 
-    // Cryptographically simulate/generate 6-digit verification code token [cite: 349, 412]
+    // Generate secure registration 6-digit verification code token [cite: 349, 412]
     const generatedVerificationCode = String(
       Math.floor(100000 + Math.random() * 900000),
-    ); // cite: 412
+    ); // cite: 349, 412
     const hashedPassword = await bcrypt.hash(password, 10); // cite: 70, 412
     const sessionTransactionId = "verification-session-" + Date.now(); // cite: 412
 
-    // Hold demographic configurations safely inside volatile application memory state [cite: 413]
+    // Hold profile configuration parameters in volatile application memory cache block [cite: 349, 413]
     pendingRegistrationsMap.set(sessionTransactionId, {
       profilePayload: {
         name,
@@ -287,39 +278,37 @@ app.post("/api/auth/user/register/initiate", async (req, res) => {
       correctToken: generatedVerificationCode, // cite: 413
     });
 
-    // Format numbers to E.164 international protocol required by Twilio
-    const formattedMobileTarget = mobileNumber.startsWith("+")
-      ? mobileNumber.trim()
-      : `+91${mobileNumber.trim()}`;
-
     // ==================================================================
-    // LIVE CELLULAR SMS DISPATCH SEQUENCE VIA TWILIO
+    // FIXED WORKFLOW: PRINT SECURE REGISTER TOKEN TO TERMINAL CONSOLE
     // ==================================================================
-    await twilioClient.messages.create({
-      body: `Namaste ${name}! Your YojanaBasket official verification identity code is: ${generatedVerificationCode}. This code is valid for 10 minutes.`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: formattedMobileTarget,
-    });
-
+    console.log("\n==========================================================");
+    console.log(`[📱 YOJANABASKET INTERNAL SMS GATEWAY SIMULATOR]`);
+    console.log(`Target Recipient Name : ${name}`);
+    console.log(`Mobile Connectivity  : +91 ${mobileNumber.trim()}`);
     console.log(
-      `[YojanaBasket SMS Gateway] Live Twilio SMS routed to: ${formattedMobileTarget} | OTP: ${generatedVerificationCode}`,
+      `Generated OTP Token  : ${generatedVerificationCode}  <-- COPY THIS`,
     );
+    console.log("==========================================================\n");
 
     res.status(200).json({
-      message: `Security validation code successfully transmitted to mobile number: ${formattedMobileTarget}.`,
+      message: `Security validation code successfully generated for mobile routing line: +91 ${mobileNumber.trim()}.`,
       verificationSessionId: sessionTransactionId,
     }); // cite: 417
   } catch (error) {
-    console.error("Twilio Cellular Gateway Error:", error.message);
-    res.status(500).json({
-      error:
-        "Failed to dispatch physical SMS token text to network carrier lines.",
-      details: error.message,
-    }); // cite: 418
+    console.error(
+      "Internal Registration Initiation Pipeline Fault:",
+      error.message,
+    );
+    res
+      .status(500)
+      .json({
+        error: "Failed to initialize mobile validation sequence.",
+        details: error.message,
+      }); // cite: 418
   }
 });
 
-// PHASE 2: Verify Token & Commit Profile Object Nested Atomically to Database [cite: 70, 352]
+// PHASE 2: Verify Token & Commit Profile Object Nested Atomically to Database [cite: 352]
 app.post("/api/auth/user/register/verify", async (req, res) => {
   try {
     const { verificationSessionId, inputOtpToken } = req.body;
@@ -338,11 +327,13 @@ app.post("/api/auth/user/register/verify", async (req, res) => {
         .json({ error: "Verification session expired or timed out." });
     }
 
-    // Token Match Validation Check Boundary
+    // Token Match Validation Check Boundary [cite: 361]
     if (savedSessionRecord.correctToken !== String(inputOtpToken).trim()) {
-      return res.status(401).json({
-        error: "Security Code Check Mismatch. Please check terminal logs.",
-      });
+      return res
+        .status(401)
+        .json({
+          error: "Security Code Check Mismatch. Please check terminal logs.",
+        });
     }
 
     const { profilePayload, loginPayload } = savedSessionRecord;
@@ -364,7 +355,7 @@ app.post("/api/auth/user/register/verify", async (req, res) => {
       include: { loginDetails: true }, // cite: 70
     });
 
-    // Erase the temporary session cache block node safely [cite: 413]
+    // Erase the temporary session cache block node safely
     pendingRegistrationsMap.delete(verificationSessionId);
 
     // Strip hashed password out of output response object [cite: 72]
@@ -373,10 +364,12 @@ app.post("/api/auth/user/register/verify", async (req, res) => {
       .status(201)
       .json({ message: "User registered successfully", data: result }); // cite: 73
   } catch (error) {
-    res.status(500).json({
-      error: "Database transaction commit sequence failed.",
-      details: error.message,
-    }); // cite: 74
+    res
+      .status(500)
+      .json({
+        error: "Database transaction commit sequence failed.",
+        details: error.message,
+      }); // cite: 74
   }
 });
 
@@ -416,17 +409,19 @@ app.post("/api/auth/user/login", async (req, res) => {
       accountDetails: loginRecord,
     }); // cite: 79
   } catch (error) {
-    res.status(500).json({
-      error: "Authentication transaction failed",
-      details: error.message,
-    }); // cite: 80
+    res
+      .status(500)
+      .json({
+        error: "Authentication transaction failed",
+        details: error.message,
+      }); // cite: 80
   }
 });
 
 // API: Profile-Based Dynamic Recommendation Matrix Matching System [cite: 94]
 app.post("/api/schemes/recommend", async (req, res) => {
   try {
-    const { username, profileOverrides } = req.body; // Expanded block handles testing values smoothly [cite: 151]
+    const { username, profileOverrides } = req.body;
     if (!username) {
       return res
         .status(400)
@@ -443,12 +438,13 @@ app.post("/api/schemes/recommend", async (req, res) => {
     });
 
     if (!account || !account.user) {
-      return res.status(404).json({
-        error: "Registered user profile not found for this username.",
-      }); // cite: 97
+      return res
+        .status(404)
+        .json({
+          error: "Registered user profile not found for this username.",
+        }); // cite: 97
     }
 
-    // Apply dashboard form parameter adjustments overlay if provided [cite: 151]
     let profile = account.user; // cite: 99
     if (profileOverrides) {
       profile = { ...profile, ...profileOverrides };
@@ -500,7 +496,7 @@ app.post("/api/schemes/recommend", async (req, res) => {
         // cite: 106
         return false; // cite: 106
       }
-      return true; // Passes all constraints [cite: 107]
+      return true;
     });
 
     res.json({
@@ -523,19 +519,20 @@ app.post("/api/schemes/recommend", async (req, res) => {
       matchCount: matchedSchemes.length, // cite: 109
     });
   } catch (error) {
-    res.status(500).json({
-      error: "Failed to process automatic profile search mapping.",
-      details: error.message,
-    }); // cite: 109
+    res
+      .status(500)
+      .json({
+        error: "Failed to process automatic profile search mapping.",
+        details: error.message,
+      }); // cite: 109
   }
 });
 
 // -------------------------------------------------------------
-// SEEDING SERVICE EXECUTION LAYER
+// BASELINE DATABASE SEEDING ENGINE
 // -------------------------------------------------------------
 async function seedDefaultData() {
   try {
-    // Generate base profile for Ankit Kumar [cite: 52]
     const defaultUser = await prisma.userProfile.upsert({
       where: { email: "krankit2007@gmail.com" }, // cite: 52
       update: {},
@@ -575,7 +572,7 @@ async function seedDefaultData() {
   }
 }
 
-// Fire seeder execution logic cleanly during startup cycle hook [cite: 64]
+// Trigger automatic seeder routine operations during server start sequence hook [cite: 64]
 seedDefaultData().catch((err) => console.error("Initial seeding failed:", err));
 
 app.listen(PORT, () => {
