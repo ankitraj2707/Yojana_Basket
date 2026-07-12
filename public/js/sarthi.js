@@ -22,7 +22,7 @@ async function processSarthiQueryTransmission() {
 
   // Append a temporary loading bubble placeholder
   const loadingId = "sarthi-loading-" + Date.now();
-  stream.innerHTML += `<div id="${loadingId}" class="bg-white border p-2 rounded-lg max-w-[85%] w-fit mb-2 text-on-surface-variant italic animate-pulse">Yojana Mitra is analyzing...</div>`;
+  stream.innerHTML += `<div id="${loadingId}" class="bg-white border p-2 rounded-lg max-w-[85%] w-fit mb-2 text-on-surface-variant italic animate-pulse">Sarthi is analyzing...</div>`;
   stream.scrollTop = stream.scrollHeight;
 
   try {

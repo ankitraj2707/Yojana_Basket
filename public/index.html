@@ -108,6 +108,24 @@
                 placeholder="Search parameters (e.g. Farming, Education)..."
                 type="text"
               />
+
+              <button
+                onclick="
+                  startVoiceRecognition(
+                    'schemeSearchInput',
+                    'searchExecutionBtn',
+                  )
+                "
+                class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant flex items-center justify-center mr-2 transition-colors min-w-[40px] min-h-[40px]"
+                title="Speak to search"
+              >
+                <span
+                  id="mic-icon-schemeSearchInput"
+                  class="material-symbols-outlined text-xl"
+                  >mic</span
+                >
+              </button>
+
               <button
                 id="searchExecutionBtn"
                 class="bg-secondary-container text-on-secondary-container font-bold px-8 py-3.5 rounded-full hover:bg-secondary hover:text-white transition-all min-h-[48px]"
@@ -371,7 +389,7 @@
           <span class="flex items-center gap-2">
             <img
               src="icon.jpeg"
-              alt="Yojana Mitra"
+              alt="Sarthi"
               class="w-5 h-5 rounded-full object-cover ring-1 ring-white/40"
             />
             <span data-i18n="sarthiTitle">Sarthi AI Assistant</span>
@@ -387,7 +405,7 @@
           id="sarthiChatConsoleStream"
           class="flex-grow p-4 overflow-y-auto space-y-3 bg-surface-container-low text-xs"
         ></div>
-        <div class="p-3 border-t bg-white flex gap-2">
+        <div class="p-3 border-t bg-white flex gap-2 items-center">
           <input
             type="text"
             id="sarthiQueryConsoleInput"
@@ -396,9 +414,28 @@
             placeholder="Ask anything regarding welfare services..."
             onkeypress="handleSarthiKeyPress(event)"
           />
+
           <button
+            onclick="
+              startVoiceRecognition(
+                'sarthiQueryConsoleInput',
+                'sarthiSendActionBtn',
+              )
+            "
+            class="p-2 hover:bg-surface-container-low rounded-full text-on-surface-variant flex items-center justify-center transition-colors"
+            title="Speak to assistant"
+          >
+            <span
+              id="mic-icon-sarthiQueryConsoleInput"
+              class="material-symbols-outlined text-lg"
+              >mic</span
+            >
+          </button>
+
+          <button
+            id="sarthiSendActionBtn"
             onclick="processSarthiQueryTransmission()"
-            class="bg-primary text-white px-3 rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors"
+            class="bg-primary text-white h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors shrink-0"
           >
             <span class="material-symbols-outlined text-sm">send</span>
           </button>
@@ -410,7 +447,7 @@
       >
         <img
           src="icon.jpeg"
-          alt="Yojana Mitra Logo"
+          alt="Sarthi Logo"
           class="w-full h-full object-cover"
         />
       </button>
@@ -429,6 +466,68 @@
           .addEventListener("click", executeCatalogSync);
       });
 
+      // ==================================================================
+      // WEB SPEECH VOICE ASSISTANT RECOGNITION PIPELINE ENGINE
+      // ==================================================================
+      function startVoiceRecognition(inputId, triggerBtnId) {
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert(
+            "Voice features are not supported in this browser. Please load via Google Chrome or Microsoft Edge.",
+          );
+          return;
+        }
+
+        const recognition = new SpeechRecognition();
+        const micIcon = document.getElementById(`mic-icon-${inputId}`);
+        const targetInput = document.getElementById(inputId);
+
+        // Intelligently match language preferences: English or Hindi
+        const isHindi = localStorage.getItem("yojana_lang") === "hi";
+        recognition.lang = isHindi ? "hi-IN" : "en-IN";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+          if (micIcon) {
+            micIcon.innerText = "graphic_eq"; // Transform mic icon into live audio wave text glyph
+            micIcon.classList.add("text-red-600", "animate-pulse");
+          }
+        };
+
+        recognition.onerror = (e) => {
+          console.error("[Voice Assistant Engine Error]:", e.error);
+          resetMicIconState();
+        };
+
+        recognition.onend = () => {
+          resetMicIconState();
+        };
+
+        recognition.onresult = (event) => {
+          const vocalTranscript = event.results[0][0].transcript;
+          if (targetInput) {
+            targetInput.value = vocalTranscript;
+
+            // Dispatches query trigger execution automatically after processing speech transcription frame
+            setTimeout(() => {
+              const finalActionBtn = document.getElementById(triggerBtnId);
+              if (finalActionBtn) finalActionBtn.click();
+            }, 400);
+          }
+        };
+
+        function resetMicIconState() {
+          if (micIcon) {
+            micIcon.innerText = "mic";
+            micIcon.classList.remove("text-red-600", "animate-pulse");
+          }
+        }
+
+        recognition.start();
+      }
+
       async function executeCatalogSync() {
         const query = document.getElementById("schemeSearchInput").value;
         const grid = document.getElementById("schemesGridDisplay");
@@ -438,7 +537,6 @@
           const res = await fetch(url);
           const data = await res.json();
 
-          // Adjust label text string based on active language setting parameters
           const dynamicCounterLabel =
             currentSelectedLanguage === "hi"
               ? "लक्षित योजनाएं पाई गईं"
@@ -453,7 +551,6 @@
 
           grid.innerHTML = data.schemes
             .map((s) => {
-              // Read localization settings automatically to decide language layout output representation strings
               const localizedSchemeName =
                 currentSelectedLanguage === "hi" && s.hindiName
                   ? s.hindiName

@@ -148,7 +148,7 @@ app.post("/api/assistant/chat", async (req, res) => {
     if (!apiKey || apiKey.trim() === "" || apiKey === "MY_GEMINI_API_KEY") {
       // cite: 23
       let responseText =
-        "### Namaste 🙏 I am Yojana Mitra, your schemes assistant.\n\n"; // cite: 31
+        "### Namaste 🙏 I am Sarthi, your schemes assistant.\n\n"; // cite: 31
 
       if (matchedKeywords.length > 0) {
         // cite: 33
@@ -179,7 +179,7 @@ app.post("/api/assistant/chat", async (req, res) => {
         profileContext = `Current citizen background metrics: Name=${userProfile.name}, Age=${userProfile.age}, State=${userProfile.state}, Income=₹${userProfile.annualIncome}, Disability=${userProfile.disability ? "Yes" : "No"}.`; // cite: 42, 43, 44, 45
       }
 
-      const promptSystemPayload = `You are Yojana Mitra, an expert AI Central Schemes Assistant on YojanaBasket. Help the user with their prompt. ${profileContext} Local database schemes available: ${JSON.stringify(SCHEMES_DATA)}. User prompt: "${lastUserMessage}"`; // cite: 46, 47, 48
+      const promptSystemPayload = `You are Sarthi, an expert AI Central Schemes Assistant on YojanaBasket. Help the user with their prompt. ${profileContext} Local database schemes available: ${JSON.stringify(SCHEMES_DATA)}. User prompt: "${lastUserMessage}"`; // cite: 46, 47, 48
 
       const gatewayApiResponse = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -601,21 +601,17 @@ app.post("/api/admin/schemes/add", async (req, res) => {
 
     // Strict boundary validation checks
     if (!id || !name || !category || !description) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Missing required primary parameters (ID, Name, Category, Description).",
-        });
+      return res.status(400).json({
+        error:
+          "Missing required primary parameters (ID, Name, Category, Description).",
+      });
     }
 
     // Verify if scheme ID already exists to prevent key collision crashes
     if (SCHEMES_DATA.some((s) => s.id === id.trim())) {
-      return res
-        .status(400)
-        .json({
-          error: "A scheme with this unique identifier ID already exists.",
-        });
+      return res.status(400).json({
+        error: "A scheme with this unique identifier ID already exists.",
+      });
     }
 
     // Parse data types to match recommendation evaluation criteria precisely
@@ -675,24 +671,20 @@ app.post("/api/admin/schemes/add", async (req, res) => {
       console.log(
         `[Admin Console] Successfully appended new scheme: ${cleanSchemeObject.name}`,
       );
-      return res
-        .status(201)
-        .json({
-          message:
-            "Scheme successfully registered and committed to data registry.",
-          scheme: cleanSchemeObject,
-        });
+      return res.status(201).json({
+        message:
+          "Scheme successfully registered and committed to data registry.",
+        scheme: cleanSchemeObject,
+      });
     } else {
       throw new Error("Unable to identify standard data write paths.");
     }
   } catch (error) {
     console.error("Administrative Registry Insertion Fault:", error.message);
-    return res
-      .status(500)
-      .json({
-        error: "Failed to persist new welfare scheme.",
-        details: error.message,
-      });
+    return res.status(500).json({
+      error: "Failed to persist new welfare scheme.",
+      details: error.message,
+    });
   }
 });
 // -------------------------------------------------------------

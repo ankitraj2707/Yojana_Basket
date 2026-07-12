@@ -5,7 +5,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Citizen Dashboard - YojanaBasket</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined&display=swap"
       rel="stylesheet"
@@ -73,7 +72,7 @@
       </nav>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-10">
+    <main class="max-w-7xl mx-auto px-6 py-10 pb-24">
       <div
         class="mb-8 bg-primary-container text-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
       >
@@ -107,7 +106,9 @@
             class="text-lg font-bold text-primary mb-4 flex items-center gap-2 border-b pb-3"
           >
             <span class="material-symbols-outlined text-secondary">tune</span>
-            Demographic Metrics Matrix
+            <span data-i18n="demographicHeading"
+              >Demographic Metrics Matrix</span
+            >
           </h3>
 
           <form
@@ -118,6 +119,7 @@
             <div>
               <label
                 class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                data-i18n="ageLabel"
                 >Age Bracket (Years)</label
               >
               <input
@@ -133,6 +135,7 @@
             <div>
               <label
                 class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                data-i18n="genderLabel"
                 >Gender Representation</label
               >
               <select
@@ -144,21 +147,57 @@
                 <option value="Other">Other</option>
               </select>
             </div>
-
             <div>
               <label
                 class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                >State / Domicile</label
+                data-i18n="stateLabel"
+                >State / Domicile*</label
               >
               <select
                 id="profileStateInput"
+                required
                 class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
               >
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                <option value="Assam">Assam</option>
                 <option value="Bihar">Bihar</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Maharashtra">Maharashtra</option>
-                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Chhattisgarh">Chhattisgarh</option>
+                <option value="Goa">Goa</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Haryana">Haryana</option>
+                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                <option value="Jharkhand">Jharkhand</option>
                 <option value="Karnataka">Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Manipur">Manipur</option>
+                <option value="Meghalaya">Meghalaya</option>
+                <option value="Mizoram">Mizoram</option>
+                <option value="Nagaland">Nagaland</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Sikkim">Sikkim</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Tripura">Tripura</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Uttarakhand">Uttarakhand</option>
+                <option value="West Bengal">West Bengal</option>
+                <option value="Andaman and Nicobar Islands">
+                  Andaman and Nicobar Islands
+                </option>
+                <option value="Chandigarh">Chandigarh</option>
+                <option value="Dadra and Nagar Haveli and Daman and Diu">
+                  Dadra and Nagar Haveli and Daman and Diu
+                </option>
+                <option value="Delhi">Delhi</option>
+                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                <option value="Ladakh">Ladakh</option>
+                <option value="Lakshadweep">Lakshadweep</option>
+                <option value="Puducherry">Puducherry</option>
               </select>
             </div>
 
@@ -171,6 +210,7 @@
                 id="profileCasteInput"
                 class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
               >
+                <option value="All">All</option>
                 <option value="General">General</option>
                 <option value="OBC">OBC</option>
                 <option value="SC">SC</option>
@@ -253,14 +293,87 @@
       </div>
     </main>
 
+    <div class="fixed bottom-6 right-6 z-[90] flex flex-col items-end">
+      <div
+        id="sarthiWorkspacePanel"
+        class="w-80 md:w-96 h-[400px] bg-white rounded-2xl border border-outline-variant shadow-xl flex flex-col mb-4 hidden overflow-hidden transition-all"
+      >
+        <div
+          class="bg-primary p-4 text-white flex justify-between items-center text-xs font-bold"
+        >
+          <span class="flex items-center gap-2">
+            <img
+              src="icon.jpeg"
+              alt="Sarthi"
+              class="w-5 h-5 rounded-full object-cover ring-1 ring-white/40"
+            />
+            <span data-i18n="sarthiTitle">Sarthi AI Assistant</span>
+          </span>
+          <button
+            onclick="toggleSarthiPanel(false)"
+            class="opacity-80 hover:opacity-100"
+          >
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+        <div
+          id="sarthiChatConsoleStream"
+          class="flex-grow p-4 overflow-y-auto space-y-3 bg-surface-container-low text-xs"
+        ></div>
+        <div class="p-3 border-t bg-white flex gap-2 items-center">
+          <input
+            type="text"
+            id="sarthiQueryConsoleInput"
+            class="flex-grow rounded-lg border-outline-variant text-xs min-h-[40px] focus:ring-primary"
+            placeholder="Ask anything regarding welfare services..."
+            onkeypress="handleSarthiKeyPress(event)"
+          />
+
+          <button
+            onclick="
+              startDashboardVoiceRecognition(
+                'sarthiQueryConsoleInput',
+                'sarthiSendActionBtn',
+              )
+            "
+            class="p-2 hover:bg-surface-container-low rounded-full text-on-surface-variant flex items-center justify-center transition-colors"
+            title="Speak to assistant"
+          >
+            <span
+              id="mic-icon-sarthiQueryConsoleInput"
+              class="material-symbols-outlined text-lg"
+              >mic</span
+            >
+          </button>
+
+          <button
+            id="sarthiSendActionBtn"
+            onclick="processSarthiQueryTransmission()"
+            class="bg-primary text-white h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors shrink-0"
+          >
+            <span class="material-symbols-outlined text-sm">send</span>
+          </button>
+        </div>
+      </div>
+      <button
+        onclick="toggleSarthiPanel(true)"
+        class="w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center ring-4 ring-primary/20 hover:scale-105 transition-all overflow-hidden"
+      >
+        <img
+          src="icon.jpeg"
+          alt="Sarthi Logo"
+          class="w-full h-full object-cover"
+        />
+      </button>
+    </div>
+
     <script src="js/lang.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/sarthi.js"></script>
     <script>
-      // Lifecycle hook: Validates session state context before running asset calculations
       document.addEventListener("DOMContentLoaded", () => {
-        // Forces dashboard navigation bars to bind to login status state tokens instantly
         if (typeof renderNavbarAuthenticationState === "function") {
-          renderNavbarAuthenticationState(); // cite: 567
+          renderNavbarAuthenticationState();
         }
 
         const activeSessionData = localStorage.getItem("yojana_session_token");
@@ -272,7 +385,6 @@
           return;
         }
 
-        // Initialize display configuration using session parameters
         try {
           const parsedSessionObj = JSON.parse(activeSessionData);
           const userProfile =
@@ -288,7 +400,6 @@
           document.getElementById("welcomeCitizenUsername").innerText =
             targetedUsername;
 
-          // Pre-populate input variables cleanly from cached entity attributes if available
           if (userProfile) {
             if (userProfile.age)
               document.getElementById("profileAgeInput").value =
@@ -309,7 +420,6 @@
               !!userProfile.disability;
           }
 
-          // Fire initial request matching matrix mapping sweep automatically on boot
           executeDemographicMatchResolution(targetedUsername, null);
         } catch (err) {
           console.error("Dashboard configuration parameter load fault:", err);
@@ -318,14 +428,45 @@
         }
       });
 
-      // Form execution override hook to capture interface variables
+      function startDashboardVoiceRecognition(inputId, triggerBtnId) {
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert("Voice features are not supported in this browser.");
+          return;
+        }
+        const recognition = new SpeechRecognition();
+        const micIcon = document.getElementById(`mic-icon-${inputId}`);
+        const targetInput = document.getElementById(inputId);
+        const isHindi = localStorage.getItem("yojana_lang") === "hi";
+
+        recognition.lang = isHindi ? "hi-IN" : "en-IN";
+        recognition.onstart = () => {
+          if (micIcon)
+            micIcon.className =
+              "material-symbols-outlined text-lg text-red-600 animate-pulse";
+        };
+        recognition.onend = () => {
+          if (micIcon)
+            micIcon.className =
+              "material-symbols-outlined text-lg text-on-surface-variant";
+        };
+        recognition.onresult = (event) => {
+          if (targetInput) {
+            targetInput.value = event.results[0][0].transcript;
+            setTimeout(() => {
+              document.getElementById(triggerBtnId).click();
+            }, 400);
+          }
+        };
+        recognition.start();
+      }
+
       function triggerMatrixEvaluationOverride(event) {
         event.preventDefault();
         const targetedUsername = document.getElementById(
           "welcomeCitizenUsername",
         ).innerText;
-
-        // Assemble current modified payload constraints properties block
         const profileOverrides = {
           age:
             parseInt(document.getElementById("profileAgeInput").value) || null,
@@ -337,11 +478,9 @@
             null,
           disability: document.getElementById("profileDisabilityInput").checked,
         };
-
         executeDemographicMatchResolution(targetedUsername, profileOverrides);
       }
 
-      // Direct AJAX dispatch pipeline checking matching entries against Express endpoints
       async function executeDemographicMatchResolution(
         username,
         profileOverrides,
@@ -355,65 +494,45 @@
           const response = await fetch("/api/schemes/recommend", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, profileOverrides }), // cite: 94
+            body: JSON.stringify({ username, profileOverrides }),
           });
-
           const output = await response.json();
-
           if (!response.ok) {
             streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs text-red-600 p-4 font-bold bg-red-50 rounded-xl border">${output.error || "Failed to match parameters."}</div>`;
             return;
           }
 
-          // Update balance indicator metrics text
           const isHindi = localStorage.getItem("yojana_lang") === "hi";
-          const badgeLabel = isHindi ? "योजनाएं पाई गईं" : "Matches Found";
           document.getElementById("evaluationMatchBadge").innerText =
-            `${output.matchCount} ${badgeLabel}`;
+            `${output.matchCount} ${isHindi ? "योजनाएं पाई गईं" : "Matches Found"}`;
 
           if (!output.eligibleSchemes || output.eligibleSchemes.length === 0) {
-            streamContainer.innerHTML = `
-                    <div class="col-span-2 text-center py-12 px-4 border border-dashed rounded-xl bg-surface-container-low text-on-surface-variant">
-                        <span class="material-symbols-outlined text-3xl opacity-40 mb-2">info</span>
-                        <p class="text-sm font-semibold">No schemes match your exact metrics combinations.</p>
-                        <p class="text-xs opacity-75 mt-1">Try adjusting income limits or age values inside the control panel grid.</p>
-                    </div>`;
+            streamContainer.innerHTML = `<div class="col-span-2 text-center py-12 px-4 border border-dashed rounded-xl bg-surface-container-low text-on-surface-variant"><p class="text-sm font-semibold">No schemes match your criteria.</p></div>`;
             return;
           }
 
-          // Map and inject items smoothly onto container display cards
           streamContainer.innerHTML = output.eligibleSchemes
             .map((s) => {
-              const schemeTitle = isHindi && s.hindiName ? s.hindiName : s.name;
-              const benefitLabel = isHindi ? "मुख्य लाभ" : "Key Benefits";
-              const docLabel = isHindi ? "आवश्यक दस्तावेज" : "Required Papers";
-              const applyBtnText = isHindi
-                ? "आधिकारिक पोर्टल पर आवेदन करें ↗"
-                : "Apply on Official Portal ↗";
-
               return `
                     <div class="bg-white rounded-xl border border-outline-variant p-5 flex flex-col justify-between shadow-sm hover:border-primary/30 transition-all">
                         <div>
                             <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 bg-surface-container-high text-primary w-fit rounded block mb-2">${s.category}</span>
-                            <h4 class="text-base font-bold text-primary mb-2">${schemeTitle}</h4>
+                            <h4 class="text-base font-bold text-primary mb-2">${isHindi && s.hindiName ? s.hindiName : s.name}</h4>
                             <p class="text-xs text-on-surface-variant line-clamp-3 mb-4 opacity-90">${s.description}</p>
-                            
                             <div class="space-y-2 border-t pt-3 text-[11px]">
-                                <p><strong class="text-primary">${benefitLabel}:</strong> <span class="text-on-surface-variant">${s.benefits}</span></p>
-                                <p><strong class="text-primary">${docLabel}:</strong> <span class="text-on-surface-variant">${s.requiredDocuments.join(", ")}</span></p>
+                                <p><strong class="text-primary">${isHindi ? "मुख्य लाभ" : "Key Benefits"}:</strong> <span class="text-on-surface-variant">${s.benefits}</span></p>
+                                <p><strong class="text-primary">${isHindi ? "आवश्यक दस्तावेज" : "Required Papers"}:</strong> <span class="text-on-surface-variant">${s.requiredDocuments.join(", ")}</span></p>
                             </div>
                         </div>
-                        
                         <a href="${s.officialLink || "#"}" target="_blank" rel="noopener noreferrer" class="w-full text-center mt-4 inline-flex min-h-[40px] bg-primary-container text-white font-bold text-xs rounded-lg hover:bg-primary transition-colors flex items-center justify-center gap-1.5 decoration-transparent select-none">
                             <span class="material-symbols-outlined text-xs">open_in_new</span>
-                            ${applyBtnText}
+                            ${isHindi ? "आधिकारिक पोर्टल पर आवेदन करें ↗" : "Apply on Official Portal ↗"}
                         </a>
-                    </div>
-                `;
+                    </div>`;
             })
             .join("");
         } catch (err) {
-          streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs text-red-600 p-4 font-bold bg-red-50 rounded-xl border">Network connection dropped parsing recommendations mapping pipeline endpoints.</div>`;
+          streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs text-red-600 p-4 font-bold bg-red-50 rounded-xl border">Connection error.</div>`;
         }
       }
     </script>
