@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Sovereign Administration Gateway - YojanaBasket</title>
+    <!-- Core Tailwind UI System Engines -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined&display=swap"
@@ -63,6 +64,7 @@
     </header>
 
     <main class="flex-grow flex items-center justify-center p-6 pb-24">
+      <!-- VIEW A: Admin Gate Authentication Card -->
       <div
         id="adminAuthCard"
         class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl border border-outline-variant flex flex-col"
@@ -125,17 +127,44 @@
         </div>
       </div>
 
+      <!-- VIEW B: Hidden Administrative Scheme Deployment Workspace -->
       <div
         id="adminDashboardPanel"
         class="hidden bg-white rounded-2xl w-full max-w-4xl p-6 shadow-xl border border-outline-variant flex flex-col"
       >
-        <div class="border-b pb-4 mb-6">
-          <h3 class="text-2xl font-bold text-primary flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary-container"
-              >playlist_add</span
+        <div
+          class="border-b pb-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
+          <div>
+            <h3
+              id="panelActionTitle"
+              class="text-2xl font-bold text-primary flex items-center gap-2"
             >
-            Deploy New Government Welfare Scheme
-          </h3>
+              <span class="material-symbols-outlined text-secondary-container"
+                >playlist_add</span
+              >
+              Deploy New Government Welfare Scheme
+            </h3>
+            <p class="text-xs text-on-surface-variant mt-0.5">
+              Create a new entry or select an existing entry below to modify
+              structural criteria maps.
+            </p>
+          </div>
+
+          <!-- Scheme Edit Selection Component Integration -->
+          <div class="min-w-[250px]">
+            <label
+              class="block text-[10px] font-bold uppercase text-secondary mb-1"
+              >Select Scheme to Modify/Edit</label
+            >
+            <select
+              id="schemeSelectionDropdown"
+              onchange="loadExistingSchemeDataForEditing()"
+              class="w-full rounded-lg border-outline-variant text-xs min-h-[38px] bg-surface-container-low font-medium"
+            >
+              <option value="NEW_SCHEME">-- Add New Scheme Entry --</option>
+            </select>
+          </div>
         </div>
 
         <div
@@ -145,7 +174,7 @@
 
         <form
           id="addSchemeDataForm"
-          onsubmit="submitNewSchemeToRegistry(event)"
+          onsubmit="submitSchemeFormToRegistry(event)"
           class="grid grid-cols-1 md:grid-cols-2 gap-5"
         >
           <div>
@@ -241,12 +270,13 @@
           <div class="md:col-span-2">
             <label
               class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Required Documents</label
+              >Required Documents (Comma Separated)</label
             >
             <input
               type="text"
               id="schemeDocuments"
               class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+              placeholder="Aadhaar Card, Bank Passbook"
             />
           </div>
           <div>
@@ -296,11 +326,48 @@
               class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
             >
               <option value="central">Central / Nationwide</option>
+              <!-- 28 States -->
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+              <option value="Assam">Assam</option>
               <option value="Bihar">Bihar</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Maharashtra">Maharashtra</option>
-              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Chhattisgarh">Chhattisgarh</option>
+              <option value="Goa">Goa</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Himachal Pradesh">Himachal Pradesh</option>
+              <option value="Jharkhand">Jharkhand</option>
               <option value="Karnataka">Karnataka</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Manipur">Manipur</option>
+              <option value="Meghalaya">Meghalaya</option>
+              <option value="Mizoram">Mizoram</option>
+              <option value="Nagaland">Nagaland</option>
+              <option value="Odisha">Odisha</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Sikkim">Sikkim</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Tripura">Tripura</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="West Bengal">West Bengal</option>
+              <!-- Union Territories -->
+              <option value="Andaman and Nicobar Islands">
+                Andaman and Nicobar Islands
+              </option>
+              <option value="Chandigarh">Chandigarh</option>
+              <option value="Dadra and Nagar Haveli and Daman and Diu">
+                Dadra and Nagar Haveli and Daman and Diu
+              </option>
+              <option value="Delhi">Delhi</option>
+              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+              <option value="Ladakh">Ladakh</option>
+              <option value="Lakshadweep">Lakshadweep</option>
+              <option value="Puducherry">Puducherry</option>
             </select>
           </div>
           <div>
@@ -357,10 +424,11 @@
               onclick="resetSchemeForm()"
               class="bg-gray-100 text-gray-700 font-bold px-6 py-3 rounded-lg"
             >
-              Clear
+              Clear / Reset
             </button>
             <button
               type="submit"
+              id="formSubmitActionButton"
               class="bg-primary text-white font-bold px-8 py-3 rounded-lg hover:bg-primary-container transition-colors shadow"
             >
               Publish Scheme Entry 🚀
@@ -370,6 +438,7 @@
       </div>
     </main>
 
+    <!-- UNIVERSAL AI ASSISTANT OVERLAY PORTAL -->
     <div class="fixed bottom-6 right-6 z-[90] flex flex-col items-end">
       <div
         id="sarthiWorkspacePanel"
@@ -381,7 +450,7 @@
           <span class="flex items-center gap-2">
             <img
               src="icon.jpeg"
-              alt="Sarthi"
+              alt="Yojana Mitra"
               class="w-5 h-5 rounded-full object-cover ring-1 ring-white/40"
             />
             <span>Sarthi AI Assistant (Admin Console)</span>
@@ -435,7 +504,7 @@
       >
         <img
           src="icon.jpeg"
-          alt="Sarthi Logo"
+          alt="Yojana Mitra Logo"
           class="w-full h-full object-cover"
         />
       </button>
@@ -450,11 +519,106 @@
     <script src="js/lang.js"></script>
     <script src="js/sarthi.js"></script>
     <script>
+      let globalCachedSchemesList = [];
+
       document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem("yojana_admin_token")) {
           switchViewLayouts(true);
+          fetchSchemesRegistryList();
         }
       });
+
+      // Fetches schemes to populate the selection dropdown
+      async function fetchSchemesRegistryList() {
+        try {
+          const response = await fetch("/api/schemes?category=all");
+          const data = await response.json();
+          if (response.ok && data.schemes) {
+            globalCachedSchemesList = data.schemes;
+            const dropdown = document.getElementById("schemeSelectionDropdown");
+
+            // Clear out everything except the baseline "New Scheme" option
+            dropdown.innerHTML =
+              '<option value="NEW_SCHEME">-- Add New Scheme Entry --</option>';
+
+            data.schemes.forEach((scheme) => {
+              const opt = document.createElement("option");
+              opt.value = scheme.id;
+              opt.innerText = `${scheme.name} (${scheme.id})`;
+              dropdown.appendChild(opt);
+            });
+          }
+        } catch (err) {
+          console.error("Error sync matching scheme master list indexes:", err);
+        }
+      }
+
+      // Dynamic field mapping injection matrix
+      function loadExistingSchemeDataForEditing() {
+        const selectedId = document.getElementById(
+          "schemeSelectionDropdown",
+        ).value;
+        const submitBtn = document.getElementById("formSubmitActionButton");
+        const actionTitle = document.getElementById("panelActionTitle");
+        const idField = document.getElementById("schemeId");
+
+        if (selectedId === "NEW_SCHEME") {
+          resetSchemeForm();
+          return;
+        }
+
+        const targetData = globalCachedSchemesList.find(
+          (s) => s.id === selectedId,
+        );
+        if (!targetData) return;
+
+        // Populate fields
+        idField.value = targetData.id;
+        idField.setAttribute("readonly", true); // Freeze primary identifier keys
+        idField.classList.add("bg-gray-100", "cursor-not-allowed");
+
+        document.getElementById("schemeName").value = targetData.name || "";
+        document.getElementById("schemeHindiName").value =
+          targetData.hindiName || "";
+        document.getElementById("schemeCategory").value =
+          targetData.category || "farming";
+        document.getElementById("schemeDescription").value =
+          targetData.description || "";
+        document.getElementById("schemeMinistry").value =
+          targetData.ministry || "";
+        document.getElementById("schemeBenefits").value =
+          targetData.benefits || "";
+
+        // Formats input document loops cleanly
+        if (Array.isArray(targetData.requiredDocuments)) {
+          document.getElementById("schemeDocuments").value =
+            targetData.requiredDocuments.join(", ");
+        } else {
+          document.getElementById("schemeDocuments").value =
+            targetData.requiredDocuments || "";
+        }
+
+        document.getElementById("schemeMinAge").value = targetData.minAge || "";
+        document.getElementById("schemeMaxAge").value = targetData.maxAge || "";
+        document.getElementById("schemeGender").value =
+          targetData.gender || "all";
+        document.getElementById("schemeState").value =
+          targetData.state || "central";
+        document.getElementById("schemeCaste").value =
+          targetData.caste || "all";
+        document.getElementById("schemeMaxIncome").value =
+          targetData.maxIncome || "";
+        document.getElementById("schemeOfficialLink").value =
+          targetData.officialLink || "";
+        document.getElementById("schemeRequiresDisability").checked =
+          !!targetData.requiresDisability;
+
+        // Visual indicator shift mapping
+        actionTitle.innerHTML = `<span class="material-symbols-outlined text-secondary-container">edit_note</span> Edit Existing Government Welfare Scheme`;
+        submitBtn.innerText = "Save Scheme Modifications 💾";
+        submitBtn.className =
+          "bg-secondary text-white font-bold px-8 py-3 rounded-lg hover:bg-on-secondary-container transition-colors shadow";
+      }
 
       function startAdminVoiceRecognition(inputId, triggerBtnId) {
         const SpeechRecognition =
@@ -527,15 +691,20 @@
             JSON.stringify(output.adminDetails),
           );
           switchViewLayouts(true);
+          fetchSchemesRegistryList();
         } catch (err) {
           banner.innerText = "Connection error.";
           banner.classList.remove("hidden");
         }
       }
 
-      async function submitNewSchemeToRegistry(event) {
+      async function submitSchemeFormToRegistry(event) {
         event.preventDefault();
         const banner = document.getElementById("schemeFormAlertBanner");
+        const selectedId = document.getElementById(
+          "schemeSelectionDropdown",
+        ).value;
+
         const payload = {
           id: document.getElementById("schemeId").value,
           name: document.getElementById("schemeName").value,
@@ -557,27 +726,42 @@
           officialLink: document.getElementById("schemeOfficialLink").value,
         };
 
+        // Determine target endpoint action dynamically based on active framework modes
+        const targetEndpoint =
+          selectedId === "NEW_SCHEME"
+            ? "/api/admin/schemes/add"
+            : "/api/admin/schemes/update";
+
         try {
-          const response = await fetch("/api/admin/schemes/add", {
+          const response = await fetch(targetEndpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
           const output = await response.json();
           if (!response.ok) {
-            banner.innerText = output.error || "Failed to publish scheme.";
+            banner.innerText =
+              output.error ||
+              "Failed to sync modifications onto database tables.";
             banner.className =
               "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
             banner.classList.remove("hidden");
             return;
           }
-          banner.innerText = "Success! New scheme entry published.";
+
+          banner.innerText =
+            selectedId === "NEW_SCHEME"
+              ? "Success! New scheme entry published."
+              : "Success! Scheme entry records updated successfully.";
           banner.className =
             "mb-4 p-3 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200";
           banner.classList.remove("hidden");
-          document.getElementById("addSchemeDataForm").reset();
+
+          resetSchemeForm();
+          fetchSchemesRegistryList();
+          window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (err) {
-          banner.innerText = "Network error.";
+          banner.innerText = "Network database synchronization error.";
           banner.classList.remove("hidden");
         }
       }
@@ -587,6 +771,20 @@
         document
           .getElementById("schemeFormAlertBanner")
           .classList.add("hidden");
+
+        const idField = document.getElementById("schemeId");
+        idField.removeAttribute("readonly");
+        idField.classList.remove("bg-gray-100", "cursor-not-allowed");
+
+        document.getElementById("panelActionTitle").innerHTML =
+          `<span class="material-symbols-outlined text-secondary-container">playlist_add</span> Deploy New Government Welfare Scheme`;
+
+        const submitBtn = document.getElementById("formSubmitActionButton");
+        submitBtn.innerText = "Publish Scheme Entry 🚀";
+        submitBtn.className =
+          "bg-primary text-white font-bold px-8 py-3 rounded-lg hover:bg-primary-container transition-colors shadow";
+
+        document.getElementById("schemeSelectionDropdown").value = "NEW_SCHEME";
       }
 
       function executeAdminSignOut() {

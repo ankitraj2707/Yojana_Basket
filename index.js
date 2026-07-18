@@ -578,7 +578,10 @@ app.post("/api/schemes/recommend", async (req, res) => {
 // -------------------------------------------------------------
 // SECURE ADMIN CONSOLE: ADD NEW SCHEME TO THE DATA CATALOG
 // -------------------------------------------------------------
-app.post("/api/admin/schemes/add", async (req, res) => {
+// -------------------------------------------------------------
+// ADMINISTRATIVE GATEWAY: UPDATE AN EXISTING WELFARE SCHEME Entry
+// -------------------------------------------------------------
+app.post("/api/admin/schemes/update", async (req, res) => {
   try {
     const {
       id,
@@ -599,92 +602,67 @@ app.post("/api/admin/schemes/add", async (req, res) => {
       officialLink,
     } = req.body;
 
-    // Strict boundary validation checks
-    if (!id || !name || !category || !description) {
-      return res.status(400).json({
-        error:
-          "Missing required primary parameters (ID, Name, Category, Description).",
-      });
+    // 1. Basic Validation Check
+    if (!id) {
+      return res
+        .status(400)
+        .json({ error: "Missing unique Scheme ID parameter slug." });
     }
 
-    // Verify if scheme ID already exists to prevent key collision crashes
-    if (SCHEMES_DATA.some((s) => s.id === id.trim())) {
-      return res.status(400).json({
-        error: "A scheme with this unique identifier ID already exists.",
-      });
+    // 2. Format Comma-Separated Values into Clean Arrays if Needed
+    let documentsArray = [];
+    if (typeof requiredDocuments === "string") {
+      documentsArray = requiredDocuments
+        .split(",")
+        .map((doc) => doc.trim())
+        .filter((doc) => doc.length > 0);
+    } else if (Array.isArray(requiredDocuments)) {
+      documentsArray = requiredDocuments;
     }
 
-    // Parse data types to match recommendation evaluation criteria precisely
-    const cleanSchemeObject = {
-      id: id.trim().toLowerCase(),
-      name: name.trim(),
-      hindiName: hindiName ? hindiName.trim() : "",
-      category: category.trim().toLowerCase(),
-      description: description.trim(),
-      ministry: ministry ? ministry.trim() : "Not specified",
-      benefits: benefits ? benefits.trim() : "Not specified",
-      requiredDocuments: Array.isArray(requiredDocuments)
-        ? requiredDocuments
-        : String(requiredDocuments)
-            .split(",")
-            .map((d) => d.trim())
-            .filter(Boolean),
-      minAge: minAge !== "" ? parseInt(minAge) : null,
-      maxAge: maxAge !== "" ? parseInt(maxAge) : null,
-      gender: gender ? gender.toLowerCase() : "all",
-      state: state ? state.toLowerCase() : "central",
-      caste: Array.isArray(caste)
-        ? caste.map((c) => c.toLowerCase())
-        : String(caste)
-            .split(",")
-            .map((c) => c.trim().toLowerCase())
-            .filter(Boolean),
-      maxIncome:
-        maxIncome !== "" && maxIncome !== null ? parseFloat(maxIncome) : null,
-      requiresDisability: !!requiresDisability,
-      officialLink: officialLink ? officialLink.trim() : "",
-    };
-
-    // Push into runtime array buffer
-    SCHEMES_DATA.push(cleanSchemeObject);
-
-    // Locate the physical schemes.json path dynamically to commit local disk changes
-    const targetFilePaths = [
-      path.join(__dirname, "src/data/schemes.json"),
-      path.join(__dirname, "schemes.json"),
-      path.join(process.cwd(), "src/data/schemes.json"),
-      path.join(process.cwd(), "schemes.json"),
-    ];
-
-    let writeCompleted = false;
-    for (const p of targetFilePaths) {
-      if (fs.existsSync(p) || p.endsWith("schemes.json")) {
-        // Ensure directories exist prior to streaming operations
-        fs.mkdirSync(path.dirname(p), { recursive: true });
-        fs.writeFileSync(p, JSON.stringify(SCHEMES_DATA, null, 2), "utf8");
-        writeCompleted = true;
-        break;
-      }
-    }
-
-    if (writeCompleted) {
-      console.log(
-        `[Admin Console] Successfully appended new scheme: ${cleanSchemeObject.name}`,
-      );
-      return res.status(201).json({
-        message:
-          "Scheme successfully registered and committed to data registry.",
-        scheme: cleanSchemeObject,
-      });
-    } else {
-      throw new Error("Unable to identify standard data write paths.");
-    }
-  } catch (error) {
-    console.error("Administrative Registry Insertion Fault:", error.message);
-    return res.status(500).json({
-      error: "Failed to persist new welfare scheme.",
-      details: error.message,
+    // 3. Database Update Execution Vector via Prisma
+    const updatedScheme = await prisma.scheme.update({
+      where: { id: id }, // Target the absolute primary identifier key
+      data: {
+        name,
+        hindiName,
+        category,
+        description,
+        ministry,
+        benefits,
+        requiredDocuments: documentsArray,
+        minAge: minAge ? parseInt(minAge) : null,
+        maxAge: maxAge ? parseInt(maxAge) : null,
+        gender: gender || "all",
+        state: state || "central",
+        caste: caste || "all",
+        maxIncome: maxIncome ? parseFloat(maxIncome) : null,
+        requiresDisability: !!requiresDisability,
+        officialLink,
+      },
     });
+
+    // 4. Return successful update context payload
+    return res.status(200).json({
+      success: true,
+      message: "Administrative registry synchronized successfully.",
+      scheme: updatedScheme,
+    });
+  } catch (error) {
+    console.error("[Admin Update Controller Exception]:", error);
+
+    // Handle Prisma Record Not Found Code explicitly
+    if (error.code === "P2025") {
+      return res
+        .status(404)
+        .json({
+          error: "The targeted scheme ID registry record does not exist.",
+        });
+    }
+
+    return res
+      .status(500)
+      .json({ error: "Internal database write error occurred." });
   }
 });
 // -------------------------------------------------------------
