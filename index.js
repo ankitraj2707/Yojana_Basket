@@ -472,107 +472,135 @@ app.post("/api/auth/admin/login", async (req, res) => {
 });
 
 // API: Profile-Based Dynamic Recommendation Matrix Matching System
+// -------------------------------------------------------------
+// DEMOGRAPHIC ELIGIBILITY RECOMMENDATION ENGINE ROUTE
+// -------------------------------------------------------------
 app.post("/api/schemes/recommend", async (req, res) => {
   try {
     const { username, profileOverrides } = req.body;
-    if (!username) {
-      return res
-        .status(400)
-        .json({ error: "Username is required to autofill details." }); // cite: 125
-    }
 
-    const account = await prisma.userLogin.findUnique({
-      where: { username }, // cite: 127
-      include: {
-        user: {
-          include: { savedSchemes: true, applications: true, documents: true }, // cite: 127
-        },
-      },
-    });
+    let userProfile = profileOverrides || {};
 
-    if (!account || !account.user) {
-      return res.status(404).json({
-        error: "Registered user profile not found for this username.",
-      }); // cite: 128
-    }
+    if (username) {
+      const dbUser = await prisma.userProfile.findFirst({
+        where: { OR: [{ username: username }, { name: username }] },
+      });
 
-    let profile = account.user; // cite: 130
-    if (profileOverrides) {
-      profile = { ...profile, ...profileOverrides };
-    }
-
-    const matchedSchemes = SCHEMES_DATA.filter((scheme) => {
-      if (profile.age !== null) {
-        if (scheme.minAge && profile.age < scheme.minAge) return false; // cite: 130
-        if (scheme.maxAge && profile.age > scheme.maxAge) return false; // cite: 130
+      if (dbUser) {
+        userProfile = {
+          age: profileOverrides?.age ?? dbUser.age,
+          gender: profileOverrides?.gender ?? dbUser.gender,
+          state: profileOverrides?.state ?? dbUser.state,
+          caste: profileOverrides?.caste ?? dbUser.caste,
+          category: profileOverrides?.category ?? "all", // <-- Added category
+          annualIncome: profileOverrides?.annualIncome ?? dbUser.annualIncome,
+          disability: profileOverrides?.disability ?? dbUser.disability,
+        };
       }
+    }
+
+    const allSchemes = await prisma.scheme.findMany();
+
+    const eligibleSchemes = allSchemes.filter((scheme) => {
+      // --- CATEGORY MATCHING ---
       if (
-        scheme.gender &&
-        scheme.gender.toLowerCase() !== "all" &&
-        profile.gender
+        userProfile.category &&
+        userProfile.category.toLowerCase() !== "all"
       ) {
-        // cite: 131
-        if (scheme.gender.toLowerCase() !== profile.gender.toLowerCase())
-          return false; // cite: 131
-      }
-      if (
-        scheme.state &&
-        scheme.state.toLowerCase() !== "central" &&
-        profile.state
-      ) {
-        // cite: 133
-        if (scheme.state.toLowerCase() !== profile.state.toLowerCase())
-          return false; // cite: 133
-      }
-      if (scheme.caste && scheme.caste.length > 0 && profile.caste) {
-        // cite: 135
-        const casteList = Array.isArray(scheme.caste)
-          ? scheme.caste.map((c) => c.toLowerCase())
-          : [scheme.caste.toLowerCase()]; // cite: 135, 136
         if (
-          !casteList.includes("general") &&
-          !casteList.includes("all") &&
-          !casteList.includes(profile.caste.toLowerCase())
+          scheme.category.toLowerCase() !== userProfile.category.toLowerCase()
         ) {
-          // cite: 136
           return false;
         }
       }
-      if (scheme.maxIncome && profile.annualIncome !== null) {
-        // cite: 138
-        if (profile.annualIncome > scheme.maxIncome) return false; // cite: 138
+
+      // --- AGE LIMIT MATCHING ---
+      if (
+        userProfile.age !== null &&
+        userProfile.age !== undefined &&
+        userProfile.age !== ""
+      ) {
+        const userAge = parseInt(userProfile.age, 10);
+        if (
+          scheme.minAge !== null &&
+          scheme.minAge !== undefined &&
+          userAge < scheme.minAge
+        )
+          return false;
+        if (
+          scheme.maxAge !== null &&
+          scheme.maxAge !== undefined &&
+          userAge > scheme.maxAge
+        )
+          return false;
       }
-      if (scheme.requiresDisability === true && !profile.disability) {
-        // cite: 140
-        return false; // cite: 140
+
+      // --- GENDER REPRESENTATION MATCHING ---
+      if (
+        userProfile.gender &&
+        scheme.gender &&
+        scheme.gender.toLowerCase() !== "all"
+      ) {
+        if (scheme.gender.toLowerCase() !== userProfile.gender.toLowerCase())
+          return false;
       }
+
+      // --- STATE / DOMICILE MATCHING ---
+      if (
+        userProfile.state &&
+        scheme.state &&
+        scheme.state.toLowerCase() !== "central"
+      ) {
+        if (scheme.state.toLowerCase() !== userProfile.state.toLowerCase())
+          return false;
+      }
+
+      // --- CASTE / SOCIAL CATEGORY MATCHING ---
+      if (
+        userProfile.caste &&
+        scheme.caste &&
+        scheme.caste.toLowerCase() !== "all"
+      ) {
+        const allowedCastes = scheme.caste
+          .split(",")
+          .map((c) => c.trim().toLowerCase());
+        if (!allowedCastes.includes(userProfile.caste.toLowerCase()))
+          return false;
+      }
+
+      // --- ANNUAL INCOME CEILING MATCHING ---
+      if (
+        userProfile.annualIncome !== null &&
+        userProfile.annualIncome !== undefined &&
+        userProfile.annualIncome !== ""
+      ) {
+        const userIncome = parseFloat(userProfile.annualIncome);
+        if (
+          scheme.maxIncome !== null &&
+          scheme.maxIncome !== undefined &&
+          userIncome > scheme.maxIncome
+        )
+          return false;
+      }
+
+      // --- DISABILITY CLASSIFICATION MATCHING ---
+      if (scheme.requiresDisability) {
+        if (!userProfile.disability) return false;
+      }
+
       return true;
     });
 
-    res.json({
-      message: "Profile auto-loaded and schemes evaluated successfully.", // cite: 142
-      autofilledProfile: {
-        id: profile.id, // cite: 142
-        name: profile.name, // cite: 142
-        email: profile.email, // cite: 142
-        age: profile.age, // cite: 142
-        gender: profile.gender, // cite: 142
-        state: profile.state, // cite: 142
-        caste: profile.caste, // cite: 142
-        annualIncome: profile.annualIncome, // cite: 142
-        occupation: profile.occupation, // cite: 142
-        disability: profile.disability, // cite: 142
-        savedSchemesCount: profile.savedSchemes?.length || 0,
-        trackedApplicationsCount: profile.applications?.length || 0,
-      },
-      eligibleSchemes: matchedSchemes, // cite: 142, 143
-      matchCount: matchedSchemes.length, // cite: 143
+    return res.status(200).json({
+      success: true,
+      matchCount: eligibleSchemes.length,
+      eligibleSchemes,
     });
   } catch (error) {
-    res.status(500).json({
-      error: "Failed to process automatic profile search mapping.",
-      details: error.message,
-    }); // cite: 143
+    console.error("[Recommendation Filter Error]:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to evaluate demographic parameters." });
   }
 });
 // -------------------------------------------------------------
@@ -653,11 +681,9 @@ app.post("/api/admin/schemes/update", async (req, res) => {
 
     // Handle Prisma Record Not Found Code explicitly
     if (error.code === "P2025") {
-      return res
-        .status(404)
-        .json({
-          error: "The targeted scheme ID registry record does not exist.",
-        });
+      return res.status(404).json({
+        error: "The targeted scheme ID registry record does not exist.",
+      });
     }
 
     return res

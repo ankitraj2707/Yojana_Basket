@@ -142,6 +142,7 @@
                 id="profileGenderInput"
                 class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
               >
+                <option value="All">All</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
@@ -215,6 +216,40 @@
                 <option value="OBC">OBC</option>
                 <option value="SC">SC</option>
                 <option value="ST">ST</option>
+              </select>
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Scheme Categories</label
+              >
+              <select
+                id="categoryinput"
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+              >
+                <option value="All Categories">All Categories</option>
+                <option value="farming">Farming / Agriculture</option>
+                <option value="health">Health & Medical Cover</option>
+                <option value="loans">
+                  Banking, Financial Services & Insurance
+                </option>
+                <option value="education">Education & Scholarships</option>
+                <option value="housing">Housing & Infrastructure</option>
+                <option value="public safety">
+                  Public Safety, Law and Justice
+                </option>
+                <option value="transport">Transport</option>
+                <option value="sports & culture">Sports & Culture</option>
+                <option value="science">
+                  Science, Technology & Innovation
+                </option>
+                <option value="travel">Travel & Tourism</option>
+                <option value="Empowerment">
+                  Social Welfare & Empowerment
+                </option>
+                <option value="Women">Women & Child Development</option>
+                <option value="sanitation">Utility and Sanitation</option>
+                <option value="skills">Skills and Employment</option>
               </select>
             </div>
 
@@ -473,6 +508,8 @@
           gender: document.getElementById("profileGenderInput").value,
           state: document.getElementById("profileStateInput").value,
           caste: document.getElementById("profileCasteInput").value,
+          category:
+            document.getElementById("profileCategoryInput")?.value || "all", // <-- Added category
           annualIncome:
             parseFloat(document.getElementById("profileIncomeInput").value) ||
             null,
