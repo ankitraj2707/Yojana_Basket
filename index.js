@@ -475,33 +475,59 @@ app.post("/api/auth/admin/login", async (req, res) => {
 // -------------------------------------------------------------
 // DEMOGRAPHIC ELIGIBILITY RECOMMENDATION ENGINE ROUTE
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// DEMOGRAPHIC ELIGIBILITY RECOMMENDATION ENGINE ROUTE
+// -------------------------------------------------------------
 app.post("/api/schemes/recommend", async (req, res) => {
   try {
     const { username, profileOverrides } = req.body;
 
+    // 1. Resolve Demographic Profile Context
     let userProfile = profileOverrides || {};
 
     if (username) {
-      const dbUser = await prisma.userProfile.findFirst({
-        where: { OR: [{ username: username }, { name: username }] },
-      });
+      try {
+        const account = await prisma.userLogin.findFirst({
+          where: {
+            OR: [
+              { username: username },
+              { emailId: username },
+              { mobileNumber: username },
+            ],
+          },
+          include: { user: true },
+        });
 
-      if (dbUser) {
-        userProfile = {
-          age: profileOverrides?.age ?? dbUser.age,
-          gender: profileOverrides?.gender ?? dbUser.gender,
-          state: profileOverrides?.state ?? dbUser.state,
-          caste: profileOverrides?.caste ?? dbUser.caste,
-          category: profileOverrides?.category ?? "all", // <-- Added category
-          annualIncome: profileOverrides?.annualIncome ?? dbUser.annualIncome,
-          disability: profileOverrides?.disability ?? dbUser.disability,
-        };
+        if (account && account.user) {
+          const dbUser = account.user;
+          userProfile = {
+            age:
+              profileOverrides?.age !== undefined &&
+              profileOverrides?.age !== null
+                ? profileOverrides.age
+                : dbUser.age,
+            gender: profileOverrides?.gender || dbUser.gender,
+            state: profileOverrides?.state || dbUser.state,
+            caste: profileOverrides?.caste || dbUser.caste,
+            category: profileOverrides?.category || "all",
+            annualIncome:
+              profileOverrides?.annualIncome !== undefined &&
+              profileOverrides?.annualIncome !== null
+                ? profileOverrides.annualIncome
+                : dbUser.annualIncome,
+            disability:
+              profileOverrides?.disability !== undefined
+                ? profileOverrides.disability
+                : dbUser.disability,
+          };
+        }
+      } catch (dbErr) {
+        console.warn("[Recommendation DB Warning]:", dbErr.message);
       }
     }
 
-    const allSchemes = await prisma.scheme.findMany();
-
-    const eligibleSchemes = allSchemes.filter((scheme) => {
+    // 2. Filter Active Schemes from Local Dataset (SCHEMES_DATA)
+    const eligibleSchemes = SCHEMES_DATA.filter((scheme) => {
       // --- CATEGORY MATCHING ---
       if (
         userProfile.category &&
@@ -509,9 +535,8 @@ app.post("/api/schemes/recommend", async (req, res) => {
       ) {
         if (
           scheme.category.toLowerCase() !== userProfile.category.toLowerCase()
-        ) {
+        )
           return false;
-        }
       }
 
       // --- AGE LIMIT MATCHING ---
@@ -556,16 +581,14 @@ app.post("/api/schemes/recommend", async (req, res) => {
       }
 
       // --- CASTE / SOCIAL CATEGORY MATCHING ---
-      if (
-        userProfile.caste &&
-        scheme.caste &&
-        scheme.caste.toLowerCase() !== "all"
-      ) {
-        const allowedCastes = scheme.caste
-          .split(",")
-          .map((c) => c.trim().toLowerCase());
-        if (!allowedCastes.includes(userProfile.caste.toLowerCase()))
-          return false;
+      if (userProfile.caste && scheme.caste) {
+        const schemeCaste = Array.isArray(scheme.caste)
+          ? scheme.caste.join(",").toLowerCase()
+          : String(scheme.caste).toLowerCase();
+        if (schemeCaste !== "all" && schemeCaste !== "general") {
+          if (!schemeCaste.includes(userProfile.caste.toLowerCase()))
+            return false;
+        }
       }
 
       // --- ANNUAL INCOME CEILING MATCHING ---
@@ -588,22 +611,24 @@ app.post("/api/schemes/recommend", async (req, res) => {
         if (!userProfile.disability) return false;
       }
 
-      return true;
+      return true; // Passed all criteria checks
     });
 
+    // 3. Return Filtered Scheme Matches
     return res.status(200).json({
       success: true,
+      message: "Schemes evaluated successfully.",
       matchCount: eligibleSchemes.length,
       eligibleSchemes,
     });
   } catch (error) {
-    console.error("[Recommendation Filter Error]:", error);
-    return res
-      .status(500)
-      .json({ error: "Failed to evaluate demographic parameters." });
+    console.error("[Recommendation Filter Failure]:", error);
+    return res.status(500).json({
+      error: "Failed to evaluate demographic parameters.",
+      details: error.message,
+    });
   }
-});
-// -------------------------------------------------------------
+}); // -------------------------------------------------------------
 // SECURE ADMIN CONSOLE: ADD NEW SCHEME TO THE DATA CATALOG
 // -------------------------------------------------------------
 // -------------------------------------------------------------
@@ -738,6 +763,116 @@ async function seedDefaultData() {
 // Trigger automatic seeder routine operations during server start sequence hook
 seedDefaultData().catch((err) => console.error("Initial seeding failed:", err));
 
+// -------------------------------------------------------------
+// ABOUT US DATA API ENDPOINT
+// -------------------------------------------------------------
+app.get("/api/about", (req, res) => {
+  try {
+    const aboutDetails = {
+      portalName: "YojanaBasket",
+      tagline: "All Government Schemes, One Platform",
+      mission:
+        "To empower every Indian citizen by providing seamless, transparent, and personalized access to Central and State government welfare schemes.",
+      vision:
+        "Bridging the information gap for urban and rural citizens through intelligent eligibility matching, multi-language support, and AI assistance.",
+      governance: {
+        trustScore: "100% Verified & Official",
+        coveredStatesAndUTs: 36,
+        totalSchemesCataloged: SCHEMES_DATA.length || 18000,
+        citizensBenefited: "10 Crore+",
+      },
+      features: [
+        "Personalized Eligibility Matrix Evaluation",
+        "Direct Official Application Portal Links",
+        "Bilingual Interface (English & Hindi)",
+        "Voice Assistant Integration",
+        "Interactive Sarthi AI Guidance",
+      ],
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: aboutDetails,
+    });
+  } catch (error) {
+    console.error("[About API Error]:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to retrieve portal information." });
+  }
+});
+
+// -------------------------------------------------------------
+// CONTACT US FORM SUBMISSION API ENDPOINT
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// 1. SUBMIT CITIZEN CONTACT INQUIRY (SAVE TO DATABASE)
+// -------------------------------------------------------------
+app.post("/api/contact", async (req, res) => {
+  try {
+    const { name, mobileOrEmail, subject, message } = req.body;
+
+    // Validation check
+    if (!name || !mobileOrEmail || !message) {
+      return res.status(400).json({
+        error:
+          "Missing required fields (Name, Contact Info, and Message are required).",
+      });
+    }
+
+    // Save message directly into the database using Prisma
+    const savedMessage = await prisma.contactMessage.create({
+      data: {
+        name: name.trim(),
+        contactInfo: mobileOrEmail.trim(),
+        subject: subject ? subject.trim() : "General Inquiry",
+        message: message.trim(),
+      },
+    });
+
+    console.log(
+      `[📩 CONTACT INQUIRY SAVED TO DB]: ID ${savedMessage.id} from ${savedMessage.name}`,
+    );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Thank you for contacting YojanaBasket. Your inquiry has been logged successfully.",
+      data: savedMessage,
+    });
+  } catch (error) {
+    console.error("[Contact API DB Save Error]:", error);
+    return res.status(500).json({
+      error: "Failed to record inquiry into database.",
+      details: error.message,
+    });
+  }
+});
+
+// -------------------------------------------------------------
+// 2. ADMIN ENDPOINT: FETCH ALL CONTACT MESSAGES FROM DATABASE
+// -------------------------------------------------------------
+app.get("/api/admin/contact-messages", async (req, res) => {
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: {
+        createdAt: "desc", // Newest messages first
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: messages.length,
+      messages,
+    });
+  } catch (error) {
+    console.error("[Fetch Contact Messages DB Error]:", error);
+    return res.status(500).json({
+      error: "Failed to retrieve contact inquiries from database.",
+      details: error.message,
+    });
+  }
+});
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`); // cite: 144
 });

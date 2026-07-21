@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>YojanaBasket - Direct Access to Government Schemes</title>
+    <title>YojanaBasket - All Government Schemes, One Platform</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined&display=swap"
       rel="stylesheet"
@@ -17,9 +18,11 @@
             colors: {
               primary: "#00113a",
               "primary-container": "#002366",
+              "brand-green": "#1e6b37",
+              "brand-green-dark": "#145229",
+              "brand-green-light": "#eaf5ed",
               secondary: "#8f4e00",
               "secondary-container": "#fe9832",
-              "on-secondary-container": "#683700",
               background: "#f8f9ff",
               surface: "#f8f9ff",
               "surface-container-lowest": "#ffffff",
@@ -33,129 +36,484 @@
         },
       };
     </script>
+    <style>
+      .hero-bg {
+        background: linear-gradient(135deg, #ffffff 0%, #f4f8f5 100%);
+      }
+    </style>
   </head>
-  <body class="bg-background text-on-surface">
-    <header class="bg-surface-container-lowest shadow-sm sticky top-0 z-50">
+  <body class="bg-background text-on-surface font-['Public_Sans',sans-serif]">
+    <header
+      class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100"
+    >
       <nav
-        class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto"
+        class="flex justify-between items-center w-full px-6 py-3.5 max-w-7xl mx-auto"
       >
         <div
-          class="text-2xl font-bold text-primary tracking-tight cursor-pointer"
+          class="flex items-center gap-3 cursor-pointer"
           onclick="window.location.reload()"
-          data-i18n="brand"
         >
-          YojanaBasket
+          <img
+            src="logo.jpeg"
+            alt="YojanaBasket Emblem"
+            class="h-10 w-auto object-contain rounded-lg"
+            onerror="this.src = 'icon.jpeg'"
+          />
+          <span
+            class="text-2xl font-extrabold text-primary tracking-tight"
+            data-i18n="brand"
+            >Yojana<span class="text-brand-green">Basket</span></span
+          >
         </div>
 
         <div
-          class="flex items-center ml-auto mr-6 border rounded-lg overflow-hidden bg-white shadow-sm"
+          class="hidden lg:flex items-center gap-6 text-sm font-semibold text-on-surface-variant"
         >
-          <button
-            id="btnLangEn"
-            onclick="togglePlatformLanguage('en')"
-            class="text-xs font-bold px-3 py-1.5 bg-primary text-white transition-all"
+          <a
+            href="#"
+            class="text-brand-green border-b-2 border-brand-green pb-1"
+            data-i18n="navHome"
+            >Home</a
           >
-            EN
+          <a
+            href="#popular-schemes"
+            class="hover:text-primary transition-colors"
+            data-i18n="navSchemes"
+            >Schemes ▾</a
+          >
+          <a
+            href="#category-section"
+            class="hover:text-primary transition-colors"
+            data-i18n="navCategories"
+            >Categories</a
+          >
+          <a
+            href="#popular-schemes"
+            class="hover:text-primary transition-colors"
+            data-i18n="navStates"
+            >States</a
+          >
+          <button
+            onclick="toggleSarthiPanel(true)"
+            class="hover:text-primary transition-colors flex items-center gap-1"
+          >
+            <span class="material-symbols-outlined text-base text-brand-green"
+              >smart_toy</span
+            >
+            <span data-i18n="navAi">AI Assistant</span>
           </button>
           <button
-            id="btnLangHi"
-            onclick="togglePlatformLanguage('hi')"
-            class="text-xs font-bold px-3 py-1.5 text-primary transition-all"
+            onclick="openAboutModal()"
+            class="hover:text-primary transition-colors"
+            data-i18n="navAbout"
           >
-            हिंदी
+            About Us
+          </button>
+          <button
+            onclick="openContactModal()"
+            class="hover:text-primary transition-colors"
+            data-i18n="navContact"
+          >
+            Contact Us
           </button>
         </div>
 
-        <div class="flex items-center gap-8">
-          <span id="navAuthLinks" class="flex items-center gap-6"></span>
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm"
+          >
+            <button
+              id="btnLangEn"
+              onclick="togglePlatformLanguage('en')"
+              class="text-xs font-bold px-3 py-1.5 bg-primary text-white transition-all"
+            >
+              English ▾
+            </button>
+            <button
+              id="btnLangHi"
+              onclick="togglePlatformLanguage('hi')"
+              class="text-xs font-bold px-3 py-1.5 text-primary transition-all"
+            >
+              हिंदी
+            </button>
+          </div>
+
+          <div id="navAuthLinks" class="flex items-center">
+            <button
+              onclick="toggleAuthModal(true, 'LOGIN')"
+              class="bg-brand-green text-white font-bold text-xs px-5 py-2.5 rounded-lg hover:bg-brand-green-dark transition-all flex items-center gap-1.5 shadow-sm min-h-[40px]"
+            >
+              <span class="material-symbols-outlined text-sm">person</span>
+              <span data-i18n="signIn">Login / Sign Up</span>
+            </button>
+          </div>
         </div>
       </nav>
     </header>
 
     <main>
       <section
-        class="relative overflow-hidden pt-16 pb-20 bg-gradient-to-br from-surface via-surface-container-low to-surface-container-high"
+        class="hero-bg py-12 lg:py-16 border-b border-gray-100 relative overflow-hidden"
       >
         <div
-          class="max-w-7xl mx-auto px-6 flex flex-col items-center text-center"
+          class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
         >
-          <h1
-            class="text-4xl md:text-5xl font-extrabold text-primary max-w-4xl mb-6 leading-tight"
-            data-i18n="subtitle"
-          >
-            Direct Access to Government Welfare Schemes
-          </h1>
-          <p
-            class="text-lg text-on-surface-variant max-w-2xl mb-10"
-            data-i18n="desc"
-          >
-            Discover, check customized matrix constraints eligibility, and
-            process requests instantly.
-          </p>
-
-          <div class="w-full max-w-3xl relative">
-            <div
-              class="flex items-center bg-surface-container-lowest rounded-full p-2 shadow-lg border border-outline-variant"
-            >
-              <span
-                class="material-symbols-outlined ml-4 text-on-surface-variant/70"
-                >search</span
+          <div class="lg:col-span-7 space-y-6">
+            <div class="flex items-center gap-3">
+              <img
+                src="logo.jpeg"
+                alt="YojanaBasket"
+                class="h-14 w-auto object-contain rounded-xl"
+                onerror="this.src = 'icon.jpeg'"
+              />
+              <h1
+                class="text-3xl sm:text-4xl font-extrabold text-primary tracking-tight"
               >
-              <input
-                id="schemeSearchInput"
-                class="flex-grow bg-transparent border-none focus:ring-0 px-4 py-3 text-base text-on-surface"
-                data-i18n="searchPlace"
-                placeholder="Search parameters (e.g. Farming, Education)..."
-                type="text"
+                Yojana <span class="text-brand-green">Basket</span>
+              </h1>
+            </div>
+            <h2
+              class="text-2xl sm:text-3xl font-bold text-primary"
+              data-i18n="subtitle"
+            >
+              All Government Schemes, One Platform
+            </h2>
+            <p
+              class="text-base text-on-surface-variant max-w-xl leading-relaxed"
+              data-i18n="desc"
+            >
+              Find, check eligibility and apply for Central and State Government
+              schemes easily at one place.
+            </p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+              <div
+                class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-100 shadow-sm"
+              >
+                <span class="material-symbols-outlined text-brand-green text-xl"
+                  >verified_user</span
+                >
+                <span class="text-xs font-bold text-primary"
+                  >100% Official</span
+                >
+              </div>
+              <div
+                class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-100 shadow-sm"
+              >
+                <span class="material-symbols-outlined text-brand-green text-xl"
+                  >eco</span
+                >
+                <span class="text-xs font-bold text-primary"
+                  >Easy to Understand</span
+                >
+              </div>
+              <div
+                class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-100 shadow-sm"
+              >
+                <span class="material-symbols-outlined text-brand-green text-xl"
+                  >schedule</span
+                >
+                <span class="text-xs font-bold text-primary"
+                  >Save Time & Effort</span
+                >
+              </div>
+              <div
+                class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-100 shadow-sm"
+              >
+                <span class="material-symbols-outlined text-brand-green text-xl"
+                  >lock</span
+                >
+                <span class="text-xs font-bold text-primary"
+                  >Secure & Trusted</span
+                >
+              </div>
+            </div>
+
+            <div class="pt-4">
+              <div
+                class="flex flex-col sm:flex-row items-center bg-white rounded-2xl p-2 shadow-lg border border-gray-200 gap-2"
+              >
+                <div
+                  class="w-full sm:w-auto border-b sm:border-b-0 sm:border-r border-gray-200 px-3 py-2"
+                >
+                  <select
+                    id="heroCategorySelect"
+                    class="bg-transparent text-xs font-bold text-primary border-none focus:ring-0 p-0 pr-6 w-full cursor-pointer"
+                  >
+                    <option value="all">All Schemes</option>
+                    <option value="farming">Farming</option>
+                    <option value="health">Health</option>
+                    <option value="loans">Loans</option>
+                    <option value="education">Education</option>
+                    <option value="housing">Housing</option>
+                  </select>
+                </div>
+                <div class="flex items-center flex-grow w-full px-2">
+                  <input
+                    id="schemeSearchInput"
+                    type="text"
+                    data-i18n="searchPlace"
+                    placeholder="Search for schemes, keywords..."
+                    class="w-full border-none bg-transparent focus:ring-0 text-sm text-on-surface px-2 py-2"
+                  />
+
+                  <button
+                    onclick="
+                      startVoiceRecognition(
+                        'schemeSearchInput',
+                        'searchExecutionBtn',
+                      )
+                    "
+                    class="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors shrink-0"
+                    title="Speak to Search"
+                  >
+                    <span
+                      id="mic-icon-schemeSearchInput"
+                      class="material-symbols-outlined text-xl"
+                      >mic</span
+                    >
+                  </button>
+                </div>
+                <button
+                  id="searchExecutionBtn"
+                  onclick="executeCatalogSync()"
+                  class="w-full sm:w-auto bg-brand-green text-white font-bold text-sm px-8 py-3 rounded-xl hover:bg-brand-green-dark transition-all shrink-0 flex items-center justify-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-sm">search</span>
+                  <span data-i18n="searchBtn">Search</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 relative flex justify-center">
+            <div
+              class="relative w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-white"
+            >
+              <img
+                src="bg pic.png"
+                alt="Indian Rural Family"
+                class="w-full h-[380px] object-cover"
               />
 
-              <button
-                onclick="
-                  startVoiceRecognition(
-                    'schemeSearchInput',
-                    'searchExecutionBtn',
-                  )
-                "
-                class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant flex items-center justify-center mr-2 transition-colors min-w-[40px] min-h-[40px]"
-                title="Speak to search"
+              <div
+                class="absolute bottom-4 right-4 left-4 bg-primary/95 text-white p-4 rounded-2xl backdrop-blur-sm border border-white/10 shadow-xl flex items-center gap-3"
               >
-                <span
-                  id="mic-icon-schemeSearchInput"
-                  class="material-symbols-outlined text-xl"
-                  >mic</span
+                <div
+                  class="w-10 h-10 rounded-full bg-brand-green flex items-center justify-center shrink-0"
                 >
-              </button>
-
-              <button
-                id="searchExecutionBtn"
-                class="bg-secondary-container text-on-secondary-container font-bold px-8 py-3.5 rounded-full hover:bg-secondary hover:text-white transition-all min-h-[48px]"
-                data-i18n="searchBtn"
-              >
-                Search
-              </button>
+                  <span class="material-symbols-outlined text-white"
+                    >groups</span
+                  >
+                </div>
+                <div>
+                  <h4 class="text-xs font-extrabold text-white">
+                    Sabka Saath, Sabka Vikas
+                  </h4>
+                  <p class="text-[10px] text-white/80 mt-0.5">
+                    Empowering every citizen through government schemes.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="trending" class="py-16 max-w-7xl mx-auto px-6">
-        <div class="flex justify-between items-end mb-10">
-          <div>
-            <h2
-              class="text-3xl font-bold text-primary"
-              data-i18n="catalogHeading"
+      <section
+        id="category-section"
+        class="py-8 bg-white border-b border-gray-100"
+      >
+        <div class="max-w-7xl mx-auto px-6 overflow-x-auto">
+          <div class="flex items-center gap-4 min-w-max pb-2">
+            <button
+              onclick="setCategoryFilter('education')"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
-              Explore Available Schemes
-            </h2>
-            <p class="text-sm text-on-surface-variant mt-1" id="schemeCounter">
-              Loading catalog registries...
-            </p>
+              <span class="material-symbols-outlined text-lg">school</span>
+              Education
+            </button>
+            <button
+              onclick="setCategoryFilter('farming')"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
+            >
+              <span class="material-symbols-outlined text-lg">eco</span>
+              Agriculture
+            </button>
+            <button
+              onclick="setCategoryFilter('health')"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
+            >
+              <span class="material-symbols-outlined text-lg"
+                >medical_services</span
+              >
+              Health
+            </button>
+            <button
+              onclick="setCategoryFilter('loans')"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
+            >
+              <span class="material-symbols-outlined text-lg">work</span>
+              Employment
+            </button>
+            <button
+              onclick="setCategoryFilter('housing')"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
+            >
+              <span class="material-symbols-outlined text-lg">home</span>
+              Housing
+            </button>
+            <button
+              onclick="setCategoryFilter('all')"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
+            >
+              <span class="material-symbols-outlined text-lg">female</span>
+              Women
+            </button>
+            <button
+              onclick="setCategoryFilter('loans')"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
+            >
+              <span class="material-symbols-outlined text-lg">equalizer</span>
+              MSME
+            </button>
+            <button
+              onclick="setCategoryFilter('all')"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
+            >
+              <span class="material-symbols-outlined text-lg">grid_view</span>
+              More
+            </button>
           </div>
         </div>
+      </section>
+
+      <section id="popular-schemes" class="py-12 max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-8 space-y-6">
+            <div class="flex justify-between items-center border-b pb-4">
+              <div>
+                <h3
+                  class="text-xl font-bold text-primary"
+                  data-i18n="catalogHeading"
+                >
+                  Popular Schemes
+                </h3>
+                <p
+                  class="text-xs text-on-surface-variant mt-0.5"
+                  id="schemeCounter"
+                >
+                  Loading catalog registries...
+                </p>
+              </div>
+              <button
+                onclick="setCategoryFilter('all')"
+                class="text-xs font-bold text-brand-green hover:underline flex items-center gap-0.5"
+              >
+                View All &gt;
+              </button>
+            </div>
+
+            <div
+              id="schemesGridDisplay"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-6"
+            ></div>
+          </div>
+
+          <div class="lg:col-span-4 space-y-6">
+            <div
+              class="bg-brand-green-light/60 rounded-2xl p-6 border border-brand-green/20 space-y-4"
+            >
+              <div class="flex items-center gap-3 text-brand-green">
+                <span class="material-symbols-outlined text-2xl"
+                  >auto_awesome</span
+                >
+                <h4 class="font-bold text-primary text-base">
+                  Find Schemes for You
+                </h4>
+              </div>
+              <p class="text-xs text-on-surface-variant leading-relaxed">
+                Answer a few demographic questions and we'll automatically
+                calculate your exact eligible schemes.
+              </p>
+              <button
+                onclick="handleApplicationRouting()"
+                class="w-full bg-brand-green text-white font-bold text-xs py-3.5 px-4 rounded-xl hover:bg-brand-green-dark transition-all flex items-center justify-center gap-2 shadow-sm min-h-[44px]"
+              >
+                <span>Start Scheme Finder</span>
+                <span class="material-symbols-outlined text-sm"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+
+            <div
+              class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4 hover:border-brand-green/40 transition-all cursor-pointer"
+              onclick="toggleSarthiPanel(true)"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center border border-gray-100 overflow-hidden shrink-0"
+                  >
+                    <img
+                      src="icon.jpeg"
+                      alt="Yojana Mitra Avatar"
+                      class="w-full h-full object-cover rounded-full"
+                    />
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-primary text-sm">
+                      Ask AI Assistant
+                    </h4>
+                    <p class="text-[11px] text-on-surface-variant">
+                      Get instant help about schemes
+                    </p>
+                  </div>
+                </div>
+                <span class="material-symbols-outlined text-gray-400"
+                  >chevron_right</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="bg-primary text-white py-8 border-t border-primary-container"
+      >
         <div
-          id="schemesGridDisplay"
-          class="grid grid-cols-1 md:grid-cols-3 gap-8"
-        ></div>
+          class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center"
+        >
+          <div class="flex items-center justify-center gap-3">
+            <span
+              class="material-symbols-outlined text-secondary-container text-3xl"
+              >library_books</span
+            >
+            
+          <div class="flex items-center justify-center gap-3">
+            <span
+              class="material-symbols-outlined text-secondary-container text-3xl"
+              >map</span
+            >
+            <div class="text-left">
+              <p class="text-lg font-extrabold text-white">36</p>
+              <p class="text-[11px] text-white/70">State/UTs Covered</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-center gap-3">
+            <span
+              class="material-symbols-outlined text-secondary-container text-3xl"
+              >verified</span
+            >
+            <div class="text-left">
+              <p class="text-lg font-extrabold text-white">100%</p>
+              <p class="text-[11px] text-white/70">Verified & Trusted</p>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -164,10 +522,10 @@
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
     >
       <div
-        class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl border border-outline-variant flex flex-col"
+        class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-outline-variant flex flex-col"
       >
         <div
-          class="bg-primary-container p-6 text-white flex justify-between items-center"
+          class="bg-primary p-6 text-white flex justify-between items-center"
         >
           <div>
             <h3 class="text-xl font-bold">Access Portal Platform</h3>
@@ -328,7 +686,7 @@
               </div>
               <button
                 type="submit"
-                class="w-full bg-secondary-container text-on-secondary-container font-bold py-3 rounded-lg min-h-[48px] hover:bg-secondary hover:text-white transition-all shadow"
+                class="w-full bg-brand-green text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-brand-green-dark transition-all shadow"
                 data-i18n="genOtpBtn"
               >
                 Generate Security OTP
@@ -347,9 +705,7 @@
                   Verify Mobile Number Connection
                 </p>
                 <p class="text-on-surface-variant mt-1 text-[11px]">
-                  A secure 6-digit verification code token message has been
-                  dispatched onto your network cellular smartphone carrier
-                  connection string line.
+                  A secure verification code token has been generated.
                 </p>
               </div>
               <div>
@@ -378,10 +734,154 @@
       </div>
     </div>
 
+    <div
+      id="aboutUsModal"
+      class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl border border-outline-variant flex flex-col max-h-[90vh]"
+      >
+        <div
+          class="bg-primary p-6 text-white flex justify-between items-center"
+        >
+          <div class="flex items-center gap-3">
+            <span
+              class="material-symbols-outlined text-secondary-container text-2xl"
+              >info</span
+            >
+            <div>
+              <h3 class="text-xl font-bold">About YojanaBasket</h3>
+              <p class="text-xs opacity-80 mt-0.5">
+                Sovereign Citizen Welfare Intelligence Hub
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeAboutModal()"
+            class="text-white/80 hover:text-white transition-colors"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div
+          id="aboutModalContent"
+          class="p-6 overflow-y-auto space-y-6 text-sm text-on-surface"
+        >
+          <div class="animate-pulse text-center py-8 text-on-surface-variant">
+            Loading portal mission details...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="contactUsModal"
+      class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-outline-variant flex flex-col"
+      >
+        <div
+          class="bg-brand-green p-6 text-white flex justify-between items-center"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-2xl"
+              >support_agent</span
+            >
+            <div>
+              <h3 class="text-xl font-bold">Contact Support</h3>
+              <p class="text-xs opacity-80 mt-0.5">
+                Send a message to our portal team
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeContactModal()"
+            class="text-white/80 hover:text-white transition-colors"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="p-6">
+          <div
+            id="contactAlertBanner"
+            class="mb-4 p-3 rounded-lg text-xs font-medium hidden"
+          ></div>
+
+          <form
+            id="contactUsForm"
+            onsubmit="sendContactForm(event)"
+            class="space-y-4"
+          >
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Full Name *</label
+              >
+              <input
+                type="text"
+                id="contactName"
+                required
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                placeholder="Your name"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Mobile or Email *</label
+              >
+              <input
+                type="text"
+                id="contactContactInfo"
+                required
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                placeholder="Mobile number or Email address"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Subject</label
+              >
+              <input
+                type="text"
+                id="contactSubject"
+                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
+                placeholder="e.g. Help with PM-KISAN application"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
+                >Message *</label
+              >
+              <textarea
+                id="contactMessage"
+                required
+                rows="3"
+                class="w-full rounded-lg border-outline-variant text-sm"
+                placeholder="Write your inquiry or feedback here..."
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              class="w-full bg-brand-green text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-brand-green-dark transition-all shadow flex items-center justify-center gap-2"
+            >
+              <span class="material-symbols-outlined text-sm">send</span>
+              <span>Submit Inquiry</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <div class="fixed bottom-6 right-6 z-[90] flex flex-col items-end">
       <div
         id="sarthiWorkspacePanel"
-        class="w-80 md:w-96 h-[400px] bg-white rounded-2xl border border-outline-variant shadow-xl flex flex-col mb-4 hidden overflow-hidden transition-all"
+        class="w-80 md:w-96 h-[400px] bg-white rounded-2xl border border-outline-variant shadow-2xl flex flex-col mb-4 hidden overflow-hidden transition-all"
       >
         <div
           class="bg-primary p-4 text-white flex justify-between items-center text-xs font-bold"
@@ -389,8 +889,8 @@
           <span class="flex items-center gap-2">
             <img
               src="icon.jpeg"
-              alt="Sarthi"
-              class="w-5 h-5 rounded-full object-cover ring-1 ring-white/40"
+              alt="Yojana Mitra"
+              class="w-7 h-7 rounded-full object-cover ring-2 ring-white/40 shrink-0"
             />
             <span data-i18n="sarthiTitle">Sarthi AI Assistant</span>
           </span>
@@ -409,12 +909,11 @@
           <input
             type="text"
             id="sarthiQueryConsoleInput"
-            class="flex-grow rounded-lg border-outline-variant text-xs min-h-[40px] focus:ring-primary focus:border-primary"
+            class="flex-grow rounded-lg border-outline-variant text-xs min-h-[40px] focus:ring-primary"
             data-i18n="sarthiPlace"
             placeholder="Ask anything regarding welfare services..."
             onkeypress="handleSarthiKeyPress(event)"
           />
-
           <button
             onclick="
               startVoiceRecognition(
@@ -431,7 +930,6 @@
               >mic</span
             >
           </button>
-
           <button
             id="sarthiSendActionBtn"
             onclick="processSarthiQueryTransmission()"
@@ -443,12 +941,12 @@
       </div>
       <button
         onclick="toggleSarthiPanel(true)"
-        class="w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center ring-4 ring-primary/20 hover:scale-105 transition-all overflow-hidden"
+        class="w-14 h-14 bg-white rounded-full shadow-2xl flex items-center justify-center ring-4 ring-brand-green/30 hover:scale-105 transition-all overflow-hidden p-0"
       >
         <img
           src="icon.jpeg"
-          alt="Sarthi Logo"
-          class="w-full h-full object-cover"
+          alt="Yojana Mitra Logo"
+          class="w-full h-full object-cover rounded-full"
         />
       </button>
     </div>
@@ -461,20 +959,21 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         executeCatalogSync();
-        document
-          .getElementById("searchExecutionBtn")
-          .addEventListener("click", executeCatalogSync);
       });
 
-      // ==================================================================
-      // WEB SPEECH VOICE ASSISTANT RECOGNITION PIPELINE ENGINE
-      // ==================================================================
+      function setCategoryFilter(category) {
+        targetedCategoryFilter = category;
+        const heroSelect = document.getElementById("heroCategorySelect");
+        if (heroSelect) heroSelect.value = category;
+        executeCatalogSync();
+      }
+
       function startVoiceRecognition(inputId, triggerBtnId) {
         const SpeechRecognition =
           window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
           alert(
-            "Voice features are not supported in this browser. Please load via Google Chrome or Microsoft Edge.",
+            "Voice features are not supported in this browser. Please use Chrome or Edge.",
           );
           return;
         }
@@ -482,53 +981,38 @@
         const recognition = new SpeechRecognition();
         const micIcon = document.getElementById(`mic-icon-${inputId}`);
         const targetInput = document.getElementById(inputId);
-
-        // Intelligently match language preferences: English or Hindi
         const isHindi = localStorage.getItem("yojana_lang") === "hi";
-        recognition.lang = isHindi ? "hi-IN" : "en-IN";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
 
+        recognition.lang = isHindi ? "hi-IN" : "en-IN";
         recognition.onstart = () => {
           if (micIcon) {
-            micIcon.innerText = "graphic_eq"; // Transform mic icon into live audio wave text glyph
+            micIcon.innerText = "graphic_eq";
             micIcon.classList.add("text-red-600", "animate-pulse");
           }
         };
-
-        recognition.onerror = (e) => {
-          console.error("[Voice Assistant Engine Error]:", e.error);
-          resetMicIconState();
-        };
-
         recognition.onend = () => {
-          resetMicIconState();
-        };
-
-        recognition.onresult = (event) => {
-          const vocalTranscript = event.results[0][0].transcript;
-          if (targetInput) {
-            targetInput.value = vocalTranscript;
-
-            // Dispatches query trigger execution automatically after processing speech transcription frame
-            setTimeout(() => {
-              const finalActionBtn = document.getElementById(triggerBtnId);
-              if (finalActionBtn) finalActionBtn.click();
-            }, 400);
-          }
-        };
-
-        function resetMicIconState() {
           if (micIcon) {
             micIcon.innerText = "mic";
             micIcon.classList.remove("text-red-600", "animate-pulse");
           }
-        }
-
+        };
+        recognition.onresult = (event) => {
+          if (targetInput) {
+            targetInput.value = event.results[0][0].transcript;
+            setTimeout(() => {
+              const btn = document.getElementById(triggerBtnId);
+              if (btn) btn.click();
+            }, 400);
+          }
+        };
         recognition.start();
       }
 
       async function executeCatalogSync() {
+        const heroSelectVal =
+          document.getElementById("heroCategorySelect")?.value;
+        if (heroSelectVal) targetedCategoryFilter = heroSelectVal;
+
         const query = document.getElementById("schemeSearchInput").value;
         const grid = document.getElementById("schemesGridDisplay");
         try {
@@ -537,54 +1021,173 @@
           const res = await fetch(url);
           const data = await res.json();
 
-          const dynamicCounterLabel =
-            currentSelectedLanguage === "hi"
-              ? "लक्षित योजनाएं पाई गईं"
-              : "Target Schemes Identified";
+          const isHindi = localStorage.getItem("yojana_lang") === "hi";
+          const dynamicCounterLabel = isHindi
+            ? "लक्षित योजनाएं पाई गईं"
+            : "Target Schemes Identified";
           document.getElementById("schemeCounter").innerText =
             `${data.schemes.length} ${dynamicCounterLabel}`;
 
           if (data.schemes.length === 0) {
-            grid.innerHTML = `<div class="col-span-3 text-center py-10 text-on-surface-variant font-medium text-sm">No schemes match those parameters.</div>`;
+            grid.innerHTML = `<div class="col-span-2 text-center py-10 text-on-surface-variant font-medium text-sm">No schemes match those parameters.</div>`;
             return;
           }
 
           grid.innerHTML = data.schemes
             .map((s) => {
               const localizedSchemeName =
-                currentSelectedLanguage === "hi" && s.hindiName
-                  ? s.hindiName
-                  : s.name;
-              const localizedBtnText =
-                currentSelectedLanguage === "hi"
-                  ? "पात्रता की जांच करें"
-                  : "Evaluate Prerequisites";
+                isHindi && s.hindiName ? s.hindiName : s.name;
+              const localizedBtnText = isHindi
+                ? "पात्रता की जांच करें"
+                : "Evaluate Prerequisites";
 
               return `
-                    <div class="bg-white rounded-xl border border-outline-variant p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow">
-                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-surface-container-high text-primary w-fit rounded mb-2">${s.category}</span>
-                        <h4 class="text-lg font-bold text-primary mb-1">${localizedSchemeName}</h4>
-                        <p class="text-xs text-on-surface-variant mb-4 line-clamp-3 flex-grow">${s.description}</p>
-                        <button onclick="handleApplicationRouting('${s.id}')" class="w-full min-h-[48px] border-2 border-primary text-primary font-bold text-sm rounded-lg hover:bg-primary hover:text-white transition-all">${localizedBtnText}</button>
+                    <div class="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-brand-green-light text-brand-green w-fit rounded-md block mb-3 font-mono">${s.category}</span>
+                            <h4 class="text-base font-bold text-primary mb-2 leading-snug">${localizedSchemeName}</h4>
+                            <p class="text-xs text-on-surface-variant mb-4 line-clamp-3 leading-relaxed opacity-90">${s.description}</p>
+                        </div>
+                        <button onclick="handleApplicationRouting('${s.id}')" class="w-full min-h-[42px] border-2 border-primary text-primary font-bold text-xs rounded-xl hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-1">
+                            <span>${localizedBtnText}</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
                     </div>
                 `;
             })
             .join("");
         } catch (e) {
-          grid.innerHTML = `<div class="col-span-3 text-center text-red-600 font-bold text-sm p-4">Sync failure with administrative registries.</div>`;
+          grid.innerHTML = `<div class="col-span-2 text-center text-red-600 font-bold text-xs p-4">Sync failure with administrative registries.</div>`;
         }
       }
 
       function handleApplicationRouting(id) {
         if (!localStorage.getItem("yojana_session_token")) {
-          const promptMsg =
-            currentSelectedLanguage === "hi"
-              ? "पात्रता मूल्यांकन कार्यों को पूरा करने के लिए साइन इन आवश्यक है।"
-              : "Authentication Required to perform qualification matrix evaluation tasks.";
-          alert(promptMsg);
+          alert(
+            localStorage.getItem("yojana_lang") === "hi"
+              ? "पात्रता की जांच के लिए साइन इन करें।"
+              : "Authentication required to evaluate eligibility.",
+          );
           toggleAuthModal(true, "LOGIN");
         } else {
           window.location.href = "/dashboard.html";
+        }
+      }
+
+      // ==================================================================
+      // ABOUT US & CONTACT US MODAL CONTROLLERS
+      // ==================================================================
+      async function openAboutModal() {
+        const modal = document.getElementById("aboutUsModal");
+        const container = document.getElementById("aboutModalContent");
+        modal.classList.remove("hidden");
+
+        try {
+          const res = await fetch("/api/about");
+          const result = await res.json();
+
+          if (result.success && result.data) {
+            const info = result.data;
+            container.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-brand-green-light p-4 rounded-xl border border-brand-green/20">
+                            <h4 class="font-bold text-brand-green text-base">${info.portalName} - ${info.tagline}</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">${info.mission}</p>
+                        </div>
+
+                        <div>
+                            <h5 class="font-bold text-primary text-xs uppercase tracking-wider mb-2">Vision Statement</h5>
+                            <p class="text-xs text-on-surface-variant leading-relaxed">${info.vision}</p>
+                        </div>
+
+                        <div class="border-t pt-4">
+                            <h5 class="font-bold text-primary text-xs uppercase tracking-wider mb-3">Key Platform Capabilities</h5>
+                            <ul class="space-y-1.5 text-xs text-on-surface-variant">
+                                ${info.features.map((f) => `<li class="flex items-center gap-2"><span class="material-symbols-outlined text-brand-green text-sm">check_circle</span> ${f}</li>`).join("")}
+                            </ul>
+                        </div>
+
+                        <div class="bg-surface-container-low p-4 rounded-xl border flex justify-between items-center text-xs">
+                            <div>
+                                <span class="block font-bold text-primary">States & UTs Covered</span>
+                                <span class="text-brand-green font-extrabold text-lg">${info.governance.coveredStatesAndUTs}</span>
+                            </div>
+                            <div>
+                                <span class="block font-bold text-primary">Trust Level</span>
+                                <span class="text-brand-green font-extrabold">${info.governance.trustScore}</span>
+                            </div>
+                            <div>
+                                <span class="block font-bold text-primary">Impact Reach</span>
+                                <span class="text-brand-green font-extrabold">${info.governance.citizensBenefited}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          } else {
+            container.innerHTML = `<div class="text-red-600 font-bold text-xs">Failed to load portal information.</div>`;
+          }
+        } catch (err) {
+          container.innerHTML = `<div class="text-red-600 font-bold text-xs">Connection error fetching portal metadata.</div>`;
+        }
+      }
+
+      function closeAboutModal() {
+        document.getElementById("aboutUsModal").classList.add("hidden");
+      }
+
+      function openContactModal() {
+        document.getElementById("contactUsModal").classList.remove("hidden");
+        document.getElementById("contactAlertBanner").classList.add("hidden");
+      }
+
+      function closeContactModal() {
+        document.getElementById("contactUsModal").classList.add("hidden");
+        document.getElementById("contactUsForm").reset();
+      }
+
+      async function sendContactForm(event) {
+        event.preventDefault();
+        const banner = document.getElementById("contactAlertBanner");
+        banner.classList.add("hidden");
+
+        const payload = {
+          name: document.getElementById("contactName").value,
+          mobileOrEmail: document.getElementById("contactContactInfo").value,
+          subject: document.getElementById("contactSubject").value,
+          message: document.getElementById("contactMessage").value,
+        };
+
+        try {
+          const response = await fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            banner.innerText =
+              result.message || "Inquiry recorded successfully!";
+            banner.className =
+              "mb-4 p-3 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200";
+            banner.classList.remove("hidden");
+            document.getElementById("contactUsForm").reset();
+
+            setTimeout(() => {
+              closeContactModal();
+            }, 2000);
+          } else {
+            banner.innerText = result.error || "Failed to submit form.";
+            banner.className =
+              "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+            banner.classList.remove("hidden");
+          }
+        } catch (err) {
+          banner.innerText = "Network connection dropped sending message.";
+          banner.className =
+            "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+          banner.classList.remove("hidden");
         }
       }
     </script>
