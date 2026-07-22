@@ -4,13 +4,16 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>YojanaBasket - All Government Schemes, One Platform</title>
+    <!-- Tailwind CSS Framework CDN with Forms Plugin -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
+    <!-- Google Fonts: Public Sans & Material Symbols Outlined -->
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined&display=swap"
       rel="stylesheet"
     />
 
+    <!-- Design System Configuration -->
     <script>
       tailwind.config = {
         theme: {
@@ -43,12 +46,14 @@
     </style>
   </head>
   <body class="bg-background text-on-surface font-['Public_Sans',sans-serif]">
+    <!-- 1. Header Navigation Bar -->
     <header
       class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100"
     >
       <nav
         class="flex justify-between items-center w-full px-6 py-3.5 max-w-7xl mx-auto"
       >
+        <!-- TOP BRANDING LOGO -->
         <div
           class="flex items-center gap-3 cursor-pointer"
           onclick="window.location.reload()"
@@ -66,6 +71,7 @@
           >
         </div>
 
+        <!-- Center Nav Links with All Categories and All States Modals -->
         <div
           class="hidden lg:flex items-center gap-6 text-sm font-semibold text-on-surface-variant"
         >
@@ -81,18 +87,23 @@
             data-i18n="navSchemes"
             >Schemes ▾</a
           >
-          <a
-            href="#category-section"
-            class="hover:text-primary transition-colors"
-            data-i18n="navCategories"
-            >Categories</a
+
+          <!-- CATEGORIES TRIGGER BUTTON -->
+          <button
+            onclick="openAllCategoriesModal()"
+            class="hover:text-primary transition-colors flex items-center gap-1"
           >
-          <a
-            href="#popular-schemes"
-            class="hover:text-primary transition-colors"
-            data-i18n="navStates"
-            >States</a
+            <span data-i18n="navCategories">Categories</span> ▾
+          </button>
+
+          <!-- STATES TRIGGER BUTTON -->
+          <button
+            onclick="openAllStatesModal()"
+            class="hover:text-primary transition-colors flex items-center gap-1"
           >
+            <span data-i18n="navStates">States</span> ▾
+          </button>
+
           <button
             onclick="toggleSarthiPanel(true)"
             class="hover:text-primary transition-colors flex items-center gap-1"
@@ -118,6 +129,7 @@
           </button>
         </div>
 
+        <!-- Right Side: Language Toggle & Auth Actions -->
         <div class="flex items-center gap-4">
           <div
             class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm"
@@ -138,6 +150,7 @@
             </button>
           </div>
 
+          <!-- Dynamic Session Slot -->
           <div id="navAuthLinks" class="flex items-center">
             <button
               onclick="toggleAuthModal(true, 'LOGIN')"
@@ -152,13 +165,16 @@
     </header>
 
     <main>
+      <!-- 2. Hero Section -->
       <section
         class="hero-bg py-12 lg:py-16 border-b border-gray-100 relative overflow-hidden"
       >
         <div
           class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
         >
+          <!-- Left Hero Content -->
           <div class="lg:col-span-7 space-y-6">
+            <!-- HERO BRANDING LOGO -->
             <div class="flex items-center gap-3">
               <img
                 src="logo.jpeg"
@@ -186,6 +202,7 @@
               schemes easily at one place.
             </p>
 
+            <!-- 4 Trust Badges Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
               <div
                 class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-100 shadow-sm"
@@ -229,10 +246,12 @@
               </div>
             </div>
 
+            <!-- Universal Integrated Search Bar -->
             <div class="pt-4">
               <div
                 class="flex flex-col sm:flex-row items-center bg-white rounded-2xl p-2 shadow-lg border border-gray-200 gap-2"
               >
+                <!-- Dropdown Filter (All Categories Included) -->
                 <div
                   class="w-full sm:w-auto border-b sm:border-b-0 sm:border-r border-gray-200 px-3 py-2"
                 >
@@ -240,14 +259,21 @@
                     id="heroCategorySelect"
                     class="bg-transparent text-xs font-bold text-primary border-none focus:ring-0 p-0 pr-6 w-full cursor-pointer"
                   >
-                    <option value="all">All Schemes</option>
-                    <option value="farming">Farming</option>
-                    <option value="health">Health</option>
-                    <option value="loans">Loans</option>
-                    <option value="education">Education</option>
-                    <option value="housing">Housing</option>
+                    <option value="all">All Categories</option>
+                    <option value="farming">Agriculture & Farming</option>
+                    <option value="health">Health & Medical</option>
+                    <option value="loans">Banking, Loans & Finance</option>
+                    <option value="education">Education & Scholarships</option>
+                    <option value="housing">Housing & Infrastructure</option>
+                    <option value="women">Women & Child Welfare</option>
+                    <option value="employment">
+                      Employment & Skill Development
+                    </option>
+                    <option value="social">Social Security & Pension</option>
+                    <option value="msme">MSME & Business</option>
                   </select>
                 </div>
+                <!-- Text Input Field -->
                 <div class="flex items-center flex-grow w-full px-2">
                   <input
                     id="schemeSearchInput"
@@ -257,6 +283,7 @@
                     class="w-full border-none bg-transparent focus:ring-0 text-sm text-on-surface px-2 py-2"
                   />
 
+                  <!-- Voice Input Microphone Button -->
                   <button
                     onclick="
                       startVoiceRecognition(
@@ -274,6 +301,7 @@
                     >
                   </button>
                 </div>
+                <!-- Search Execution Trigger Button -->
                 <button
                   id="searchExecutionBtn"
                   onclick="executeCatalogSync()"
@@ -286,16 +314,22 @@
             </div>
           </div>
 
+          <!-- Right Hero Image Graphic with Callout Badge -->
           <div class="lg:col-span-5 relative flex justify-center">
             <div
               class="relative w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-white"
             >
               <img
-                src="bg pic.png"
+                src="image_f0e622.jpg"
                 alt="Indian Rural Family"
                 class="w-full h-[380px] object-cover"
+                onerror="
+                  this.src =
+                    'https://images.unsplash.com/photo-1595274436069-42b71946059d?q=80&w=800&auto=format&fit=crop'
+                "
               />
 
+              <!-- Floating Dark Blue Callout Badge -->
               <div
                 class="absolute bottom-4 right-4 left-4 bg-primary/95 text-white p-4 rounded-2xl backdrop-blur-sm border border-white/10 shadow-xl flex items-center gap-3"
               >
@@ -320,6 +354,7 @@
         </div>
       </section>
 
+      <!-- 3. Scheme Category Pill Buttons Strip -->
       <section
         id="category-section"
         class="py-8 bg-white border-b border-gray-100"
@@ -364,30 +399,31 @@
               Housing
             </button>
             <button
-              onclick="setCategoryFilter('all')"
+              onclick="setCategoryFilter('women')"
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
               <span class="material-symbols-outlined text-lg">female</span>
               Women
             </button>
             <button
-              onclick="setCategoryFilter('loans')"
+              onclick="setCategoryFilter('msme')"
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
               <span class="material-symbols-outlined text-lg">equalizer</span>
               MSME
             </button>
             <button
-              onclick="setCategoryFilter('all')"
-              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
+              onclick="openAllCategoriesModal()"
+              class="flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-white hover:bg-primary-container font-bold text-xs border border-gray-200/60 transition-all shadow-sm"
             >
               <span class="material-symbols-outlined text-lg">grid_view</span>
-              More
+              All Categories
             </button>
           </div>
         </div>
       </section>
 
+      <!-- 4. Main Body: Popular Schemes Grid + Quick-Action Sidebars -->
       <section id="popular-schemes" class="py-12 max-w-7xl mx-auto px-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div class="lg:col-span-8 space-y-6">
@@ -447,6 +483,7 @@
               </button>
             </div>
 
+            <!-- ASK AI ASSISTANT CARD -->
             <div
               class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4 hover:border-brand-green/40 transition-all cursor-pointer"
               onclick="toggleSarthiPanel(true)"
@@ -480,6 +517,7 @@
         </div>
       </section>
 
+      <!-- 5. Impact Metrics Footer Strip -->
       <section
         class="bg-primary text-white py-8 border-t border-primary-container"
       >
@@ -491,7 +529,11 @@
               class="material-symbols-outlined text-secondary-container text-3xl"
               >library_books</span
             >
-            
+            <div class="text-left">
+              <p class="text-lg font-extrabold text-white">100+</p>
+              <p class="text-[11px] text-white/70">Government Schemes</p>
+            </div>
+          </div>
           <div class="flex items-center justify-center gap-3">
             <span
               class="material-symbols-outlined text-secondary-container text-3xl"
@@ -502,7 +544,16 @@
               <p class="text-[11px] text-white/70">State/UTs Covered</p>
             </div>
           </div>
-          
+          <div class="flex items-center justify-center gap-3">
+            <span
+              class="material-symbols-outlined text-secondary-container text-3xl"
+              >groups</span
+            >
+            <div class="text-left">
+              <p class="text-lg font-extrabold text-white">100+</p>
+              <p class="text-[11px] text-white/70">Citizens Benefited</p>
+            </div>
+          </div>
           <div class="flex items-center justify-center gap-3">
             <span
               class="material-symbols-outlined text-secondary-container text-3xl"
@@ -517,6 +568,481 @@
       </section>
     </main>
 
+    <!-- ================================================================== -->
+    <!-- MODALS SECTION -->
+    <!-- ================================================================== -->
+
+    <!-- 1. ALL CATEGORIES MODAL -->
+    <div
+      id="allCategoriesModal"
+      class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl border border-outline-variant flex flex-col max-h-[90vh]"
+      >
+        <div
+          class="bg-primary p-6 text-white flex justify-between items-center"
+        >
+          <div class="flex items-center gap-3">
+            <span
+              class="material-symbols-outlined text-secondary-container text-2xl"
+              >category</span
+            >
+            <div>
+              <h3 class="text-xl font-bold">All Welfare Categories</h3>
+              <p class="text-xs opacity-80 mt-0.5">
+                Explore welfare programs grouped by public benefit sector
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeAllCategoriesModal()"
+            class="text-white/80 hover:text-white transition-colors"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div
+          class="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        >
+          <button
+            onclick="selectCategoryAndClose('farming')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >eco</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">
+                Agriculture & Farming
+              </h4>
+              <p class="text-[10px] text-on-surface-variant">
+                Kisan nidhi, equipment & seeds
+              </p>
+            </div>
+          </button>
+          <button
+            onclick="selectCategoryAndClose('health')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >medical_services</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">Health & Medical</h4>
+              <p class="text-[10px] text-on-surface-variant">
+                Insurance, cashless care & wellness
+              </p>
+            </div>
+          </button>
+          <button
+            onclick="selectCategoryAndClose('loans')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >account_balance</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">
+                Loans & Financial Services
+              </h4>
+              <p class="text-[10px] text-on-surface-variant">
+                Mudra, collateral-free credit
+              </p>
+            </div>
+          </button>
+          <button
+            onclick="selectCategoryAndClose('education')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >school</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">
+                Education & Scholarships
+              </h4>
+              <p class="text-[10px] text-on-surface-variant">
+                Student loans & fee concessions
+              </p>
+            </div>
+          </button>
+          <button
+            onclick="selectCategoryAndClose('housing')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >home</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">
+                Housing & Urban Infra
+              </h4>
+              <p class="text-[10px] text-on-surface-variant">
+                Awas yojana & construction
+              </p>
+            </div>
+          </button>
+          <button
+            onclick="selectCategoryAndClose('women')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >female</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">Women & Child Care</h4>
+              <p class="text-[10px] text-on-surface-variant">
+                Empowerment & girl child savings
+              </p>
+            </div>
+          </button>
+          <button
+            onclick="selectCategoryAndClose('employment')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >work</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">
+                Employment & Skills
+              </h4>
+              <p class="text-[10px] text-on-surface-variant">
+                MGNREGA, skill training & jobs
+              </p>
+            </div>
+          </button>
+          <button
+            onclick="selectCategoryAndClose('social')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >family_restroom</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">
+                Social Security & Pensions
+              </h4>
+              <p class="text-[10px] text-on-surface-variant">
+                Old age, widow & disability support
+              </p>
+            </div>
+          </button>
+          <button
+            onclick="selectCategoryAndClose('msme')"
+            class="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-green hover:bg-brand-green-light transition-all text-left"
+          >
+            <span class="material-symbols-outlined text-brand-green text-2xl"
+              >store</span
+            >
+            <div>
+              <h4 class="font-bold text-primary text-xs">
+                MSME & Small Business
+              </h4>
+              <p class="text-[10px] text-on-surface-variant">
+                Subsidies, grants & setup assistance
+              </p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. ALL STATES & UNION TERRITORIES MODAL -->
+    <div
+      id="allStatesModal"
+      class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl border border-outline-variant flex flex-col max-h-[90vh]"
+      >
+        <div
+          class="bg-primary p-6 text-white flex justify-between items-center"
+        >
+          <div class="flex items-center gap-3">
+            <span
+              class="material-symbols-outlined text-secondary-container text-2xl"
+              >map</span
+            >
+            <div>
+              <h3 class="text-xl font-bold">Select State or Union Territory</h3>
+              <p class="text-xs opacity-80 mt-0.5">
+                Coverage active across all 28 States and 8 Union Territories
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeAllStatesModal()"
+            class="text-white/80 hover:text-white transition-colors"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto space-y-6">
+          <!-- Central Nationwide Option -->
+          <div class="pb-2 border-b">
+            <button
+              onclick="filterByStateAndClose('central')"
+              class="w-full bg-brand-green-light hover:bg-brand-green hover:text-white p-3 rounded-xl border border-brand-green/30 font-bold text-xs text-brand-green text-center transition-all flex items-center justify-center gap-2"
+            >
+              <span class="material-symbols-outlined text-sm">flag</span>
+              <span>View Central / Nationwide Schemes (All Citizens)</span>
+            </button>
+          </div>
+
+          <!-- 28 States Grid -->
+          <div>
+            <h4
+              class="text-xs font-extrabold uppercase text-primary tracking-wider mb-3"
+            >
+              28 States of India
+            </h4>
+            <div
+              class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs"
+            >
+              <button
+                onclick="filterByStateAndClose('Andhra Pradesh')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Andhra Pradesh
+              </button>
+              <button
+                onclick="filterByStateAndClose('Arunachal Pradesh')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Arunachal Pradesh
+              </button>
+              <button
+                onclick="filterByStateAndClose('Assam')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Assam
+              </button>
+              <button
+                onclick="filterByStateAndClose('Bihar')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Bihar
+              </button>
+              <button
+                onclick="filterByStateAndClose('Chhattisgarh')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Chhattisgarh
+              </button>
+              <button
+                onclick="filterByStateAndClose('Goa')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Goa
+              </button>
+              <button
+                onclick="filterByStateAndClose('Gujarat')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Gujarat
+              </button>
+              <button
+                onclick="filterByStateAndClose('Haryana')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Haryana
+              </button>
+              <button
+                onclick="filterByStateAndClose('Himachal Pradesh')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Himachal Pradesh
+              </button>
+              <button
+                onclick="filterByStateAndClose('Jharkhand')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left font-bold text-brand-green"
+              >
+                Jharkhand
+              </button>
+              <button
+                onclick="filterByStateAndClose('Karnataka')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Karnataka
+              </button>
+              <button
+                onclick="filterByStateAndClose('Kerala')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Kerala
+              </button>
+              <button
+                onclick="filterByStateAndClose('Madhya Pradesh')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Madhya Pradesh
+              </button>
+              <button
+                onclick="filterByStateAndClose('Maharashtra')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Maharashtra
+              </button>
+              <button
+                onclick="filterByStateAndClose('Manipur')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Manipur
+              </button>
+              <button
+                onclick="filterByStateAndClose('Meghalaya')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Meghalaya
+              </button>
+              <button
+                onclick="filterByStateAndClose('Mizoram')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Mizoram
+              </button>
+              <button
+                onclick="filterByStateAndClose('Nagaland')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Nagaland
+              </button>
+              <button
+                onclick="filterByStateAndClose('Odisha')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Odisha
+              </button>
+              <button
+                onclick="filterByStateAndClose('Punjab')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Punjab
+              </button>
+              <button
+                onclick="filterByStateAndClose('Rajasthan')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Rajasthan
+              </button>
+              <button
+                onclick="filterByStateAndClose('Sikkim')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Sikkim
+              </button>
+              <button
+                onclick="filterByStateAndClose('Tamil Nadu')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Tamil Nadu
+              </button>
+              <button
+                onclick="filterByStateAndClose('Telangana')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Telangana
+              </button>
+              <button
+                onclick="filterByStateAndClose('Tripura')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Tripura
+              </button>
+              <button
+                onclick="filterByStateAndClose('Uttar Pradesh')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Uttar Pradesh
+              </button>
+              <button
+                onclick="filterByStateAndClose('Uttarakhand')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Uttarakhand
+              </button>
+              <button
+                onclick="filterByStateAndClose('West Bengal')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                West Bengal
+              </button>
+            </div>
+          </div>
+
+          <!-- 8 Union Territories Grid -->
+          <div class="border-t pt-4">
+            <h4
+              class="text-xs font-extrabold uppercase text-primary tracking-wider mb-3"
+            >
+              8 Union Territories
+            </h4>
+            <div
+              class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs"
+            >
+              <button
+                onclick="filterByStateAndClose('Andaman and Nicobar Islands')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Andaman & Nicobar
+              </button>
+              <button
+                onclick="filterByStateAndClose('Chandigarh')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Chandigarh
+              </button>
+              <button
+                onclick="
+                  filterByStateAndClose(
+                    'Dadra and Nagar Haveli and Daman and Diu',
+                  )
+                "
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Dadra & Nagar Haveli
+              </button>
+              <button
+                onclick="filterByStateAndClose('Delhi')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Delhi (NCT)
+              </button>
+              <button
+                onclick="filterByStateAndClose('Jammu and Kashmir')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Jammu & Kashmir
+              </button>
+              <button
+                onclick="filterByStateAndClose('Ladakh')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Ladakh
+              </button>
+              <button
+                onclick="filterByStateAndClose('Lakshadweep')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Lakshadweep
+              </button>
+              <button
+                onclick="filterByStateAndClose('Puducherry')"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+              >
+                Puducherry
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. AUTHENTICATION MODAL -->
     <div
       id="authOverlayModal"
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
@@ -734,6 +1260,7 @@
       </div>
     </div>
 
+    <!-- 4. ABOUT US MODAL -->
     <div
       id="aboutUsModal"
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
@@ -775,6 +1302,7 @@
       </div>
     </div>
 
+    <!-- 5. CONTACT US MODAL -->
     <div
       id="contactUsModal"
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
@@ -878,6 +1406,7 @@
       </div>
     </div>
 
+    <!-- FLOATING SARTHI AI ASSISTANT WIDGET -->
     <div class="fixed bottom-6 right-6 z-[90] flex flex-col items-end">
       <div
         id="sarthiWorkspacePanel"
@@ -951,20 +1480,53 @@
       </button>
     </div>
 
+    <!-- Scripts -->
     <script src="js/lang.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/sarthi.js"></script>
     <script>
       let targetedCategoryFilter = "all";
+      let targetedStateFilter = "all";
 
       document.addEventListener("DOMContentLoaded", () => {
         executeCatalogSync();
       });
 
+      // Category Selector
       function setCategoryFilter(category) {
         targetedCategoryFilter = category;
         const heroSelect = document.getElementById("heroCategorySelect");
         if (heroSelect) heroSelect.value = category;
+        executeCatalogSync();
+      }
+
+      function openAllCategoriesModal() {
+        document
+          .getElementById("allCategoriesModal")
+          .classList.remove("hidden");
+      }
+
+      function closeAllCategoriesModal() {
+        document.getElementById("allCategoriesModal").classList.add("hidden");
+      }
+
+      function selectCategoryAndClose(category) {
+        closeAllCategoriesModal();
+        setCategoryFilter(category);
+      }
+
+      // States Selector
+      function openAllStatesModal() {
+        document.getElementById("allStatesModal").classList.remove("hidden");
+      }
+
+      function closeAllStatesModal() {
+        document.getElementById("allStatesModal").classList.add("hidden");
+      }
+
+      function filterByStateAndClose(stateName) {
+        closeAllStatesModal();
+        targetedStateFilter = stateName;
         executeCatalogSync();
       }
 
@@ -1017,7 +1579,11 @@
         const grid = document.getElementById("schemesGridDisplay");
         try {
           let url = `/api/schemes?category=${targetedCategoryFilter}`;
+          if (targetedStateFilter && targetedStateFilter !== "all") {
+            url += `&state=${encodeURIComponent(targetedStateFilter)}`;
+          }
           if (query) url += `&search=${encodeURIComponent(query)}`;
+
           const res = await fetch(url);
           const data = await res.json();
 
@@ -1025,11 +1591,14 @@
           const dynamicCounterLabel = isHindi
             ? "लक्षित योजनाएं पाई गईं"
             : "Target Schemes Identified";
+
+          let stateBadgeText =
+            targetedStateFilter !== "all" ? ` (${targetedStateFilter})` : "";
           document.getElementById("schemeCounter").innerText =
-            `${data.schemes.length} ${dynamicCounterLabel}`;
+            `${data.schemes.length} ${dynamicCounterLabel}${stateBadgeText}`;
 
           if (data.schemes.length === 0) {
-            grid.innerHTML = `<div class="col-span-2 text-center py-10 text-on-surface-variant font-medium text-sm">No schemes match those parameters.</div>`;
+            grid.innerHTML = `<div class="col-span-2 text-center py-10 text-on-surface-variant font-medium text-sm">No schemes match those specific filters.</div>`;
             return;
           }
 
@@ -1044,7 +1613,10 @@
               return `
                     <div class="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-brand-green-light text-brand-green w-fit rounded-md block mb-3 font-mono">${s.category}</span>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-brand-green-light text-brand-green rounded-md font-mono">${s.category}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 text-gray-700 rounded-md">${s.state || "Central"}</span>
+                            </div>
                             <h4 class="text-base font-bold text-primary mb-2 leading-snug">${localizedSchemeName}</h4>
                             <p class="text-xs text-on-surface-variant mb-4 line-clamp-3 leading-relaxed opacity-90">${s.description}</p>
                         </div>
@@ -1074,9 +1646,7 @@
         }
       }
 
-      // ==================================================================
-      // ABOUT US & CONTACT US MODAL CONTROLLERS
-      // ==================================================================
+      // Modal Control Logic
       async function openAboutModal() {
         const modal = document.getElementById("aboutUsModal");
         const container = document.getElementById("aboutModalContent");
