@@ -4,16 +4,13 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>YojanaBasket - All Government Schemes, One Platform</title>
-    <!-- Tailwind CSS Framework CDN with Forms Plugin -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-    <!-- Google Fonts: Public Sans & Material Symbols Outlined -->
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Design System Configuration -->
     <script>
       tailwind.config = {
         theme: {
@@ -46,38 +43,35 @@
     </style>
   </head>
   <body class="bg-background text-on-surface font-['Public_Sans',sans-serif]">
-    <!-- 1. Header Navigation Bar -->
     <header
       class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100"
     >
       <nav
-        class="flex justify-between items-center w-full px-6 py-3.5 max-w-7xl mx-auto"
+        class="flex justify-between items-center w-full px-4 sm:px-6 py-3 max-w-7xl mx-auto gap-2"
       >
-        <!-- TOP BRANDING LOGO -->
         <div
-          class="flex items-center gap-3 cursor-pointer"
+          class="flex items-center gap-2.5 cursor-pointer shrink-0 mr-2"
           onclick="window.location.reload()"
         >
           <img
             src="logo.jpeg"
             alt="YojanaBasket Emblem"
-            class="h-10 w-auto object-contain rounded-lg"
+            class="h-9 sm:h-10 w-auto object-contain rounded-lg shrink-0"
             onerror="this.src = 'icon.jpeg'"
           />
           <span
-            class="text-2xl font-extrabold text-primary tracking-tight"
+            class="text-xl sm:text-2xl font-extrabold text-primary tracking-tight whitespace-nowrap"
             data-i18n="brand"
             >Yojana<span class="text-brand-green">Basket</span></span
           >
         </div>
 
-        <!-- Center Nav Links with All Categories and All States Modals -->
         <div
-          class="hidden lg:flex items-center gap-6 text-sm font-semibold text-on-surface-variant"
+          class="hidden lg:flex items-center gap-3 xl:gap-5 text-xs xl:text-sm font-semibold text-on-surface-variant whitespace-nowrap"
         >
           <a
             href="#"
-            class="text-brand-green border-b-2 border-brand-green pb-1"
+            class="text-brand-green border-b-2 border-brand-green pb-0.5"
             data-i18n="navHome"
             >Home</a
           >
@@ -88,18 +82,16 @@
             >Schemes ▾</a
           >
 
-          <!-- CATEGORIES TRIGGER BUTTON -->
           <button
             onclick="openAllCategoriesModal()"
-            class="hover:text-primary transition-colors flex items-center gap-1"
+            class="hover:text-primary transition-colors flex items-center gap-0.5"
           >
             <span data-i18n="navCategories">Categories</span> ▾
           </button>
 
-          <!-- STATES TRIGGER BUTTON -->
           <button
             onclick="openAllStatesModal()"
-            class="hover:text-primary transition-colors flex items-center gap-1"
+            class="hover:text-primary transition-colors flex items-center gap-0.5"
           >
             <span data-i18n="navStates">States</span> ▾
           </button>
@@ -108,7 +100,8 @@
             onclick="toggleSarthiPanel(true)"
             class="hover:text-primary transition-colors flex items-center gap-1"
           >
-            <span class="material-symbols-outlined text-base text-brand-green"
+            <span
+              class="material-symbols-outlined text-base text-brand-green shrink-0"
               >smart_toy</span
             >
             <span data-i18n="navAi">AI Assistant</span>
@@ -129,32 +122,32 @@
           </button>
         </div>
 
-        <!-- Right Side: Language Toggle & Auth Actions -->
-        <div class="flex items-center gap-4">
+        <div
+          class="flex items-center gap-2.5 sm:gap-3 shrink-0 whitespace-nowrap"
+        >
           <div
-            class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm"
+            class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm shrink-0"
           >
             <button
               id="btnLangEn"
               onclick="togglePlatformLanguage('en')"
-              class="text-xs font-bold px-3 py-1.5 bg-primary text-white transition-all"
+              class="text-xs font-bold px-2.5 sm:px-3 py-1.5 bg-primary text-white transition-all"
             >
               English ▾
             </button>
             <button
               id="btnLangHi"
               onclick="togglePlatformLanguage('hi')"
-              class="text-xs font-bold px-3 py-1.5 text-primary transition-all"
+              class="text-xs font-bold px-2.5 sm:px-3 py-1.5 text-primary transition-all"
             >
               हिंदी
             </button>
           </div>
 
-          <!-- Dynamic Session Slot -->
-          <div id="navAuthLinks" class="flex items-center">
+          <div id="navAuthLinks" class="flex items-center shrink-0">
             <button
               onclick="toggleAuthModal(true, 'LOGIN')"
-              class="bg-brand-green text-white font-bold text-xs px-5 py-2.5 rounded-lg hover:bg-brand-green-dark transition-all flex items-center gap-1.5 shadow-sm min-h-[40px]"
+              class="bg-brand-green text-white font-bold text-xs px-4 sm:px-5 py-2 rounded-lg hover:bg-brand-green-dark transition-all flex items-center gap-1.5 shadow-sm min-h-[38px] whitespace-nowrap"
             >
               <span class="material-symbols-outlined text-sm">person</span>
               <span data-i18n="signIn">Login / Sign Up</span>
@@ -165,16 +158,13 @@
     </header>
 
     <main>
-      <!-- 2. Hero Section -->
       <section
         class="hero-bg py-12 lg:py-16 border-b border-gray-100 relative overflow-hidden"
       >
         <div
           class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
         >
-          <!-- Left Hero Content -->
           <div class="lg:col-span-7 space-y-6">
-            <!-- HERO BRANDING LOGO -->
             <div class="flex items-center gap-3">
               <img
                 src="logo.jpeg"
@@ -202,7 +192,6 @@
               schemes easily at one place.
             </p>
 
-            <!-- 4 Trust Badges Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
               <div
                 class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-100 shadow-sm"
@@ -246,12 +235,10 @@
               </div>
             </div>
 
-            <!-- Universal Integrated Search Bar -->
             <div class="pt-4">
               <div
                 class="flex flex-col sm:flex-row items-center bg-white rounded-2xl p-2 shadow-lg border border-gray-200 gap-2"
               >
-                <!-- Dropdown Filter (All Categories Included) -->
                 <div
                   class="w-full sm:w-auto border-b sm:border-b-0 sm:border-r border-gray-200 px-3 py-2"
                 >
@@ -273,7 +260,6 @@
                     <option value="msme">MSME & Business</option>
                   </select>
                 </div>
-                <!-- Text Input Field -->
                 <div class="flex items-center flex-grow w-full px-2">
                   <input
                     id="schemeSearchInput"
@@ -283,7 +269,6 @@
                     class="w-full border-none bg-transparent focus:ring-0 text-sm text-on-surface px-2 py-2"
                   />
 
-                  <!-- Voice Input Microphone Button -->
                   <button
                     onclick="
                       startVoiceRecognition(
@@ -301,7 +286,6 @@
                     >
                   </button>
                 </div>
-                <!-- Search Execution Trigger Button -->
                 <button
                   id="searchExecutionBtn"
                   onclick="executeCatalogSync()"
@@ -314,13 +298,12 @@
             </div>
           </div>
 
-          <!-- Right Hero Image Graphic with Callout Badge -->
           <div class="lg:col-span-5 relative flex justify-center">
             <div
               class="relative w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-white"
             >
               <img
-                src="image_f0e622.jpg"
+                src="bg pic.png"
                 alt="Indian Rural Family"
                 class="w-full h-[380px] object-cover"
                 onerror="
@@ -329,7 +312,6 @@
                 "
               />
 
-              <!-- Floating Dark Blue Callout Badge -->
               <div
                 class="absolute bottom-4 right-4 left-4 bg-primary/95 text-white p-4 rounded-2xl backdrop-blur-sm border border-white/10 shadow-xl flex items-center gap-3"
               >
@@ -354,7 +336,6 @@
         </div>
       </section>
 
-      <!-- 3. Scheme Category Pill Buttons Strip -->
       <section
         id="category-section"
         class="py-8 bg-white border-b border-gray-100"
@@ -366,14 +347,14 @@
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
               <span class="material-symbols-outlined text-lg">school</span>
-              Education
+              <span data-i18n="catEducation">Education</span>
             </button>
             <button
               onclick="setCategoryFilter('farming')"
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
               <span class="material-symbols-outlined text-lg">eco</span>
-              Agriculture
+              <span data-i18n="catAgriculture">Agriculture</span>
             </button>
             <button
               onclick="setCategoryFilter('health')"
@@ -382,48 +363,47 @@
               <span class="material-symbols-outlined text-lg"
                 >medical_services</span
               >
-              Health
+              <span data-i18n="catHealth">Health</span>
             </button>
             <button
               onclick="setCategoryFilter('loans')"
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
               <span class="material-symbols-outlined text-lg">work</span>
-              Employment
+              <span data-i18n="catEmployment">Employment</span>
             </button>
             <button
               onclick="setCategoryFilter('housing')"
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
               <span class="material-symbols-outlined text-lg">home</span>
-              Housing
+              <span data-i18n="catHousing">Housing</span>
             </button>
             <button
               onclick="setCategoryFilter('women')"
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
               <span class="material-symbols-outlined text-lg">female</span>
-              Women
+              <span data-i18n="catWomen">Women</span>
             </button>
             <button
               onclick="setCategoryFilter('msme')"
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-container-low hover:bg-brand-green-light hover:text-brand-green text-primary font-bold text-xs border border-gray-200/60 transition-all"
             >
               <span class="material-symbols-outlined text-lg">equalizer</span>
-              MSME
+              <span data-i18n="catMsme">MSME</span>
             </button>
             <button
               onclick="openAllCategoriesModal()"
               class="flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-white hover:bg-primary-container font-bold text-xs border border-gray-200/60 transition-all shadow-sm"
             >
               <span class="material-symbols-outlined text-lg">grid_view</span>
-              All Categories
+              <span data-i18n="catAll">All Categories</span>
             </button>
           </div>
         </div>
       </section>
 
-      <!-- 4. Main Body: Popular Schemes Grid + Quick-Action Sidebars -->
       <section id="popular-schemes" class="py-12 max-w-7xl mx-auto px-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div class="lg:col-span-8 space-y-6">
@@ -473,7 +453,7 @@
                 calculate your exact eligible schemes.
               </p>
               <button
-                onclick="handleApplicationRouting()"
+                onclick="handleFinderRouting()"
                 class="w-full bg-brand-green text-white font-bold text-xs py-3.5 px-4 rounded-xl hover:bg-brand-green-dark transition-all flex items-center justify-center gap-2 shadow-sm min-h-[44px]"
               >
                 <span>Start Scheme Finder</span>
@@ -483,7 +463,6 @@
               </button>
             </div>
 
-            <!-- ASK AI ASSISTANT CARD -->
             <div
               class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4 hover:border-brand-green/40 transition-all cursor-pointer"
               onclick="toggleSarthiPanel(true)"
@@ -517,7 +496,6 @@
         </div>
       </section>
 
-      <!-- 5. Impact Metrics Footer Strip -->
       <section
         class="bg-primary text-white py-8 border-t border-primary-container"
       >
@@ -568,11 +546,111 @@
       </section>
     </main>
 
-    <!-- ================================================================== -->
-    <!-- MODALS SECTION -->
-    <!-- ================================================================== -->
+    <div
+      id="schemeDetailsModal"
+      class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl border border-outline-variant flex flex-col max-h-[90vh]"
+      >
+        <div
+          class="bg-primary p-6 text-white flex justify-between items-center"
+        >
+          <div>
+            <span
+              id="modalSchemeCategory"
+              class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-secondary-container text-primary rounded-md font-mono mb-2 inline-block"
+              >Category</span
+            >
+            <h3 id="modalSchemeTitle" class="text-xl font-bold leading-snug">
+              Scheme Name
+            </h3>
+            <!-- Overview Title -->
+            <h4
+              class="text-xs font-bold uppercase text-primary tracking-wider mb-1.5 flex items-center gap-1.5"
+            >
+              <span class="material-symbols-outlined text-brand-green text-base"
+                >description</span
+              >
+              <span data-i18n="modalOverview">Scheme Overview</span>
+            </h4>
 
-    <!-- 1. ALL CATEGORIES MODAL -->
+            <!-- Benefits Title -->
+            <h4
+              class="text-xs font-bold uppercase text-brand-green tracking-wider mb-1 flex items-center gap-1.5"
+            >
+              <span class="material-symbols-outlined text-base">stars</span>
+              <span data-i18n="modalBenefits">Key Citizen Benefits</span>
+            </h4>
+            <p id="modalSchemeMinistry" class="text-xs text-white/80 mt-0.5">
+              Ministry / Department
+            </p>
+          </div>
+          <button
+            onclick="closeSchemeDetailsModal()"
+            class="text-white/80 hover:text-white transition-colors shrink-0 ml-4"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto space-y-5 text-sm text-on-surface">
+          <div>
+            <h4
+              class="text-xs font-bold uppercase text-primary tracking-wider mb-1.5 flex items-center gap-1.5"
+            >
+              <span class="material-symbols-outlined text-brand-green text-base"
+                >description</span
+              >
+              <span>Scheme Overview</span>
+            </h4>
+            <p
+              id="modalSchemeDescription"
+              class="text-xs text-on-surface-variant leading-relaxed"
+            >
+              Detailed description will populate here...
+            </p>
+          </div>
+
+          <div
+            class="bg-brand-green-light/60 p-4 rounded-xl border border-brand-green/20"
+          >
+            <h4
+              class="text-xs font-bold uppercase text-brand-green tracking-wider mb-1 flex items-center gap-1.5"
+            >
+              <span class="material-symbols-outlined text-base">stars</span>
+              <span>Key Citizen Benefits</span>
+            </h4>
+            <p
+              id="modalSchemeBenefits"
+              class="text-xs text-primary font-semibold leading-relaxed"
+            >
+              Benefits summary...
+            </p>
+          </div>
+
+          <div id="modalSchemeStepsSection" class="border-t pt-4"></div>
+
+          <div
+            class="flex items-center justify-between text-xs bg-surface-container-low p-3 rounded-lg border"
+          >
+            <span class="font-bold text-on-surface-variant"
+              >Applicable Region:</span
+            >
+            <span
+              id="modalSchemeState"
+              class="font-extrabold text-primary bg-white px-3 py-1 rounded-md border shadow-sm"
+              >Central / Nationwide</span
+            >
+          </div>
+
+          <div class="pt-2">
+            <div id="modalCTAContainer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div
       id="allCategoriesModal"
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
@@ -750,7 +828,6 @@
       </div>
     </div>
 
-    <!-- 2. ALL STATES & UNION TERRITORIES MODAL -->
     <div
       id="allStatesModal"
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
@@ -782,7 +859,6 @@
         </div>
 
         <div class="p-6 overflow-y-auto space-y-6">
-          <!-- Central Nationwide Option -->
           <div class="pb-2 border-b">
             <button
               onclick="filterByStateAndClose('central')"
@@ -793,7 +869,6 @@
             </button>
           </div>
 
-          <!-- 28 States Grid -->
           <div>
             <h4
               class="text-xs font-extrabold uppercase text-primary tracking-wider mb-3"
@@ -943,7 +1018,7 @@
               </button>
               <button
                 onclick="filterByStateAndClose('Telangana')"
-                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left"
+                class="p-2.5 rounded-lg border border-gray-200 hover:border-brand-green hover:bg-brand-green-light font-medium text-left font-medium text-left"
               >
                 Telangana
               </button>
@@ -974,7 +1049,6 @@
             </div>
           </div>
 
-          <!-- 8 Union Territories Grid -->
           <div class="border-t pt-4">
             <h4
               class="text-xs font-extrabold uppercase text-primary tracking-wider mb-3"
@@ -1042,7 +1116,6 @@
       </div>
     </div>
 
-    <!-- 3. AUTHENTICATION MODAL -->
     <div
       id="authOverlayModal"
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
@@ -1138,14 +1211,13 @@
           <form
             id="portalRegisterForm"
             class="space-y-3 hidden"
-            onsubmit="executeUserRegistration(event)"
+            onsubmit="handleRegistrationFormSubmit(event)"
           >
             <div id="registrationInputsWrapper" class="space-y-3">
               <div>
                 <label
                   class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                  data-i18n="fullName"
-                  >Full Legal Name</label
+                  >Full Legal Name *</label
                 >
                 <input
                   type="text"
@@ -1158,8 +1230,7 @@
               <div>
                 <label
                   class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                  data-i18n="username"
-                  >Target Username</label
+                  >Target Username *</label
                 >
                 <input
                   type="text"
@@ -1172,50 +1243,48 @@
               <div>
                 <label
                   class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                  data-i18n="email"
-                  >Email Identifier (Optional)</label
+                  >Email Address *</label
                 >
                 <input
                   type="email"
                   id="regEmailField"
+                  required
                   class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-                  placeholder="name@domain.gov.in (Optional)"
+                  placeholder="name@domain.gov.in"
                 />
               </div>
               <div>
                 <label
                   class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                  data-i18n="mobile"
-                  >Mobile Contact Connection</label
+                  >Mobile Contact Number *</label
                 >
                 <input
                   type="tel"
                   id="regMobileField"
                   required
                   class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-                  placeholder="10-digit smartphone loop"
+                  placeholder="10-digit smartphone number"
                 />
               </div>
               <div>
                 <label
                   class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                  data-i18n="password"
-                  >Password</label
+                  >Password *</label
                 >
                 <input
                   type="password"
                   id="regPasswordField"
                   required
                   class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-                  placeholder="Alphanumeric security complexity"
+                  placeholder="Alphanumeric password"
                 />
               </div>
               <button
                 type="submit"
+                id="btnGenerateOtp"
                 class="w-full bg-brand-green text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-brand-green-dark transition-all shadow"
-                data-i18n="genOtpBtn"
               >
-                Generate Security OTP
+                Generate Email OTP
               </button>
             </div>
 
@@ -1225,42 +1294,66 @@
               >
                 <span
                   class="material-symbols-outlined text-primary text-2xl mb-1 block"
-                  >ad_units</span
+                  >mark_email_unread</span
                 >
-                <p class="font-bold text-primary" data-i18n="mobile">
-                  Verify Mobile Number Connection
+                <p class="font-bold text-primary">
+                  Verify Email Address Connection
                 </p>
                 <p class="text-on-surface-variant mt-1 text-[11px]">
-                  A secure verification code token has been generated.
+                  A 6-digit verification code has been sent to your email inbox.
                 </p>
               </div>
+
               <div>
                 <label
                   class="block text-xs font-bold uppercase text-secondary mb-1 text-center"
-                  >Enter Mobile SMS OTP</label
+                  >Enter Email OTP</label
                 >
                 <input
                   type="text"
                   id="regOtpTokenField"
                   maxlength="6"
+                  autocomplete="off"
                   class="w-full text-center tracking-[0.5em] font-bold text-lg rounded-lg border-primary min-h-[46px] focus:ring-1 focus:ring-primary"
                   placeholder="••••••"
                 />
               </div>
+
               <button
                 type="button"
+                id="btnConfirmOtp"
                 onclick="commitSecureOtpVerification()"
                 class="w-full bg-primary text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-primary-container transition-all shadow"
               >
-                Confirm Mobile Identity
+                Confirm Email Identity
               </button>
+
+              <div
+                class="flex items-center justify-between pt-1 text-xs font-bold"
+              >
+                <button
+                  type="button"
+                  onclick="resetRegistrationForm()"
+                  class="text-brand-green hover:underline"
+                >
+                  ← Back to Details
+                </button>
+
+                <button
+                  type="button"
+                  id="btnResendOtp"
+                  onclick="resendOtpCode()"
+                  class="text-primary hover:underline transition-all"
+                >
+                  Resend OTP
+                </button>
+              </div>
             </div>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- 4. ABOUT US MODAL -->
     <div
       id="aboutUsModal"
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
@@ -1302,7 +1395,6 @@
       </div>
     </div>
 
-    <!-- 5. CONTACT US MODAL -->
     <div
       id="contactUsModal"
       class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
@@ -1406,7 +1498,6 @@
       </div>
     </div>
 
-    <!-- FLOATING SARTHI AI ASSISTANT WIDGET -->
     <div class="fixed bottom-6 right-6 z-[90] flex flex-col items-end">
       <div
         id="sarthiWorkspacePanel"
@@ -1480,19 +1571,20 @@
       </button>
     </div>
 
-    <!-- Scripts -->
     <script src="js/lang.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/sarthi.js"></script>
     <script>
       let targetedCategoryFilter = "all";
       let targetedStateFilter = "all";
+      let globalSchemesCache = [];
+      let currentSelectedScheme = null;
 
       document.addEventListener("DOMContentLoaded", () => {
         executeCatalogSync();
       });
 
-      // Category Selector
+      // Category Selector Functions
       function setCategoryFilter(category) {
         targetedCategoryFilter = category;
         const heroSelect = document.getElementById("heroCategorySelect");
@@ -1515,7 +1607,7 @@
         setCategoryFilter(category);
       }
 
-      // States Selector
+      // States Selector Functions
       function openAllStatesModal() {
         document.getElementById("allStatesModal").classList.remove("hidden");
       }
@@ -1530,6 +1622,7 @@
         executeCatalogSync();
       }
 
+      // Voice Recognition Engine
       function startVoiceRecognition(inputId, triggerBtnId) {
         const SpeechRecognition =
           window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1570,6 +1663,7 @@
         recognition.start();
       }
 
+      // Catalog Synchronizer Engine
       async function executeCatalogSync() {
         const heroSelectVal =
           document.getElementById("heroCategorySelect")?.value;
@@ -1586,6 +1680,7 @@
 
           const res = await fetch(url);
           const data = await res.json();
+          globalSchemesCache = data.schemes || [];
 
           const isHindi = localStorage.getItem("yojana_lang") === "hi";
           const dynamicCounterLabel = isHindi
@@ -1595,20 +1690,20 @@
           let stateBadgeText =
             targetedStateFilter !== "all" ? ` (${targetedStateFilter})` : "";
           document.getElementById("schemeCounter").innerText =
-            `${data.schemes.length} ${dynamicCounterLabel}${stateBadgeText}`;
+            `${globalSchemesCache.length} ${dynamicCounterLabel}${stateBadgeText}`;
 
-          if (data.schemes.length === 0) {
+          if (globalSchemesCache.length === 0) {
             grid.innerHTML = `<div class="col-span-2 text-center py-10 text-on-surface-variant font-medium text-sm">No schemes match those specific filters.</div>`;
             return;
           }
 
-          grid.innerHTML = data.schemes
+          grid.innerHTML = globalSchemesCache
             .map((s) => {
               const localizedSchemeName =
                 isHindi && s.hindiName ? s.hindiName : s.name;
               const localizedBtnText = isHindi
-                ? "पात्रता की जांच करें"
-                : "Evaluate Prerequisites";
+                ? "विवरण देखें"
+                : "View Scheme Details";
 
               return `
                     <div class="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
@@ -1620,7 +1715,7 @@
                             <h4 class="text-base font-bold text-primary mb-2 leading-snug">${localizedSchemeName}</h4>
                             <p class="text-xs text-on-surface-variant mb-4 line-clamp-3 leading-relaxed opacity-90">${s.description}</p>
                         </div>
-                        <button onclick="handleApplicationRouting('${s.id}')" class="w-full min-h-[42px] border-2 border-primary text-primary font-bold text-xs rounded-xl hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-1">
+                        <button onclick="openSchemeDetailsModal('${s.id}')" class="w-full min-h-[42px] border-2 border-primary text-primary font-bold text-xs rounded-xl hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-1">
                             <span>${localizedBtnText}</span>
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </button>
@@ -1633,20 +1728,273 @@
         }
       }
 
-      function handleApplicationRouting(id) {
-        if (!localStorage.getItem("yojana_session_token")) {
-          alert(
-            localStorage.getItem("yojana_lang") === "hi"
-              ? "पात्रता की जांच के लिए साइन इन करें।"
-              : "Authentication required to evaluate eligibility.",
-          );
+      // SCHEME DETAILS, STEPS UNLOCK & AUTH CONTROLLERS
+      function openSchemeDetailsModal(schemeId) {
+        const scheme = globalSchemesCache.find((s) => s.id === schemeId);
+        if (!scheme) return;
+
+        currentSelectedScheme = scheme;
+        const isHindi = localStorage.getItem("yojana_lang") === "hi";
+
+        // Populate localized scheme content
+        document.getElementById("modalSchemeCategory").innerText =
+          scheme.category || "General";
+        document.getElementById("modalSchemeTitle").innerText =
+          isHindi && scheme.hindiName ? scheme.hindiName : scheme.name;
+        document.getElementById("modalSchemeMinistry").innerText =
+          isHindi && scheme.hindiMinistry
+            ? scheme.hindiMinistry
+            : scheme.ministry || "Ministry of Social Welfare & Empowerment";
+        document.getElementById("modalSchemeDescription").innerText =
+          isHindi && scheme.hindiDescription
+            ? scheme.hindiDescription
+            : scheme.description;
+        document.getElementById("modalSchemeBenefits").innerText =
+          isHindi && scheme.hindiBenefits
+            ? scheme.hindiBenefits
+            : scheme.benefits;
+        document.getElementById("modalSchemeState").innerText = scheme.state
+          ? scheme.state
+          : isHindi
+            ? "केन्द्रीय / राष्ट्रव्यापी"
+            : "Central / Nationwide";
+
+        updateSchemeModalCTA();
+        applyPlatformTranslations(); // Ensures modal headers update to current language
+        document
+          .getElementById("schemeDetailsModal")
+          .classList.remove("hidden");
+      }
+
+      function updateSchemeModalCTA() {
+        const stepsSection = document.getElementById("modalSchemeStepsSection");
+        const ctaContainer = document.getElementById("modalCTAContainer");
+        if (!stepsSection || !ctaContainer || !currentSelectedScheme) return;
+
+        const isLoggedIn = !!localStorage.getItem("yojana_session_token");
+        const isHindi = localStorage.getItem("yojana_lang") === "hi";
+        const scheme = currentSelectedScheme;
+
+        // Localized Step 1 Documents text
+        const defaultDocText = isHindi
+          ? "आधार कार्ड, भूमि स्वामित्व दस्तावेज, बैंक खाता पासबुक"
+          : "Aadhaar Card, Land Ownership Papers, Bank Account Passbook";
+
+        const docText = scheme.requiredDocuments
+          ? Array.isArray(scheme.requiredDocuments)
+            ? scheme.requiredDocuments.join(", ")
+            : scheme.requiredDocuments
+          : defaultDocText;
+
+        const applicationSteps = [
+          {
+            step: 1,
+            title: isHindi
+              ? "दस्तावेज़ तैयार करें"
+              : "Gather Required Documents",
+            desc: docText,
+          },
+          {
+            step: 2,
+            title: isHindi
+              ? "आधिकारिक पोर्टल पर पंजीकरण करें"
+              : "Register on Official Portal",
+            desc: isHindi
+              ? "नीचे दिए गए बटन पर क्लिक करके आधिकारिक सरकारी पोर्टल पर जाएं।"
+              : "Navigate to the official portal using the link below and create your profile.",
+          },
+          {
+            step: 3,
+            title: isHindi
+              ? "आवेदन पत्र भरें और सबमिट करें"
+              : "Fill & Submit Application",
+            desc: isHindi
+              ? "विवरण दर्ज करें, आवश्यक दस्तावेज अपलोड करें और पावती रसीद सहेजें।"
+              : "Fill in your demographic details, upload scanned documents, and save your application reference number.",
+          },
+        ];
+
+        if (isLoggedIn) {
+          stepsSection.innerHTML = `
+            <div class="bg-blue-50/70 p-4 rounded-xl border border-blue-200/80 space-y-3">
+                <h4 class="text-xs font-bold uppercase text-primary tracking-wider flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-brand-green text-base">checklist</span>
+                    <span>${isHindi ? "आवेदन करने के चरण (Step-by-Step Guide)" : "How to Apply (Step-by-Step Guide)"}</span>
+                </h4>
+                <div class="space-y-2.5 text-xs text-on-surface">
+                    ${applicationSteps
+                      .map(
+                        (s) => `
+                        <div class="flex items-start gap-2.5 bg-white p-2.5 rounded-lg border border-gray-200/60 shadow-2xs">
+                            <span class="w-5 h-5 rounded-full bg-brand-green text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">${s.step}</span>
+                            <div>
+                                <p class="font-bold text-primary">${s.title}</p>
+                                <p class="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">${s.desc}</p>
+                            </div>
+                        </div>
+                    `,
+                      )
+                      .join("")}
+                </div>
+            </div>
+        `;
+
+          const targetUrl = scheme.officialLink || "https://www.india.gov.in/";
+          const btnText = isHindi
+            ? "आधिकारिक पोर्टल पर आवेदन करें 🚀"
+            : "Proceed & Apply on Official Portal 🚀";
+
+          ctaContainer.innerHTML = `
+            <a href="${targetUrl}" target="_blank" rel="noopener noreferrer" class="w-full bg-brand-green text-white font-bold text-xs py-3.5 px-4 rounded-xl hover:bg-brand-green-dark transition-all flex items-center justify-center gap-2 shadow-sm min-h-[46px]">
+                <span>${btnText}</span>
+                <span class="material-symbols-outlined text-sm">open_in_new</span>
+            </a>
+        `;
+        } else {
+          stepsSection.innerHTML = `
+            <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300 text-center space-y-2">
+                <span class="material-symbols-outlined text-secondary text-2xl">lock</span>
+                <h4 class="font-bold text-primary text-xs">${isHindi ? "आवेदन करने के चरण बंद हैं" : "Application Steps Locked"}</h4>
+                <p class="text-[11px] text-on-surface-variant max-w-sm mx-auto">
+                    ${isHindi ? "चरणबद्ध आवेदन प्रक्रिया और आधिकारिक लिंक देखने के लिए कृपया साइन इन करें।" : "Sign in to unlock step-by-step guidance, required document checklists, and direct official portal links."}
+                </p>
+            </div>
+        `;
+
+          const btnText = isHindi
+            ? "आवेदन के तरीके देखने के लिए साइन इन करें 🔒"
+            : "Sign in to See Steps & How to Apply 🔒";
+          ctaContainer.innerHTML = `
+            <button onclick="triggerSignInFromSchemeModal()" class="w-full bg-primary text-white font-bold text-xs py-3.5 px-4 rounded-xl hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-md min-h-[46px]">
+                <span class="material-symbols-outlined text-sm">lock_open</span>
+                <span>${btnText}</span>
+            </button>
+        `;
+        }
+      }
+
+      function closeSchemeDetailsModal() {
+        document.getElementById("schemeDetailsModal").classList.add("hidden");
+        currentSelectedScheme = null;
+      }
+
+      function updateSchemeModalCTA() {
+        const stepsSection = document.getElementById("modalSchemeStepsSection");
+        const ctaContainer = document.getElementById("modalCTAContainer");
+        if (!stepsSection || !ctaContainer || !currentSelectedScheme) return;
+
+        const isLoggedIn = !!localStorage.getItem("yojana_session_token");
+        const isHindi = localStorage.getItem("yojana_lang") === "hi";
+        const scheme = currentSelectedScheme;
+
+        // Application Steps Array
+        const applicationSteps = scheme.applicationSteps || [
+          {
+            step: 1,
+            title: isHindi
+              ? "दस्तावेज़ तैयार करें"
+              : "Gather Required Documents",
+            desc: scheme.requiredDocuments
+              ? Array.isArray(scheme.requiredDocuments)
+                ? scheme.requiredDocuments.join(", ")
+                : scheme.requiredDocuments
+              : "Aadhaar Card, Income Certificate, Bank Passbook",
+          },
+          {
+            step: 2,
+            title: isHindi
+              ? "आधिकारिक पोर्टल पर पंजीकरण करें"
+              : "Register on Official Portal",
+            desc: isHindi
+              ? "नीचे दिए गए बटन पर क्लिक करके आधिकारिक सरकारी पोर्टल पर जाएं।"
+              : "Navigate to the official portal using the link below and create your profile.",
+          },
+          {
+            step: 3,
+            title: isHindi
+              ? "आवेदन पत्र भरें और सबमिट करें"
+              : "Fill & Submit Application",
+            desc: isHindi
+              ? "विवरण दर्ज करें, आवश्यक दस्तावेज अपलोड करें और पावती रसीद सहेजें।"
+              : "Fill in your demographic details, upload scanned documents, and save your application reference number.",
+          },
+        ];
+
+        if (isLoggedIn) {
+          // SIGNED-IN USER FLOW: UNLOCKED STEPS
+          stepsSection.innerHTML = `
+                <div class="bg-blue-50/70 p-4 rounded-xl border border-blue-200/80 space-y-3">
+                    <h4 class="text-xs font-bold uppercase text-primary tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-brand-green text-base">checklist</span>
+                        <span>${isHindi ? "आवेदन करने के चरण (Step-by-Step Guide)" : "How to Apply (Step-by-Step Guide)"}</span>
+                    </h4>
+                    <div class="space-y-2.5 text-xs text-on-surface">
+                        ${applicationSteps
+                          .map(
+                            (s) => `
+                            <div class="flex items-start gap-2.5 bg-white p-2.5 rounded-lg border border-gray-200/60 shadow-2xs">
+                                <span class="w-5 h-5 rounded-full bg-brand-green text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">${s.step || "•"}</span>
+                                <div>
+                                    <p class="font-bold text-primary">${s.title}</p>
+                                    <p class="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed">${s.desc}</p>
+                                </div>
+                            </div>
+                        `,
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `;
+
+          const targetUrl = scheme.officialLink || "https://www.india.gov.in/";
+          const btnText = isHindi
+            ? "आधिकारिक पोर्टल पर आवेदन करें 🚀"
+            : "Proceed & Apply on Official Portal 🚀";
+
+          ctaContainer.innerHTML = `
+                <a href="${targetUrl}" target="_blank" rel="noopener noreferrer" class="w-full bg-brand-green text-white font-bold text-xs py-3.5 px-4 rounded-xl hover:bg-brand-green-dark transition-all flex items-center justify-center gap-2 shadow-sm min-h-[46px]">
+                    <span>${btnText}</span>
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                </a>
+            `;
+        } else {
+          // GUEST FLOW: LOCKED STEPS
+          stepsSection.innerHTML = `
+                <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300 text-center space-y-2">
+                    <span class="material-symbols-outlined text-secondary text-2xl">lock</span>
+                    <h4 class="font-bold text-primary text-xs">${isHindi ? "आवेदन करने के चरण बंद हैं" : "Application Steps Locked"}</h4>
+                    <p class="text-[11px] text-on-surface-variant max-w-sm mx-auto">
+                        ${isHindi ? "चरणबद्ध आवेदन प्रक्रिया और आधिकारिक लिंक देखने के लिए कृपया साइन इन करें।" : "Sign in to unlock step-by-step guidance, required document checklists, and direct official portal links."}
+                    </p>
+                </div>
+            `;
+
+          const btnText = isHindi
+            ? "आवेदन के तरीके देखने के लिए साइन इन करें 🔒"
+            : "Sign in to See Steps & How to Apply 🔒";
+          ctaContainer.innerHTML = `
+                <button onclick="triggerSignInFromSchemeModal()" class="w-full bg-primary text-white font-bold text-xs py-3.5 px-4 rounded-xl hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-md min-h-[46px]">
+                    <span class="material-symbols-outlined text-sm">lock_open</span>
+                    <span>${btnText}</span>
+                </button>
+            `;
+        }
+      }
+
+      function triggerSignInFromSchemeModal() {
+        toggleAuthModal(true, "LOGIN");
+      }
+
+      function handleFinderRouting() {
+        const isLoggedIn = !!localStorage.getItem("yojana_session_token");
+        if (!isLoggedIn) {
           toggleAuthModal(true, "LOGIN");
         } else {
           window.location.href = "/dashboard.html";
         }
       }
 
-      // Modal Control Logic
+      // Modal Controllers (About Us & Contact Us)
       async function openAboutModal() {
         const modal = document.getElementById("aboutUsModal");
         const container = document.getElementById("aboutModalContent");

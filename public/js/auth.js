@@ -1,145 +1,136 @@
 /**
- * YojanaBasket - Frontend Authentication & Session Management Engine
- * Handles login, registration modal triggers, local OTP parsing, and navbar states.
+ * Authentication Engine & Session State Controller - YojanaBasket
  */
 
-// Global state tracking coordinates for registration flow validation checks
-let activeVerificationSessionTokenId = null;
-let currentActiveAuthTab = "LOGIN";
+document.addEventListener("DOMContentLoaded", () => {
+  renderNavbarAuthenticationState();
+});
 
-// ==================================================================
-// 1. NAVBAR & SESSION MANAGEMENT UTILITIES
-// ==================================================================
-
-/**
- * Dynamically renders the login/logout buttons in the header navigation bar
- * based on whether a valid session token exists in local storage.
- */
 function renderNavbarAuthenticationState() {
-  const navAuthLinks = document.getElementById("navAuthLinks");
-  if (!navAuthLinks) return;
+  const navSlot = document.getElementById("navAuthLinks");
+  if (!navSlot) return;
 
-  const activeSession = localStorage.getItem("yojana_session_token");
-
-  // Read the current selected language to maintain bilingual continuity on re-render
+  const token = localStorage.getItem("yojana_session_token");
   const isHindi = localStorage.getItem("yojana_lang") === "hi";
 
-  if (activeSession) {
+  if (token) {
+    let userDetails = { name: "Citizen" };
+    try {
+      userDetails = JSON.parse(token);
+    } catch (e) {}
+
+    const userName = userDetails.name || userDetails.username || "Citizen";
+    const dashboardText = isHindi ? "डैशबोर्ड" : "Dashboard";
     const signOutText = isHindi ? "साइन आउट" : "Sign Out";
-    // If logged in, inject a clean operational Sign Out action button node
-    navAuthLinks.innerHTML = `
-            <button onclick="executeUserSignOut()" class="bg-red-50 text-red-700 font-bold px-4 py-2 text-sm rounded-lg hover:bg-red-100 transition-all min-h-[40px]">
-                ${signOutText}
-            </button>
+
+    navSlot.innerHTML = `
+            <div class="flex items-center gap-2.5">
+                <a href="/dashboard.html" class="bg-brand-green-light text-brand-green font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-brand-green hover:text-white transition-all flex items-center gap-1.5 shadow-sm min-h-[38px] whitespace-nowrap">
+                    <span class="material-symbols-outlined text-sm">dashboard</span>
+                    <span>${dashboardText} (${userName})</span>
+                </a>
+                <button onclick="executeUserSignOut()" class="bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600 font-bold text-xs px-3 py-2 rounded-lg transition-all border border-gray-200 min-h-[38px] whitespace-nowrap">
+                    ${signOutText}
+                </button>
+            </div>
         `;
   } else {
-    const signInText = isHindi ? "लॉग इन करें" : "Sign In";
-    const registerText = isHindi ? "नया पंजीकरण" : "New Registration";
-    // If logged out, render standard action panel modal triggers
-    navAuthLinks.innerHTML = `
-            <button onclick="toggleAuthModal(true, 'LOGIN')" class="text-sm font-bold text-primary hover:text-primary-container mr-4">
-                ${signInText}
-            </button>
-            <button onclick="toggleAuthModal(true, 'REGISTER')" class="bg-primary text-white font-bold px-4 py-2 text-sm rounded-lg hover:bg-primary-container transition-all min-h-[40px]">
-                ${registerText}
+    const loginText = isHindi ? "लॉगिन / साइन अप" : "Login / Sign Up";
+    navSlot.innerHTML = `
+            <button onclick="toggleAuthModal(true, 'LOGIN')" class="bg-brand-green text-white font-bold text-xs px-4 sm:px-5 py-2 rounded-lg hover:bg-brand-green-dark transition-all flex items-center gap-1.5 shadow-sm min-h-[38px] whitespace-nowrap">
+                <span class="material-symbols-outlined text-sm">person</span>
+                <span data-i18n="signIn">${loginText}</span>
             </button>
         `;
   }
 }
 
-/**
- * Destroys active user identity state tokens and redirects cleanly to home framework layout.
- */
-function executeUserSignOut() {
-  localStorage.removeItem("yojana_session_token");
-  renderNavbarAuthenticationState();
-  window.location.href = "/index.html";
-}
-
-// ==================================================================
-// 2. MODAL & INTERFACE ELEMENT UTILITIES
-// ==================================================================
-
-function toggleAuthModal(show, explicitlyTargetTab = "LOGIN") {
+function toggleAuthModal(show, defaultTab = "LOGIN") {
   const modal = document.getElementById("authOverlayModal");
+  const alertBanner = document.getElementById("authAlertBanner");
   if (!modal) return;
 
   if (show) {
     modal.classList.remove("hidden");
-    switchAuthTab(explicitlyTargetTab);
+    if (alertBanner) alertBanner.classList.add("hidden");
+    switchAuthTab(defaultTab);
   } else {
     modal.classList.add("hidden");
-    // Reset validation forms cleanly upon closure
-    document
-      .getElementById("registrationInputsWrapper")
-      .classList.remove("hidden");
-    document.getElementById("otpValidationWrapper").classList.add("hidden");
-    activeVerificationSessionTokenId = null;
   }
-  triggerAuthMessage("", "CLEAR");
 }
 
-function switchAuthTab(targetTab) {
-  currentActiveAuthTab = targetTab;
+function switchAuthTab(tab) {
   const loginForm = document.getElementById("portalLoginForm");
   const registerForm = document.getElementById("portalRegisterForm");
-  const tabLoginBtn = document.getElementById("tabLoginBtn");
-  const tabRegisterBtn = document.getElementById("tabRegisterBtn");
+  const loginBtn = document.getElementById("tabLoginBtn");
+  const regBtn = document.getElementById("tabRegisterBtn");
 
-  triggerAuthMessage("", "CLEAR");
+  if (!loginForm || !registerForm) return;
 
-  if (targetTab === "LOGIN") {
+  if (tab === "LOGIN") {
     loginForm.classList.remove("hidden");
     registerForm.classList.add("hidden");
-    tabLoginBtn.className =
-      "w-1/2 py-3 text-sm font-bold text-primary border-b-2 border-primary bg-white";
-    tabRegisterBtn.className =
-      "w-1/2 py-3 text-sm font-semibold text-on-surface-variant";
+    if (loginBtn)
+      loginBtn.className =
+        "w-1/2 py-3 text-sm font-bold text-primary border-b-2 border-primary bg-white";
+    if (regBtn)
+      regBtn.className =
+        "w-1/2 py-3 text-sm font-semibold text-on-surface-variant bg-surface-container-low";
   } else {
     loginForm.classList.add("hidden");
     registerForm.classList.remove("hidden");
-    tabRegisterBtn.className =
-      "w-1/2 py-3 text-sm font-bold text-primary border-b-2 border-primary bg-white";
-    tabLoginBtn.className =
-      "w-1/2 py-3 text-sm font-semibold text-on-surface-variant";
+    if (regBtn)
+      regBtn.className =
+        "w-1/2 py-3 text-sm font-bold text-brand-green border-b-2 border-brand-green bg-white";
+    if (loginBtn)
+      loginBtn.className =
+        "w-1/2 py-3 text-sm font-semibold text-on-surface-variant bg-surface-container-low";
+    resetRegistrationForm();
   }
 }
 
-function triggerAuthMessage(message, level) {
-  const banner = document.getElementById("authAlertBanner");
-  if (!banner) return;
+function resetRegistrationForm() {
+  const inputsWrapper = document.getElementById("registrationInputsWrapper");
+  const otpWrapper = document.getElementById("otpValidationWrapper");
+  if (inputsWrapper) inputsWrapper.classList.remove("hidden");
+  if (otpWrapper) otpWrapper.classList.add("hidden");
+  sessionStorage.removeItem("pendingVerificationSessionId");
+  delete window.activeOtpSessionId;
+}
 
-  if (level === "CLEAR" || !message) {
-    banner.classList.add("hidden");
+// SMART FORM SUBMISSION ROUTER
+function handleRegistrationFormSubmit(event) {
+  event.preventDefault();
+  const otpWrapper = document.getElementById("otpValidationWrapper");
+
+  // If user is on the OTP screen and hits Enter, run OTP verification!
+  if (otpWrapper && !otpWrapper.classList.contains("hidden")) {
+    commitSecureOtpVerification();
+  } else {
+    executeUserRegistration();
+  }
+}
+
+async function executeUserLogin(event) {
+  if (event) event.preventDefault();
+  const alertBanner = document.getElementById("authAlertBanner");
+
+  const credentialInput = document.getElementById("loginCredentialField");
+  const passwordInput = document.getElementById("loginPasswordField");
+
+  if (!credentialInput || !passwordInput) return;
+
+  const credential = credentialInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!credential || !password) {
+    alertBanner.innerText =
+      "Please enter your username/email/mobile and password.";
+    alertBanner.className =
+      "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+    alertBanner.classList.remove("hidden");
     return;
   }
-
-  banner.innerText = message;
-  banner.classList.remove("hidden");
-
-  if (level === "SUCCESS") {
-    banner.className =
-      "mb-4 p-3 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200";
-  } else {
-    banner.className =
-      "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
-  }
-}
-
-// ==================================================================
-// 3. BACKEND GATEWAY TRANSACTION SUBMISSIONS
-// ==================================================================
-
-/**
- * Handles credentials verification and sets up active dashboard sessions.
- */
-async function executeUserLogin(event) {
-  event.preventDefault();
-
-  const credential = document
-    .getElementById("loginCredentialField")
-    .value.trim();
-  const password = document.getElementById("loginPasswordField").value;
 
   try {
     const response = await fetch("/api/auth/user/login", {
@@ -151,56 +142,61 @@ async function executeUserLogin(event) {
     const output = await response.json();
 
     if (!response.ok) {
-      triggerAuthMessage(
-        output.error || "Invalid credentials provided.",
-        "ERROR",
-      );
+      alertBanner.innerText = output.error || "Invalid credentials.";
+      alertBanner.className =
+        "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+      alertBanner.classList.remove("hidden");
       return;
     }
 
-    // Cache the session payload securely in user browser memory
+    // Login Successful! Store Session Data
+    const sessionPayload = output.userProfile || output.accountDetails;
     localStorage.setItem(
       "yojana_session_token",
-      JSON.stringify(output.accountDetails),
+      JSON.stringify(sessionPayload),
     );
 
-    // Instant visual update without forcing full hard page reloads
+    // Hide Modal & Update Navigation Bar State
+    toggleAuthModal(false);
     renderNavbarAuthenticationState();
 
-    triggerAuthMessage(
-      "Welcome back! Initializing dashboard details...",
-      "SUCCESS",
-    );
+    // Update Scheme Modal CTAs if open
+    if (typeof updateSchemeModalCTA === "function") {
+      updateSchemeModalCTA();
+    }
 
-    // Wrap closure action and change routing target cleanly
-    setTimeout(() => {
-      toggleAuthModal(false);
-      window.location.href = "/dashboard.html";
-    }, 800);
+    // Reset Form Fields
+    document.getElementById("portalLoginForm").reset();
   } catch (err) {
-    triggerAuthMessage(
-      "Transit fault connecting to authorization gateway pipelines.",
-      "ERROR",
-    );
+    alertBanner.innerText =
+      "Network error attempting login. Please check server logs.";
+    alertBanner.className =
+      "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+    alertBanner.classList.remove("hidden");
   }
 }
 
-/**
- * Registration Phase 1: Submits demographic profiles and fires a simulated SMS OTP to terminal.
- */
-async function executeUserRegistration(event) {
-  event.preventDefault();
-
+async function executeUserRegistration() {
+  const alertBanner = document.getElementById("authAlertBanner");
   const name = document.getElementById("regNameField").value.trim();
   const username = document.getElementById("regUsernameField").value.trim();
+  const emailId = document.getElementById("regEmailField").value.trim();
   const mobileNumber = document.getElementById("regMobileField").value.trim();
   const password = document.getElementById("regPasswordField").value;
 
-  // ADAPTIVE RURAL STRATEGY: Treat email as entirely optional
-  const emailInput = document.getElementById("regEmailField").value.trim();
-  const emailId = emailInput !== "" ? emailInput : null;
+  if (!name || !username || !emailId || !mobileNumber || !password) {
+    alertBanner.innerText =
+      "All fields (Name, Username, Email, Mobile Number, Password) are mandatory.";
+    alertBanner.className =
+      "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+    alertBanner.classList.remove("hidden");
+    return;
+  }
 
   try {
+    const btn = document.getElementById("btnGenerateOtp");
+    if (btn) btn.disabled = true;
+
     const response = await fetch("/api/auth/user/register/initiate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -208,96 +204,191 @@ async function executeUserRegistration(event) {
     });
 
     const output = await response.json();
+    if (btn) btn.disabled = false;
 
     if (!response.ok) {
-      triggerAuthMessage(
-        output.error || "Registration sequence parameter conflict.",
-        "ERROR",
-      );
+      alertBanner.innerText = output.error || "Registration initiation failed.";
+      alertBanner.className =
+        "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+      alertBanner.classList.remove("hidden");
       return;
     }
 
-    // Cache the memory transaction tracker tracking ID token returned by the server
-    activeVerificationSessionTokenId = output.verificationSessionId;
+    // Store verification Session ID in both sessionStorage and window variable
+    const sessionId = output.verificationSessionId;
+    sessionStorage.setItem("pendingVerificationSessionId", sessionId);
+    window.activeOtpSessionId = sessionId;
 
-    // Transition form cards dynamically to display the OTP card intercept overlay wrapper
+    // Switch UI view to OTP Input
     document
       .getElementById("registrationInputsWrapper")
       .classList.add("hidden");
     document.getElementById("otpValidationWrapper").classList.remove("hidden");
 
-    triggerAuthMessage(
-      "Simulated SMS Token generated! Copy the 6-digit OTP code directly from your running Node VS Code server terminal window.",
-      "SUCCESS",
-    );
+    alertBanner.innerText =
+      output.message ||
+      "Verification OTP generated! Check your terminal console or email.";
+    alertBanner.className =
+      "mb-4 p-3 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200";
+    alertBanner.classList.remove("hidden");
+
+    setTimeout(() => {
+      const otpInput = document.getElementById("regOtpTokenField");
+      if (otpInput) otpInput.focus();
+    }, 150);
   } catch (err) {
-    triggerAuthMessage(
-      "Transit exception sending parameters to registration initiation loops.",
-      "ERROR",
-    );
+    const btn = document.getElementById("btnGenerateOtp");
+    if (btn) btn.disabled = false;
+    alertBanner.innerText = "Network error initiating registration.";
+    alertBanner.className =
+      "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+    alertBanner.classList.remove("hidden");
   }
 }
 
-/**
- * Registration Phase 2: Compares inputs with terminal codes and commits user data atomically.
- */
 async function commitSecureOtpVerification() {
-  const inputOtpToken = document
+  const alertBanner = document.getElementById("authAlertBanner");
+  const verificationToken = document
     .getElementById("regOtpTokenField")
     .value.trim();
-  if (!inputOtpToken || inputOtpToken.length !== 6) {
-    triggerAuthMessage(
-      "Please enter a complete 6-digit numeric OTP token.",
-      "ERROR",
-    );
+
+  // Retrieve Session ID
+  const verificationSessionId =
+    sessionStorage.getItem("pendingVerificationSessionId") ||
+    window.activeOtpSessionId;
+
+  if (!verificationSessionId) {
+    alertBanner.innerText =
+      'Session expired or server restarted. Click "Back to Registration Details" to re-generate OTP.';
+    alertBanner.className =
+      "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+    alertBanner.classList.remove("hidden");
+    return;
+  }
+
+  if (!verificationToken || verificationToken.length !== 6) {
+    alertBanner.innerText = "Please enter a valid 6-digit OTP code.";
+    alertBanner.className =
+      "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+    alertBanner.classList.remove("hidden");
     return;
   }
 
   try {
+    const btn = document.getElementById("btnConfirmOtp");
+    if (btn) btn.disabled = true;
+
     const response = await fetch("/api/auth/user/register/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        verificationSessionId: activeVerificationSessionTokenId,
-        inputOtpToken,
+        verificationSessionId: verificationSessionId,
+        verificationToken: verificationToken,
       }),
     });
 
     const output = await response.json();
+    if (btn) btn.disabled = false;
 
     if (!response.ok) {
-      triggerAuthMessage(
-        output.error || "Security verification token check failed.",
-        "ERROR",
-      );
+      alertBanner.innerText = output.error || "Invalid OTP code entered.";
+      alertBanner.className =
+        "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+      alertBanner.classList.remove("hidden");
       return;
     }
 
-    triggerAuthMessage(
-      "Identity confirmed successfully! Switching window to Sign In...",
-      "SUCCESS",
-    );
+    // Clean up session storage
+    sessionStorage.removeItem("pendingVerificationSessionId");
+    delete window.activeOtpSessionId;
 
-    // Auto-transition to login panel after a brief operational delay
-    setTimeout(() => {
-      switchAuthTab("LOGIN");
-      // Populate the newly created identity username automatically to ease workflow tracking
-      if (output.data && output.data.loginDetails) {
-        document.getElementById("loginCredentialField").value =
-          output.data.loginDetails.username;
-      }
-    }, 1500);
-  } catch (err) {
-    triggerAuthMessage(
-      "Transit error connecting to verification execution loop hooks.",
-      "ERROR",
+    // Store user session token
+    localStorage.setItem(
+      "yojana_session_token",
+      JSON.stringify(output.data || { name: "Citizen" }),
     );
+    toggleAuthModal(false);
+    renderNavbarAuthenticationState();
+
+    if (typeof updateSchemeModalCTA === "function") {
+      updateSchemeModalCTA();
+    }
+  } catch (err) {
+    const btn = document.getElementById("btnConfirmOtp");
+    if (btn) btn.disabled = false;
+    alertBanner.innerText = "Network error verifying security OTP.";
+    alertBanner.className =
+      "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+    alertBanner.classList.remove("hidden");
   }
 }
 
-// ==================================================================
-// 4. CORE ENGINE LIFECYCLE INITIALIZER TRIGGER
-// ==================================================================
-document.addEventListener("DOMContentLoaded", () => {
+function executeUserSignOut() {
+  localStorage.removeItem("yojana_session_token");
   renderNavbarAuthenticationState();
-});
+  window.location.reload();
+}
+let resendCooldownTimer = null;
+
+// ==================================================================
+// RESEND EMAIL OTP HANDLER
+// ==================================================================
+async function resendOtpCode() {
+  const resendBtn = document.getElementById("btnResendOtp");
+  const alertBanner = document.getElementById("authAlertBanner");
+
+  if (resendBtn && resendBtn.disabled) return;
+
+  // Clear previous input code
+  const otpInput = document.getElementById("regOtpTokenField");
+  if (otpInput) otpInput.value = "";
+
+  // Trigger OTP generation endpoint again
+  await executeUserRegistration();
+
+  // Start 30-Second Cooldown Timer
+  startResendCooldown(30);
+}
+
+function startResendCooldown(seconds) {
+  const resendBtn = document.getElementById("btnResendOtp");
+  if (!resendBtn) return;
+
+  let timeLeft = seconds;
+  resendBtn.disabled = true;
+  resendBtn.classList.add("opacity-50", "cursor-not-allowed");
+
+  if (resendCooldownTimer) clearInterval(resendCooldownTimer);
+
+  resendCooldownTimer = setInterval(() => {
+    if (timeLeft <= 0) {
+      clearInterval(resendCooldownTimer);
+      resendBtn.disabled = false;
+      resendBtn.classList.remove("opacity-50", "cursor-not-allowed");
+      resendBtn.innerText = "Resend OTP";
+    } else {
+      resendBtn.innerText = `Resend OTP (${timeLeft}s)`;
+      timeLeft--;
+    }
+  }, 1000);
+}
+
+// Reset form helper
+function resetRegistrationForm() {
+  const inputsWrapper = document.getElementById("registrationInputsWrapper");
+  const otpWrapper = document.getElementById("otpValidationWrapper");
+  const resendBtn = document.getElementById("btnResendOtp");
+
+  if (inputsWrapper) inputsWrapper.classList.remove("hidden");
+  if (otpWrapper) otpWrapper.classList.add("hidden");
+
+  if (resendCooldownTimer) clearInterval(resendCooldownTimer);
+  if (resendBtn) {
+    resendBtn.disabled = false;
+    resendBtn.classList.remove("opacity-50", "cursor-not-allowed");
+    resendBtn.innerText = "Resend OTP";
+  }
+
+  sessionStorage.removeItem("pendingVerificationSessionId");
+  delete window.activeOtpSessionId;
+}

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Citizen Dashboard - YojanaBasket</title>
+    <title>Citizen Welfare Dashboard - YojanaBasket</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined&display=swap"
@@ -17,9 +17,11 @@
             colors: {
               primary: "#00113a",
               "primary-container": "#002366",
+              "brand-green": "#1e6b37",
+              "brand-green-dark": "#145229",
+              "brand-green-light": "#eaf5ed",
               secondary: "#8f4e00",
               "secondary-container": "#fe9832",
-              "on-secondary-container": "#683700",
               background: "#f8f9ff",
               surface: "#f8f9ff",
               "surface-container-lowest": "#ffffff",
@@ -34,295 +36,123 @@
       };
     </script>
   </head>
-  <body class="bg-background text-on-surface">
-    <header class="bg-surface-container-lowest shadow-sm sticky top-0 z-50">
+  <body
+    class="bg-background text-on-surface font-['Public_Sans',sans-serif] min-h-screen flex flex-col"
+  >
+    <header
+      class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100"
+    >
       <nav
-        class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto"
+        class="flex justify-between items-center w-full px-6 py-3.5 max-w-7xl mx-auto"
       >
         <div
-          class="text-2xl font-bold text-primary tracking-tight cursor-pointer"
-          onclick="window.location.href = '/index.html'"
-          data-i18n="brand"
+          class="flex items-center gap-3 cursor-pointer"
+          onclick="window.location.href = '/'"
         >
-          YojanaBasket
+          <img
+            src="logo.jpeg"
+            alt="YojanaBasket Logo"
+            class="h-10 w-auto object-contain rounded-lg"
+            onerror="this.src = 'icon.jpeg'"
+          />
+          <span class="text-2xl font-extrabold text-primary tracking-tight"
+            >Yojana<span class="text-brand-green">Basket</span></span
+          >
         </div>
 
-        <div
-          class="flex items-center ml-auto mr-6 border rounded-lg overflow-hidden bg-white shadow-sm"
-        >
-          <button
-            id="btnLangEn"
-            onclick="togglePlatformLanguage('en')"
-            class="text-xs font-bold px-3 py-1.5 bg-primary text-white transition-all"
+        <div class="flex items-center gap-4">
+          <a
+            href="/"
+            class="text-xs font-bold text-primary hover:text-brand-green flex items-center gap-1 bg-surface-container-low px-3 py-2 rounded-lg transition-all"
           >
-            EN
-          </button>
-          <button
-            id="btnLangHi"
-            onclick="togglePlatformLanguage('hi')"
-            class="text-xs font-bold px-3 py-1.5 text-primary transition-all"
-          >
-            हिंदी
-          </button>
-        </div>
-
-        <div class="flex items-center gap-8">
-          <span id="navAuthLinks" class="flex items-center gap-6"></span>
+            <span class="material-symbols-outlined text-sm">home</span>
+            <span>Home</span>
+          </a>
+          <div id="navAuthLinks" class="flex items-center"></div>
         </div>
       </nav>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-10 pb-24">
+    <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-8 space-y-8">
       <div
-        class="mb-8 bg-primary-container text-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+        class="bg-primary text-white p-6 sm:p-8 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden"
       >
-        <div>
-          <h1
-            class="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2"
-          >
-            <span class="material-symbols-outlined text-secondary-container"
+        <div class="space-y-1.5 z-10">
+          <div class="flex items-center gap-2">
+            <span
+              class="material-symbols-outlined text-secondary-container text-2xl"
               >account_circle</span
             >
-            <span id="welcomeCitizenName">Loading Account...</span>
-          </h1>
-          <p class="text-xs opacity-75 mt-1">
-            Manage demographic vectors and check auto-eligible parameters
-            dynamically.
+            <h2
+              id="welcomeCitizenName"
+              class="text-2xl sm:text-3xl font-extrabold"
+            >
+              Citizen Dashboard
+            </h2>
+          </div>
+          <p class="text-xs text-white/80 max-w-xl leading-relaxed">
+            Track your registered welfare schemes, application reference
+            numbers, and active status in real-time.
           </p>
         </div>
+
         <div
-          class="bg-white/10 px-4 py-2 rounded-xl border border-white/20 text-xs font-medium"
+          class="z-10 bg-white/10 backdrop-blur-md px-6 py-4 rounded-xl border border-white/20 text-center min-w-[160px]"
         >
-          Username:
-          <span id="welcomeCitizenUsername" class="font-bold">...</span>
+          <span
+            id="registeredCountBadge"
+            class="block text-3xl font-extrabold text-secondary-container"
+            >0</span
+          >
+          <span
+            class="text-[11px] font-bold text-white/90 uppercase tracking-wider"
+            >Registered Schemes</span
+          >
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div
-          class="bg-white rounded-2xl border border-outline-variant p-6 shadow-sm h-fit"
-        >
-          <h3
-            class="text-lg font-bold text-primary mb-4 flex items-center gap-2 border-b pb-3"
-          >
-            <span class="material-symbols-outlined text-secondary">tune</span>
-            <span data-i18n="demographicHeading"
-              >Demographic Metrics Matrix</span
-            >
-          </h3>
-
-          <form
-            id="dashboardProfileOverrideForm"
-            class="space-y-4"
-            onsubmit="triggerMatrixEvaluationOverride(event)"
-          >
-            <div>
-              <label
-                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                data-i18n="ageLabel"
-                >Age Bracket (Years)</label
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-12 space-y-6">
+          <div class="flex justify-between items-center border-b pb-4">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-brand-green text-2xl"
+                >how_to_reg</span
               >
-              <input
-                type="number"
-                id="profileAgeInput"
-                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-                min="0"
-                max="120"
-                placeholder="e.g. 25"
-              />
-            </div>
-
-            <div>
-              <label
-                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                data-i18n="genderLabel"
-                >Gender Representation</label
-              >
-              <select
-                id="profileGenderInput"
-                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              >
-                <option value="All">All</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label
-                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                data-i18n="stateLabel"
-                >State / Domicile*</label
-              >
-              <select
-                id="profileStateInput"
-                required
-                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              >
-                <option value="Andhra Pradesh">Andhra Pradesh</option>
-                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                <option value="Assam">Assam</option>
-                <option value="Bihar">Bihar</option>
-                <option value="Chhattisgarh">Chhattisgarh</option>
-                <option value="Goa">Goa</option>
-                <option value="Gujarat">Gujarat</option>
-                <option value="Haryana">Haryana</option>
-                <option value="Himachal Pradesh">Himachal Pradesh</option>
-                <option value="Jharkhand">Jharkhand</option>
-                <option value="Karnataka">Karnataka</option>
-                <option value="Kerala">Kerala</option>
-                <option value="Madhya Pradesh">Madhya Pradesh</option>
-                <option value="Maharashtra">Maharashtra</option>
-                <option value="Manipur">Manipur</option>
-                <option value="Meghalaya">Meghalaya</option>
-                <option value="Mizoram">Mizoram</option>
-                <option value="Nagaland">Nagaland</option>
-                <option value="Odisha">Odisha</option>
-                <option value="Punjab">Punjab</option>
-                <option value="Rajasthan">Rajasthan</option>
-                <option value="Sikkim">Sikkim</option>
-                <option value="Tamil Nadu">Tamil Nadu</option>
-                <option value="Telangana">Telangana</option>
-                <option value="Tripura">Tripura</option>
-                <option value="Uttar Pradesh">Uttar Pradesh</option>
-                <option value="Uttarakhand">Uttarakhand</option>
-                <option value="West Bengal">West Bengal</option>
-                <option value="Andaman and Nicobar Islands">
-                  Andaman and Nicobar Islands
-                </option>
-                <option value="Chandigarh">Chandigarh</option>
-                <option value="Dadra and Nagar Haveli and Daman and Diu">
-                  Dadra and Nagar Haveli and Daman and Diu
-                </option>
-                <option value="Delhi">Delhi</option>
-                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                <option value="Ladakh">Ladakh</option>
-                <option value="Lakshadweep">Lakshadweep</option>
-                <option value="Puducherry">Puducherry</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                >Social Category (Caste)</label
-              >
-              <select
-                id="profileCasteInput"
-                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              >
-                <option value="All">All</option>
-                <option value="General">General</option>
-                <option value="OBC">OBC</option>
-                <option value="SC">SC</option>
-                <option value="ST">ST</option>
-              </select>
-            </div>
-            <div>
-              <label
-                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                >Scheme Categories</label
-              >
-              <select
-                id="categoryinput"
-                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              >
-                <option value="All Categories">All Categories</option>
-                <option value="farming">Farming / Agriculture</option>
-                <option value="health">Health & Medical Cover</option>
-                <option value="loans">
-                  Banking, Financial Services & Insurance
-                </option>
-                <option value="education">Education & Scholarships</option>
-                <option value="housing">Housing & Infrastructure</option>
-                <option value="public safety">
-                  Public Safety, Law and Justice
-                </option>
-                <option value="transport">Transport</option>
-                <option value="sports & culture">Sports & Culture</option>
-                <option value="science">
-                  Science, Technology & Innovation
-                </option>
-                <option value="travel">Travel & Tourism</option>
-                <option value="Empowerment">
-                  Social Welfare & Empowerment
-                </option>
-                <option value="Women">Women & Child Development</option>
-                <option value="sanitation">Utility and Sanitation</option>
-                <option value="skills">Skills and Employment</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                >Annual Household Income (₹)</label
-              >
-              <input
-                type="number"
-                id="profileIncomeInput"
-                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-                placeholder="e.g. 150000"
-              />
-            </div>
-
-            <div
-              class="flex items-center gap-3 bg-surface-container-low p-3 rounded-xl border border-outline-variant/50"
-            >
-              <input
-                type="checkbox"
-                id="profileDisabilityInput"
-                class="rounded text-primary focus:ring-primary w-5 h-5"
-              />
-              <label
-                for="profileDisabilityInput"
-                class="text-xs font-semibold text-primary cursor-pointer select-none"
-              >
-                Physically Disabled Category (40% or more)
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              class="w-full bg-primary text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-primary-container transition-colors shadow flex items-center justify-center gap-2"
-            >
-              <span class="material-symbols-outlined text-sm">analytics</span>
-              Evaluate Eligible Benefits
-            </button>
-          </form>
-        </div>
-
-        <div class="lg:col-span-2 space-y-6">
-          <div
-            class="bg-white rounded-2xl border border-outline-variant p-6 shadow-sm"
-          >
-            <div class="flex justify-between items-center border-b pb-4 mb-6">
               <div>
-                <h3
-                  class="text-xl font-bold text-primary flex items-center gap-2"
-                >
-                  <span
-                    class="material-symbols-outlined text-secondary-container text-xl"
-                    >workspace_premium</span
-                  >
-                  Personalized Welfare Match List
+                <h3 class="text-xl font-bold text-primary">
+                  My Registered Schemes
                 </h3>
-                <p class="text-xs text-on-surface-variant mt-1">
-                  Schemes automatically matched against your active parameters
-                  array matrix inputs.
+                <p class="text-xs text-on-surface-variant mt-0.5">
+                  Welfare programs you have submitted applications for.
                 </p>
               </div>
-              <span
-                id="evaluationMatchBadge"
-                class="bg-surface-container-high text-primary font-bold text-xs px-3 py-1.5 rounded-full border border-primary/10"
-                >0 Matches Found</span
-              >
             </div>
+            <a
+              href="/"
+              class="text-xs font-bold text-brand-green hover:underline flex items-center gap-1"
+            >
+              <span>+ Explore & Register More Schemes</span>
+              <span class="material-symbols-outlined text-sm"
+                >arrow_forward</span
+              >
+            </a>
+          </div>
 
+          <div
+            id="registeredSchemesContainer"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             <div
-              id="dashboardRecommendationsStream"
-              class="grid grid-cols-1 md:grid-cols-2 gap-6"
-            ></div>
+              class="col-span-full text-center py-12 text-on-surface-variant"
+            >
+              <span
+                class="material-symbols-outlined text-4xl text-gray-300 animate-spin mb-2"
+                >sync</span
+              >
+              <p class="text-xs font-bold">
+                Loading your registered schemes...
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -331,7 +161,7 @@
     <div class="fixed bottom-6 right-6 z-[90] flex flex-col items-end">
       <div
         id="sarthiWorkspacePanel"
-        class="w-80 md:w-96 h-[400px] bg-white rounded-2xl border border-outline-variant shadow-xl flex flex-col mb-4 hidden overflow-hidden transition-all"
+        class="w-80 md:w-96 h-[400px] bg-white rounded-2xl border border-outline-variant shadow-2xl flex flex-col mb-4 hidden overflow-hidden transition-all"
       >
         <div
           class="bg-primary p-4 text-white flex justify-between items-center text-xs font-bold"
@@ -339,10 +169,10 @@
           <span class="flex items-center gap-2">
             <img
               src="icon.jpeg"
-              alt="Sarthi"
-              class="w-5 h-5 rounded-full object-cover ring-1 ring-white/40"
+              alt="Yojana Mitra"
+              class="w-7 h-7 rounded-full object-cover ring-2 ring-white/40 shrink-0"
             />
-            <span data-i18n="sarthiTitle">Sarthi AI Assistant</span>
+            <span>Sarthi AI Assistant</span>
           </span>
           <button
             onclick="toggleSarthiPanel(false)"
@@ -363,24 +193,6 @@
             placeholder="Ask anything regarding welfare services..."
             onkeypress="handleSarthiKeyPress(event)"
           />
-
-          <button
-            onclick="
-              startDashboardVoiceRecognition(
-                'sarthiQueryConsoleInput',
-                'sarthiSendActionBtn',
-              )
-            "
-            class="p-2 hover:bg-surface-container-low rounded-full text-on-surface-variant flex items-center justify-center transition-colors"
-            title="Speak to assistant"
-          >
-            <span
-              id="mic-icon-sarthiQueryConsoleInput"
-              class="material-symbols-outlined text-lg"
-              >mic</span
-            >
-          </button>
-
           <button
             id="sarthiSendActionBtn"
             onclick="processSarthiQueryTransmission()"
@@ -392,184 +204,131 @@
       </div>
       <button
         onclick="toggleSarthiPanel(true)"
-        class="w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center ring-4 ring-primary/20 hover:scale-105 transition-all overflow-hidden"
+        class="w-14 h-14 bg-white rounded-full shadow-2xl flex items-center justify-center ring-4 ring-brand-green/30 hover:scale-105 transition-all overflow-hidden p-0"
       >
         <img
           src="icon.jpeg"
-          alt="Sarthi Logo"
-          class="w-full h-full object-cover"
+          alt="Yojana Mitra Logo"
+          class="w-full h-full object-cover rounded-full"
         />
       </button>
     </div>
 
-    <script src="js/lang.js"></script>
+    <footer
+      class="bg-surface-container-low py-4 text-center text-xs text-on-surface-variant border-t mt-auto"
+    >
+      © YojanaBasket Citizen Portal - Official Government Welfare Access
+      Platform
+    </footer>
+
     <script src="js/auth.js"></script>
     <script src="js/sarthi.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        if (typeof renderNavbarAuthenticationState === "function") {
-          renderNavbarAuthenticationState();
-        }
-
-        const activeSessionData = localStorage.getItem("yojana_session_token");
-        if (!activeSessionData) {
-          alert(
-            "No active authentication token identified. Shifting viewport target to landing page.",
-          );
-          window.location.href = "/index.html";
+        // Enforce Login Session
+        const token = localStorage.getItem("yojana_session_token");
+        if (!token) {
+          alert("Please sign in to access your citizen dashboard.");
+          window.location.href = "/";
           return;
         }
 
-        try {
-          const parsedSessionObj = JSON.parse(activeSessionData);
-          const userProfile =
-            parsedSessionObj.user || parsedSessionObj.userProfile;
-          const accountDetails = parsedSessionObj;
-
-          const targetedUsername =
-            accountDetails.username ||
-            (userProfile ? userProfile.name : "Citizen");
-          document.getElementById("welcomeCitizenName").innerText = userProfile
-            ? userProfile.name
-            : "Valued Citizen";
-          document.getElementById("welcomeCitizenUsername").innerText =
-            targetedUsername;
-
-          if (userProfile) {
-            if (userProfile.age)
-              document.getElementById("profileAgeInput").value =
-                userProfile.age;
-            if (userProfile.gender)
-              document.getElementById("profileGenderInput").value =
-                userProfile.gender;
-            if (userProfile.state)
-              document.getElementById("profileStateInput").value =
-                userProfile.state;
-            if (userProfile.caste)
-              document.getElementById("profileCasteInput").value =
-                userProfile.caste;
-            if (userProfile.annualIncome)
-              document.getElementById("profileIncomeInput").value =
-                userProfile.annualIncome;
-            document.getElementById("profileDisabilityInput").checked =
-              !!userProfile.disability;
-          }
-
-          executeDemographicMatchResolution(targetedUsername, null);
-        } catch (err) {
-          console.error("Dashboard configuration parameter load fault:", err);
-          localStorage.removeItem("yojana_session_token");
-          window.location.href = "/index.html";
-        }
+        renderDashboardRegisteredSchemes();
       });
 
-      function startDashboardVoiceRecognition(inputId, triggerBtnId) {
-        const SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-          alert("Voice features are not supported in this browser.");
-          return;
-        }
-        const recognition = new SpeechRecognition();
-        const micIcon = document.getElementById(`mic-icon-${inputId}`);
-        const targetInput = document.getElementById(inputId);
-        const isHindi = localStorage.getItem("yojana_lang") === "hi";
+      async function renderDashboardRegisteredSchemes() {
+        const container = document.getElementById("registeredSchemesContainer");
+        const badge = document.getElementById("registeredCountBadge");
+        const nameHeader = document.getElementById("welcomeCitizenName");
 
-        recognition.lang = isHindi ? "hi-IN" : "en-IN";
-        recognition.onstart = () => {
-          if (micIcon)
-            micIcon.className =
-              "material-symbols-outlined text-lg text-red-600 animate-pulse";
-        };
-        recognition.onend = () => {
-          if (micIcon)
-            micIcon.className =
-              "material-symbols-outlined text-lg text-on-surface-variant";
-        };
-        recognition.onresult = (event) => {
-          if (targetInput) {
-            targetInput.value = event.results[0][0].transcript;
-            setTimeout(() => {
-              document.getElementById(triggerBtnId).click();
-            }, 400);
-          }
-        };
-        recognition.start();
-      }
+        let userSession = {};
+        try {
+          userSession = JSON.parse(
+            localStorage.getItem("yojana_session_token"),
+          );
+        } catch (e) {}
 
-      function triggerMatrixEvaluationOverride(event) {
-        event.preventDefault();
-        const targetedUsername = document.getElementById(
-          "welcomeCitizenUsername",
-        ).innerText;
-        const profileOverrides = {
-          age:
-            parseInt(document.getElementById("profileAgeInput").value) || null,
-          gender: document.getElementById("profileGenderInput").value,
-          state: document.getElementById("profileStateInput").value,
-          caste: document.getElementById("profileCasteInput").value,
-          category:
-            document.getElementById("profileCategoryInput")?.value || "all", // <-- Added category
-          annualIncome:
-            parseFloat(document.getElementById("profileIncomeInput").value) ||
-            null,
-          disability: document.getElementById("profileDisabilityInput").checked,
-        };
-        executeDemographicMatchResolution(targetedUsername, profileOverrides);
-      }
-
-      async function executeDemographicMatchResolution(
-        username,
-        profileOverrides,
-      ) {
-        const streamContainer = document.getElementById(
-          "dashboardRecommendationsStream",
-        );
-        streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs py-8 italic text-on-surface-variant animate-pulse">Running matrix eligibility filters...</div>`;
+        const userName = userSession.name || userSession.username || "Citizen";
+        if (nameHeader) nameHeader.innerText = `Welcome, ${userName}`;
 
         try {
-          const response = await fetch("/api/schemes/recommend", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, profileOverrides }),
-          });
-          const output = await response.json();
-          if (!response.ok) {
-            streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs text-red-600 p-4 font-bold bg-red-50 rounded-xl border">${output.error || "Failed to match parameters."}</div>`;
-            return;
-          }
+          // Fetch schemes catalog & user recommendations/applications
+          const response = await fetch("/api/schemes?category=all");
+          const data = await response.json();
+          const allSchemes = data.schemes || [];
 
-          const isHindi = localStorage.getItem("yojana_lang") === "hi";
-          document.getElementById("evaluationMatchBadge").innerText =
-            `${output.matchCount} ${isHindi ? "योजनाएं पाई गईं" : "Matches Found"}`;
+          // Retrieve registered schemes stored in user session or local storage
+          // ✅ NEW (Default to an empty array for new users)
+          let registeredSchemeIds = userSession.registeredSchemes || []; // Defaults to registered test schemes if present
 
-          if (!output.eligibleSchemes || output.eligibleSchemes.length === 0) {
-            streamContainer.innerHTML = `<div class="col-span-2 text-center py-12 px-4 border border-dashed rounded-xl bg-surface-container-low text-on-surface-variant"><p class="text-sm font-semibold">No schemes match your criteria.</p></div>`;
-            return;
-          }
+          // Map user registered schemes
+          const registeredSchemesList = allSchemes.filter(
+            (s) =>
+              registeredSchemeIds.includes(s.id) ||
+              registeredSchemeIds.includes(s.slug),
+          );
 
-          streamContainer.innerHTML = output.eligibleSchemes
-            .map((s) => {
-              return `
-                    <div class="bg-white rounded-xl border border-outline-variant p-5 flex flex-col justify-between shadow-sm hover:border-primary/30 transition-all">
+          if (badge) badge.innerText = registeredSchemesList.length;
+
+          if (registeredSchemesList.length === 0) {
+            container.innerHTML = `
+                    <div class="col-span-full bg-white p-8 rounded-2xl border border-dashed border-gray-300 text-center space-y-4">
+                        <span class="material-symbols-outlined text-4xl text-gray-400">assignment_late</span>
                         <div>
-                            <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 bg-surface-container-high text-primary w-fit rounded block mb-2">${s.category}</span>
-                            <h4 class="text-base font-bold text-primary mb-2">${isHindi && s.hindiName ? s.hindiName : s.name}</h4>
-                            <p class="text-xs text-on-surface-variant line-clamp-3 mb-4 opacity-90">${s.description}</p>
-                            <div class="space-y-2 border-t pt-3 text-[11px]">
-                                <p><strong class="text-primary">${isHindi ? "मुख्य लाभ" : "Key Benefits"}:</strong> <span class="text-on-surface-variant">${s.benefits}</span></p>
-                                <p><strong class="text-primary">${isHindi ? "आवश्यक दस्तावेज" : "Required Papers"}:</strong> <span class="text-on-surface-variant">${s.requiredDocuments.join(", ")}</span></p>
+                            <h4 class="font-bold text-primary text-base">No Schemes Registered Yet</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">You haven't submitted registrations for any government welfare schemes yet.</p>
+                        </div>
+                        <a href="/" class="inline-flex items-center gap-2 bg-brand-green text-white font-bold text-xs px-6 py-3 rounded-xl hover:bg-brand-green-dark transition-all shadow-sm">
+                            <span>Browse Available Schemes</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+                `;
+            return;
+          }
+
+          // Render ONLY Registered Schemes Cards
+          container.innerHTML = registeredSchemesList
+            .map((scheme, index) => {
+              const refNo = `YB-2026-${100000 + index * 37}`;
+              return `
+                    <div class="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-brand-green-light text-brand-green rounded-md font-mono">${scheme.category}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 bg-green-100 text-green-800 rounded-md flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                                    <span>Registered / Applied</span>
+                                </span>
+                            </div>
+
+                            <h4 class="text-base font-bold text-primary leading-snug">${scheme.name}</h4>
+                            <p class="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">${scheme.description}</p>
+                            
+                            <div class="bg-surface-container-low p-3 rounded-xl border text-xs space-y-1">
+                                <div class="flex justify-between items-center text-[11px]">
+                                    <span class="text-on-surface-variant font-medium">Application Ref:</span>
+                                    <span class="font-mono font-bold text-primary">${refNo}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-[11px]">
+                                    <span class="text-on-surface-variant font-medium">Status:</span>
+                                    <span class="font-bold text-brand-green">Under Verification</span>
+                                </div>
                             </div>
                         </div>
-                        <a href="${s.officialLink || "#"}" target="_blank" rel="noopener noreferrer" class="w-full text-center mt-4 inline-flex min-h-[40px] bg-primary-container text-white font-bold text-xs rounded-lg hover:bg-primary transition-colors flex items-center justify-center gap-1.5 decoration-transparent select-none">
-                            <span class="material-symbols-outlined text-xs">open_in_new</span>
-                            ${isHindi ? "आधिकारिक पोर्टल पर आवेदन करें ↗" : "Apply on Official Portal ↗"}
-                        </a>
-                    </div>`;
+
+                        <div class="pt-4 border-t mt-4">
+                            <a href="${scheme.officialLink || "https://www.india.gov.in/"}" target="_blank" rel="noopener noreferrer" class="w-full min-h-[40px] border-2 border-primary text-primary font-bold text-xs rounded-xl hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-1">
+                                <span>Track on Official Portal</span>
+                                <span class="material-symbols-outlined text-sm">open_in_new</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
             })
             .join("");
         } catch (err) {
-          streamContainer.innerHTML = `<div class="col-span-2 text-center text-xs text-red-600 p-4 font-bold bg-red-50 rounded-xl border">Connection error.</div>`;
+          container.innerHTML = `<div class="col-span-full text-center text-red-600 font-bold text-xs py-8">Failed to load registered schemes records.</div>`;
         }
       }
     </script>

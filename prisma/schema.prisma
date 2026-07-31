@@ -14,7 +14,7 @@ datasource db {
 model UserProfile {
   id           String    @id @default(uuid())
   name         String
-  email        String?    @unique
+  email        String     @unique
   age          Int?
   gender       String?   // e.g. "Male", "Female", "Transgender", ""
   state        String?
@@ -93,7 +93,7 @@ model UserLogin {
   id           String   @id @default(uuid())
   userId       String   @unique  // Ensures 1-to-1 relationship with profile
   username     String   @unique
-  emailId      String?   @unique
+  emailId      String  @unique
   mobileNumber String   @unique
   password     String   // Hashed passwords should be stored here
   createdAt    DateTime @default(now())

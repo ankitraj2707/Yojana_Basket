@@ -12,6 +12,28 @@ const bcrypt = require("bcryptjs"); // Used for secure asynchronous credential h
 
 // Initialize the Prisma Client instance (v6 natively resolves settings directly from your .env file)
 const prisma = require("./config/prisma");
+const nodemailer = require("nodemailer");
+
+const mailTransporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE || "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+// Verify email service configuration on server startup
+mailTransporter.verify((error, success) => {
+  if (error) {
+    console.warn(
+      "⚠️ [Nodemailer Warning]: SMTP Transporter not ready. Check EMAIL_USER and EMAIL_PASS in .env file.",
+    );
+  } else {
+    console.log(
+      "✅ [YojanaBasket]: Real Email OTP Transporter ready to deliver live messages!",
+    );
+  }
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000; // cite: 6
@@ -225,176 +247,263 @@ app.post("/api/assistant/chat", async (req, res) => {
 // -------------------------------------------------------------
 
 // PHASE 1: Initiate Profile Creation & Print Verification Token to Terminal Console
+// -------------------------------------------------------------
+// USER REGISTRATION INITIATE (EMAIL OTP DISPATCH)
+// -------------------------------------------------------------
 app.post("/api/auth/user/register/initiate", async (req, res) => {
   try {
-    const { username, emailId, mobileNumber, password, name } = req.body; // cite: 82
+    const { username, emailId, mobileNumber, password, name } = req.body;
 
-    if (!username || !mobileNumber || !password || !name) {
-      // cite: 83
-      return res
-        .status(400)
-        .json({ error: "Missing required registration parameters." }); // cite: 83
+    if (!username || !emailId || !mobileNumber || !password || !name) {
+      return res.status(400).json({
+        error:
+          "All registration parameters (Name, Username, Email ID, Mobile Number, Password) are mandatory.",
+      });
     }
 
-    const constraintCheckArray = [{ username }, { mobileNumber }];
+    const trimmedEmail = emailId.trim().toLowerCase();
+    const trimmedMobile = mobileNumber.trim();
+    const trimmedUsername = username.trim();
 
-    if (emailId && emailId.trim() !== "") {
-      constraintCheckArray.push({ emailId });
-    }
-
+    // Check Uniqueness
     const existingLogin = await prisma.userLogin.findFirst({
-      where: { OR: constraintCheckArray }, // cite: 85
+      where: {
+        OR: [
+          { username: { equals: trimmedUsername, mode: "insensitive" } },
+          { emailId: { equals: trimmedEmail, mode: "insensitive" } },
+          { mobileNumber: trimmedMobile },
+        ],
+      },
     });
 
     if (existingLogin) {
-      // cite: 86
-      return res
-        .status(400)
-        .json({ error: "Username, mobile number, or email already exists." }); // cite: 86
+      return res.status(400).json({
+        error: "Username, email address, or mobile number already exists.",
+      });
     }
 
+    // Generate 6-Digit Verification OTP
     const generatedVerificationCode = String(
       Math.floor(100000 + Math.random() * 900000),
-    ); // cite: 566
-    const hashedPassword = await bcrypt.hash(password, 10); // cite: 66, 566
-    const sessionTransactionId = "verification-session-" + Date.now(); // cite: 566
+    );
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const sessionTransactionId = "verification-session-" + Date.now();
 
+    // Store in RAM memory with exact creation timestamp
     pendingRegistrationsMap.set(sessionTransactionId, {
-      profilePayload: {
-        name,
-        email: emailId && emailId.trim() !== "" ? emailId : null,
-      }, // cite: 567
+      profilePayload: { name: name.trim(), email: trimmedEmail },
       loginPayload: {
-        username,
-        emailId: emailId && emailId.trim() !== "" ? emailId : null,
-        mobileNumber,
+        username: trimmedUsername,
+        emailId: trimmedEmail,
+        mobileNumber: trimmedMobile,
         password: hashedPassword,
-      }, // cite: 567
-      correctToken: generatedVerificationCode, // cite: 567
+      },
+      correctToken: generatedVerificationCode,
+      createdAt: Date.now(), // 🕒 Used to calculate 3-minute expiry
     });
 
-    console.log("\n==========================================================");
-    console.log(`[📱 YOJANABASKET INTERNAL SMS GATEWAY SIMULATOR]`);
-    console.log(`Target Recipient Name : ${name}`);
-    console.log(`Mobile Connectivity  : +91 ${mobileNumber.trim()}`);
-    console.log(
-      `Generated OTP Token  : ${generatedVerificationCode}  <-- COPY THIS`,
-    );
-    console.log("==========================================================\n");
+    // Email Template (Updated to 3 Minutes)
+    const mailOptions = {
+      from: `"YojanaBasket Welfare Portal" <${process.env.EMAIL_USER}>`,
+      to: trimmedEmail,
+      subject: "YojanaBasket - Your Email Verification OTP Code",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f8f9ff; color: #0b1c30;">
+          <div style="max-width: 500px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #c5c6d2;">
+            <h2 style="color: #00113a; margin-top: 0;">Yojana<span style="color: #1e6b37;">Basket</span></h2>
+            <p>Namaste <strong>${name}</strong>,</p>
+            <p>Thank you for registering on YojanaBasket. Your 6-digit verification code is:</p>
+            <div style="background-color: #eaf5ed; border: 1px solid #1e6b37; text-align: center; padding: 15px; margin: 20px 0; font-size: 28px; font-weight: bold; letter-spacing: 5px; color: #1e6b37; border-radius: 8px;">
+              ${generatedVerificationCode}
+            </div>
+            <p style="font-size: 12px; color: #d97706; font-weight: bold;">⏰ This OTP code is valid for exactly 3 minutes.</p>
+            <p style="font-size: 12px; color: #444650;">If you did not request this code, please ignore this email.</p>
+          </div>
+        </div>
+      `,
+    };
 
-    res.status(200).json({
-      message: `Security validation code successfully generated for mobile routing line: +91 ${mobileNumber.trim()}.`,
+    console.log(
+      `[📧 EMAIL OTP DISPATCH]: ${trimmedEmail} -> ${generatedVerificationCode} (Valid for 3 mins)`,
+    );
+
+    // Dispatch Live Email
+    await mailTransporter.sendMail(mailOptions);
+
+    return res.status(200).json({
+      message: `Verification OTP transmitted directly to email: ${trimmedEmail}`,
       verificationSessionId: sessionTransactionId,
     });
   } catch (error) {
-    console.error(
-      "Internal Registration Initiation Pipeline Fault:",
-      error.message,
-    );
-    res.status(500).json({
-      error: "Failed to initialize mobile validation sequence.",
+    console.error("[Email OTP Delivery Error]:", error);
+    return res.status(500).json({
+      error:
+        "Failed to deliver OTP email. Please verify your email address or check server settings.",
       details: error.message,
-    }); // cite: 92
+    });
   }
 });
 
 // PHASE 2: Verify Token & Commit Profile Object Nested Atomically to Database
 app.post("/api/auth/user/register/verify", async (req, res) => {
   try {
-    const { verificationSessionId, inputOtpToken } = req.body;
-    if (!verificationSessionId || !inputOtpToken) {
-      return res
-        .status(400)
-        .json({ error: "Missing active validation tracking coordinates." });
-    }
+    const { verificationSessionId, verificationToken } = req.body;
 
-    const savedSessionRecord = pendingRegistrationsMap.get(
-      verificationSessionId,
-    );
-    if (!savedSessionRecord) {
-      return res
-        .status(404)
-        .json({ error: "Verification session expired or timed out." });
-    }
-
-    if (savedSessionRecord.correctToken !== String(inputOtpToken).trim()) {
-      return res.status(401).json({
-        error: "Security Code Check Mismatch. Please check terminal logs.",
+    if (!verificationSessionId || !verificationToken) {
+      return res.status(400).json({
+        error: "Both verification Session ID and OTP code are required.",
       });
     }
 
-    const { profilePayload, loginPayload } = savedSessionRecord;
+    const pendingRegistration = pendingRegistrationsMap.get(
+      verificationSessionId,
+    );
 
-    const result = await prisma.userProfile.create({
+    if (!pendingRegistration) {
+      return res.status(400).json({
+        error:
+          "Session expired or invalid. Please click 'Resend OTP' to generate a new code.",
+      });
+    }
+
+    // 🕒 3-MINUTE EXPIRATION ENFORCEMENT (3 * 60 * 1000 = 180,000 ms)
+    const THREE_MINUTES_MS = 3 * 60 * 1000;
+    const elapsedTime = Date.now() - pendingRegistration.createdAt;
+
+    if (elapsedTime > THREE_MINUTES_MS) {
+      // Purge expired OTP session from RAM
+      pendingRegistrationsMap.delete(verificationSessionId);
+      return res.status(400).json({
+        error:
+          "This OTP code has expired (valid for 3 minutes). Please click 'Resend OTP' to receive a new code.",
+      });
+    }
+
+    if (
+      String(pendingRegistration.correctToken) !==
+      String(verificationToken).trim()
+    ) {
+      return res
+        .status(400)
+        .json({
+          error: "Invalid OTP code entered. Please check and try again.",
+        });
+    }
+
+    // OTP Valid & Within 3 Minutes -> Create User Records
+    const { profilePayload, loginPayload } = pendingRegistration;
+
+    const createdProfile = await prisma.userProfile.create({
       data: {
-        name: profilePayload.name, // cite: 89
-        email: profilePayload.email, // cite: 89
+        name: profilePayload.name,
+        email: profilePayload.email,
         loginDetails: {
-          create: {
-            username: loginPayload.username, // cite: 89
-            emailId: loginPayload.emailId, // cite: 89
-            mobileNumber: loginPayload.mobileNumber, // cite: 89
-            password: loginPayload.password, // cite: 89
-          },
+          create: loginPayload,
         },
       },
-      include: { loginDetails: true }, // cite: 89
+      include: {
+        loginDetails: true,
+      },
     });
 
+    // Remove pending session
     pendingRegistrationsMap.delete(verificationSessionId);
+    delete createdProfile.loginDetails.password;
 
-    delete result.loginDetails.password; // cite: 90
-    res
-      .status(201)
-      .json({ message: "User registered successfully", data: result }); // cite: 91
+    return res.status(201).json({
+      message:
+        "Email identity verified and citizen account created successfully!",
+      data: createdProfile,
+    });
   } catch (error) {
-    res.status(500).json({
-      error: "Database transaction commit sequence failed.",
+    console.error("[OTP Verify Error]:", error);
+    return res.status(500).json({
+      error: "Failed to finalize registration transaction.",
       details: error.message,
-    }); // cite: 92
+    });
   }
 });
 
 // API: User Session Authentication (Login)
+// -------------------------------------------------------------
+// USER LOGIN ENDPOINT (SUPPORTING USERNAME, EMAIL, OR MOBILE)
+// -------------------------------------------------------------
 app.post("/api/auth/user/login", async (req, res) => {
   try {
-    const { credential, password } = req.body; // cite: 94
+    const { credential, password } = req.body;
+
+    // 1. Parameter Validation
     if (!credential || !password) {
       return res
         .status(400)
-        .json({ error: "Credential and password required." }); // cite: 95
+        .json({ error: "Credential and password parameters are required." });
     }
 
+    const cleanCredential = String(credential).trim().toLowerCase();
+
+    // 2. Lookup Login Record (Check Username, Email, or Mobile)
     const loginRecord = await prisma.userLogin.findFirst({
       where: {
         OR: [
-          { username: credential },
-          { emailId: credential },
-          { mobileNumber: credential },
+          { username: { equals: cleanCredential, mode: "insensitive" } },
+          { emailId: { equals: cleanCredential, mode: "insensitive" } },
+          { mobileNumber: cleanCredential },
         ],
-      }, // cite: 97
-      include: { user: true }, // cite: 97
+      },
+      include: {
+        user: true,
+      },
     });
 
-    if (
-      !loginRecord ||
-      !(await bcrypt.compare(password, loginRecord.password))
-    ) {
-      // cite: 98, 99
-      return res.status(401).json({ error: "Invalid credentials." }); // cite: 98, 99
+    // 3. Check if User Exists
+    if (!loginRecord) {
+      console.warn(
+        `[Login Attempt Failed]: No user account found for credential '${credential}'`,
+      );
+      return res.status(401).json({
+        error: "Account not found. Please register a new account first.",
+      });
     }
 
-    delete loginRecord.password; // cite: 100
-    res.json({
-      message: "Login successful",
-      userProfile: loginRecord.user,
+    // 4. Verify Password Hash using bcrypt
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      loginRecord.password,
+    );
+
+    if (!isPasswordValid) {
+      console.warn(
+        `[Login Attempt Failed]: Incorrect password for user '${loginRecord.username}'`,
+      );
+      return res.status(401).json({
+        error: "Invalid password. Please check your credentials and try again.",
+      });
+    }
+
+    // 5. Successful Authentication -> Strip Password and Return Session Details
+    const userProfileData = loginRecord.user || {
+      name: loginRecord.username,
+      email: loginRecord.emailId,
+    };
+
+    delete loginRecord.password;
+
+    console.log(
+      `[Login Successful]: User '${loginRecord.username}' authenticated successfully.`,
+    );
+
+    return res.status(200).json({
+      message: "Login successful!",
+      userProfile: userProfileData,
       accountDetails: loginRecord,
-    }); // cite: 100
+    });
   } catch (error) {
-    res.status(500).json({
-      error: "Authentication transaction failed",
+    console.error("[Login Backend Error]:", error);
+    return res.status(500).json({
+      error:
+        "Authentication server encountered an error processing login request.",
       details: error.message,
-    }); // cite: 101
+    });
   }
 });
 
@@ -721,47 +830,51 @@ app.post("/api/admin/schemes/update", async (req, res) => {
 // -------------------------------------------------------------
 async function seedDefaultData() {
   try {
+    console.log("Checking and seeding default user credentials...");
+
+    // Seed default user profile
     const defaultUser = await prisma.userProfile.upsert({
-      where: { email: "krankit2007@gmail.com" }, // cite: 65
+      where: { email: "krankit2007@gmail.com" },
       update: {},
       create: {
-        id: "seeded-user-id-ankit-2026", // cite: 65
-        name: "Ankit Kumar", // cite: 65
-        email: "krankit2007@gmail.com", // cite: 65
-        age: 25, // cite: 65
-        gender: "Male", // cite: 65
-        state: "Bihar", // cite: 65
-        caste: "OBC", // cite: 65
-        annualIncome: 150000, // cite: 65
-        occupation: "Student", // cite: 65
-        disability: false, // cite: 65
-        avatarUrl: "", // cite: 65
+        id: "seeded-user-id-ankit-2026",
+        name: "Ankit Kumar",
+        email: "krankit2007@gmail.com",
+        age: 25,
+        gender: "Male",
+        state: "Bihar",
+        caste: "OBC",
+        annualIncome: 150000,
+        occupation: "Student",
+        disability: false,
       },
     });
 
-    const defaultPasswordHash = await bcrypt.hash("Ankit@2026", 10); // cite: 66
+    // Hash default password "Ankit@2026"
+    const defaultPasswordHash = await bcrypt.hash("Ankit@2026", 10);
+
     await prisma.userLogin.upsert({
-      where: { userId: defaultUser.id }, // cite: 67
+      where: { userId: defaultUser.id },
       update: {},
       create: {
-        userId: defaultUser.id, // cite: 67
-        username: "ankit_kumar", // cite: 67
-        emailId: "krankit2007@gmail.com", // cite: 67
-        mobileNumber: "9876543210", // cite: 67
-        password: defaultPasswordHash, // cite: 67
+        userId: defaultUser.id,
+        username: "ankit_kumar",
+        emailId: "krankit2007@gmail.com",
+        mobileNumber: "9876543210",
+        password: defaultPasswordHash,
       },
     });
 
-    console.log(
-      "[YojanaBasket Seeder] Baseline database profiles seeded successfully.",
-    ); // cite: 76
+    console.log("Pre-seeded default user 'ankit_kumar' ready!");
   } catch (err) {
-    console.warn("Database seeding non-blocking message:", err.message); // cite: 77
+    console.warn("Database seeding non-blocking warning:", err.message);
   }
 }
 
+seedDefaultData();
+
 // Trigger automatic seeder routine operations during server start sequence hook
-seedDefaultData().catch((err) => console.error("Initial seeding failed:", err));
+//seedDefaultData().catch((err) => console.error("Initial seeding failed:", err));
 
 // -------------------------------------------------------------
 // ABOUT US DATA API ENDPOINT
