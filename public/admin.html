@@ -3,14 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Sovereign Administration Gateway - YojanaBasket</title>
-    <!-- Core Tailwind UI System Engines -->
+    <title>Admin Portal - YojanaBasket</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined&display=swap"
       rel="stylesheet"
     />
-
     <script>
       tailwind.config = {
         theme: {
@@ -18,792 +16,494 @@
             colors: {
               primary: "#00113a",
               "primary-container": "#002366",
+              "brand-green": "#1e6b37",
+              "brand-green-dark": "#145229",
+              "brand-green-light": "#eaf5ed",
               secondary: "#8f4e00",
               "secondary-container": "#fe9832",
-              "on-secondary-container": "#683700",
               background: "#f8f9ff",
-              surface: "#f8f9ff",
-              "surface-container-lowest": "#ffffff",
-              "surface-container-low": "#eff4ff",
-              "surface-container-high": "#dce9ff",
-              "on-surface": "#0b1c30",
-              "on-surface-variant": "#444650",
-              "outline-variant": "#c5c6d2",
             },
           },
         },
       };
     </script>
   </head>
-  <body class="bg-background text-on-surface flex flex-col min-h-screen">
-    <header class="bg-surface-container-lowest shadow-sm">
-      <div
-        class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto"
+  <body
+    class="bg-background text-on-surface font-['Public_Sans',sans-serif] min-h-screen flex flex-col"
+  >
+    <header
+      class="bg-primary text-white shadow-md sticky top-0 z-50 border-b border-primary-container"
+    >
+      <nav
+        class="flex justify-between items-center w-full px-6 py-3.5 max-w-7xl mx-auto"
       >
-        <div
-          class="text-2xl font-bold text-primary tracking-tight cursor-pointer"
-          onclick="window.location.href = '/index.html'"
-        >
-          YojanaBasket
-        </div>
-        <div class="flex items-center gap-4">
-          <div
-            class="text-xs bg-red-50 text-red-700 font-bold px-3 py-1.5 rounded-full border border-red-200 uppercase tracking-wider"
-          >
-            Internal Console Area
+        <div class="flex items-center gap-3">
+          <img
+            src="logo.jpeg"
+            alt="YojanaBasket"
+            class="h-10 w-auto object-contain rounded-lg"
+            onerror="this.src = 'icon.jpeg'"
+          />
+          <div>
+            <span class="text-xl font-extrabold tracking-tight"
+              >Yojana<span class="text-secondary-container">Basket</span></span
+            >
+            <span
+              class="text-[10px] bg-secondary-container text-primary font-bold px-2 py-0.5 rounded ml-2 uppercase"
+              >Admin Portal</span
+            >
           </div>
+        </div>
+
+        <div id="adminAuthNav" class="flex items-center gap-4">
+          <a
+            href="/"
+            class="text-xs font-bold text-white/80 hover:text-white flex items-center gap-1"
+          >
+            <span class="material-symbols-outlined text-sm">home</span> Home
+          </a>
           <button
             id="adminSignOutBtn"
             onclick="executeAdminSignOut()"
-            class="hidden text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-3 py-1.5 rounded-lg transition-all"
+            class="hidden bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-3.5 py-2 rounded-lg transition-all"
           >
-            Sign Out
+            Sign Out Admin
           </button>
         </div>
-      </div>
+      </nav>
     </header>
 
-    <main class="flex-grow flex items-center justify-center p-6 pb-24">
-      <!-- VIEW A: Admin Gate Authentication Card -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-8">
       <div
-        id="adminAuthCard"
-        class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl border border-outline-variant flex flex-col"
+        id="adminLoginCard"
+        class="max-w-md mx-auto bg-white rounded-2xl p-8 border border-gray-200 shadow-xl space-y-6 my-12"
       >
-        <div class="bg-primary p-6 text-white">
-          <h3 class="text-xl font-bold flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary-container"
-              >shield_person</span
-            >
-            Administrative Portal
-          </h3>
-          <p class="text-xs opacity-70 mt-1">
-            Official Sovereign Framework Console Authentication Gate
-          </p>
+        <div class="text-center space-y-2">
+          <span class="material-symbols-outlined text-primary text-4xl"
+            >admin_panel_settings</span
+          >
+          <h2 class="text-2xl font-extrabold text-primary">Admin Sign In</h2>
+          <p class="text-xs text-gray-500">Authorized personnel access only</p>
         </div>
-        <div class="p-6">
+
+        <div
+          id="adminLoginAlert"
+          class="p-3 rounded-lg text-xs font-medium hidden"
+        ></div>
+
+        <form onsubmit="executeAdminLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-gray-700 mb-1"
+              >Username / Email</label
+            >
+            <input
+              type="text"
+              id="adminCredential"
+              required
+              class="w-full rounded-lg border-gray-300 text-sm min-h-[44px]"
+              placeholder="e.g. superadmin"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-gray-700 mb-1"
+              >Master Password</label
+            >
+            <input
+              type="password"
+              id="adminPassword"
+              required
+              class="w-full rounded-lg border-gray-300 text-sm min-h-[44px]"
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-primary text-white font-bold text-xs py-3.5 rounded-xl hover:bg-primary-container transition-all shadow-md min-h-[46px]"
+          >
+            Authenticate Admin Access
+          </button>
+        </form>
+      </div>
+
+      <div id="adminWorkspace" class="hidden space-y-8">
+        <div
+          class="bg-primary text-white p-6 rounded-2xl shadow-lg flex justify-between items-center"
+        >
+          <div>
+            <h2 class="text-2xl font-extrabold">Administrative Workspace</h2>
+            <p class="text-xs text-white/80 mt-1">
+              Publish new government schemes and manage citizen inquiries.
+            </p>
+          </div>
+          <div class="text-right">
+            <span
+              class="text-xs font-mono bg-white/10 px-3 py-1.5 rounded-lg border border-white/20"
+              >Role: SUPER_ADMIN</span
+            >
+          </div>
+        </div>
+
+        <div
+          class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-6"
+        >
+          <div class="border-b pb-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-brand-green text-2xl"
+                >add_circle</span
+              >
+              <h3 class="text-lg font-bold text-primary">
+                Publish New Government Scheme
+              </h3>
+            </div>
+          </div>
+
           <div
-            id="adminAlertBanner"
-            class="mb-4 p-3 rounded-lg text-xs font-medium hidden"
+            id="addSchemeAlert"
+            class="p-3 rounded-lg text-xs font-medium hidden"
           ></div>
+
           <form
-            id="adminPortalLoginForm"
-            class="space-y-4"
-            onsubmit="executeAdminLogin(event)"
+            onsubmit="executeAddScheme(event)"
+            class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs"
           >
             <div>
-              <label
-                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                >Admin Account Identifier</label
+              <label class="block font-bold text-gray-700 mb-1"
+                >Scheme Name (English) *</label
               >
               <input
                 type="text"
-                id="adminCredentialField"
+                id="schemeName"
                 required
-                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-                placeholder="Username"
+                class="w-full rounded-lg border-gray-300 min-h-[42px]"
+                placeholder="e.g. PM Surya Ghar Muft Bijli Yojana"
               />
             </div>
+
             <div>
-              <label
-                class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-                >Administrative Password</label
+              <label class="block font-bold text-gray-700 mb-1"
+                >Scheme Name (Hindi)</label
               >
               <input
-                type="password"
-                id="adminPasswordField"
-                required
-                class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-                placeholder="••••••••"
+                type="text"
+                id="schemeHindiName"
+                class="w-full rounded-lg border-gray-300 min-h-[42px]"
+                placeholder="e.g. पीएम सूर्य घर मुफ्त बिजली योजना"
               />
             </div>
-            <button
-              type="submit"
-              class="w-full bg-primary text-white font-bold py-3 rounded-lg min-h-[48px] hover:bg-primary-container transition-colors shadow flex items-center justify-center gap-2"
-            >
-              <span class="material-symbols-outlined text-sm">lock_open</span>
-              Authenticate Credentials
-            </button>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1"
+                >Welfare Category *</label
+              >
+              <select
+                id="schemeCategory"
+                required
+                class="w-full rounded-lg border-gray-300 min-h-[42px]"
+              >
+                <option value="farming">Farming / Agriculture</option>
+                <option value="health">Health & Medical Cover</option>
+                <option value="loans">
+                  Banking, Financial Services & Insurance
+                </option>
+                <option value="education">Education & Scholarships</option>
+                <option value="housing">Housing & Infrastructure</option>
+                <option value="public safety">
+                  Public Safety, Law and Justice
+                </option>
+                <option value="transport">Transport</option>
+                <option value="sports & culture">Sports & Culture</option>
+                <option value="science">
+                  Science, Technology & Innovation
+                </option>
+                <option value="travel">Travel & Tourism</option>
+                <option value="Empowerment">
+                  Social Welfare & Empowerment
+                </option>
+                <option value="Women">Women & Child Development</option>
+                <option value="sanitation">Utility and Sanitation</option>
+                <option value="skills">Skills and Employment</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1"
+                >Ministry / Department *</label
+              >
+              <input
+                type="text"
+                id="schemeMinistry"
+                required
+                class="w-full rounded-lg border-gray-300 min-h-[42px]"
+                placeholder="e.g. Ministry of New and Renewable Energy"
+              />
+            </div>
+
+            <div class="col-span-2">
+              <label class="block font-bold text-gray-700 mb-1"
+                >Scheme Description *</label
+              >
+              <textarea
+                id="schemeDescription"
+                required
+                rows="2"
+                class="w-full rounded-lg border-gray-300"
+                placeholder="Brief summary of scheme objectives..."
+              ></textarea>
+            </div>
+
+            <div class="col-span-2">
+              <label class="block font-bold text-gray-700 mb-1"
+                >Citizen Benefits *</label
+              >
+              <textarea
+                id="schemeBenefits"
+                required
+                rows="2"
+                class="w-full rounded-lg border-gray-300"
+                placeholder="e.g. Free electricity up to 300 units per month and subsidy up to ₹78,000..."
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1"
+                >Required Documents (Comma Separated)</label
+              >
+              <input
+                type="text"
+                id="schemeDocuments"
+                class="w-full rounded-lg border-gray-300 min-h-[42px]"
+                placeholder="Aadhaar Card, Electricity Bill, Bank Passbook"
+              />
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1"
+                >Official Portal Application Link *</label
+              >
+              <input
+                type="url"
+                id="schemeOfficialLink"
+                required
+                class="w-full rounded-lg border-gray-300 min-h-[42px]"
+                placeholder="https://pmsuryaghar.gov.in/"
+              />
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1"
+                >Applicable State / Region *</label
+              >
+              <select
+                id="schemeState"
+                required
+                class="w-full rounded-lg border-gray-300 min-h-[42px]"
+              >
+                <option value="central">
+                  Central / Nationwide (All States)
+                </option>
+
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                <option value="Assam">Assam</option>
+                <option value="Bihar">Bihar</option>
+                <option value="Chhattisgarh">Chhattisgarh</option>
+                <option value="Goa">Goa</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Haryana">Haryana</option>
+                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                <option value="Jharkhand">Jharkhand</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Manipur">Manipur</option>
+                <option value="Meghalaya">Meghalaya</option>
+                <option value="Mizoram">Mizoram</option>
+                <option value="Nagaland">Nagaland</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Sikkim">Sikkim</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Tripura">Tripura</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Uttarakhand">Uttarakhand</option>
+                <option value="West Bengal">West Bengal</option>
+
+                <option value="Andaman and Nicobar Islands">
+                  Andaman and Nicobar Islands
+                </option>
+                <option value="Chandigarh">Chandigarh</option>
+                <option value="Dadra and Nagar Haveli and Daman and Diu">
+                  Dadra and Nagar Haveli and Daman and Diu
+                </option>
+                <option value="Delhi">Delhi</option>
+                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                <option value="Ladakh">Ladakh</option>
+                <option value="Lakshadweep">Lakshadweep</option>
+                <option value="Puducherry">Puducherry</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1"
+                >Gender Scope</label
+              >
+              <select
+                id="schemeGender"
+                class="w-full rounded-lg border-gray-300 min-h-[42px]"
+              >
+                <option value="all">
+                  All Citizens (Male, Female, Transgender)
+                </option>
+                <option value="Female">Female Only</option>
+                <option value="Male">Male Only</option>
+              </select>
+            </div>
+
+            <div class="col-span-2 pt-2">
+              <button
+                type="submit"
+                class="w-full bg-brand-green text-white font-bold text-xs py-3.5 rounded-xl hover:bg-brand-green-dark transition-all shadow flex items-center justify-center gap-2"
+              >
+                <span class="material-symbols-outlined text-sm">publish</span>
+                <span>Publish Scheme to Catalog & AI Database</span>
+              </button>
+            </div>
           </form>
         </div>
       </div>
-
-      <!-- VIEW B: Hidden Administrative Scheme Deployment Workspace -->
-      <div
-        id="adminDashboardPanel"
-        class="hidden bg-white rounded-2xl w-full max-w-4xl p-6 shadow-xl border border-outline-variant flex flex-col"
-      >
-        <div
-          class="border-b pb-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4"
-        >
-          <div>
-            <h3
-              id="panelActionTitle"
-              class="text-2xl font-bold text-primary flex items-center gap-2"
-            >
-              <span class="material-symbols-outlined text-secondary-container"
-                >playlist_add</span
-              >
-              Deploy New Government Welfare Scheme
-            </h3>
-            <p class="text-xs text-on-surface-variant mt-0.5">
-              Create a new entry or select an existing entry below to modify
-              structural criteria maps.
-            </p>
-          </div>
-
-          <!-- Scheme Edit Selection Component Integration -->
-          <div class="min-w-[250px]">
-            <label
-              class="block text-[10px] font-bold uppercase text-secondary mb-1"
-              >Select Scheme to Modify/Edit</label
-            >
-            <select
-              id="schemeSelectionDropdown"
-              onchange="loadExistingSchemeDataForEditing()"
-              class="w-full rounded-lg border-outline-variant text-xs min-h-[38px] bg-surface-container-low font-medium"
-            >
-              <option value="NEW_SCHEME">-- Add New Scheme Entry --</option>
-            </select>
-          </div>
-        </div>
-
-        <div
-          id="schemeFormAlertBanner"
-          class="mb-4 p-3 rounded-lg text-xs font-medium hidden"
-        ></div>
-
-        <form
-          id="addSchemeDataForm"
-          onsubmit="submitSchemeFormToRegistry(event)"
-          class="grid grid-cols-1 md:grid-cols-2 gap-5"
-        >
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Unique Scheme ID (Slug)*</label
-            >
-            <input
-              type="text"
-              id="schemeId"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              placeholder="e.g. pm-kisan-new"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Scheme Name (English)*</label
-            >
-            <input
-              type="text"
-              id="schemeName"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              placeholder="e.g. Pradhan Mantri Kisan Nidhi"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Scheme Name (Hindi Line)</label
-            >
-            <input
-              type="text"
-              id="schemeHindiName"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              placeholder="e.g. प्रधानमंत्री किसान निधि"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Category Domain Group*</label
-            >
-            <select
-              id="schemeCategory"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            >
-              <option value="farming">Farming / Agriculture</option>
-              <option value="health">Health & Medical Cover</option>
-              <option value="loans">
-                Banking, Financial Services & Insurance
-              </option>
-              <option value="education">Education & Scholarships</option>
-              <option value="housing">Housing & Infrastructure</option>
-              <option value="public safety">
-                Public Safety, Law and Justice
-              </option>
-              <option value="transport">Transport</option>
-              <option value="sports & culture">Sports & Culture</option>
-              <option value="science">Science, Technology & Innovation</option>
-              <option value="travel">Travel & Tourism</option>
-              <option value="Empowerment">Social Welfare & Empowerment</option>
-              <option value="Women">Women & Child Development</option>
-              <option value="sanitation">Utility and Sanitation</option>
-              <option value="skills">Skills and Employment</option>
-            </select>
-          </div>
-          <div class="md:col-span-2">
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Complete Descriptive Summary*</label
-            >
-            <textarea
-              id="schemeDescription"
-              required
-              rows="3"
-              class="w-full rounded-lg border-outline-variant text-sm"
-              placeholder="Provide a summary detailing scope boundaries..."
-            ></textarea>
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Governing Authority</label
-            >
-            <input
-              type="text"
-              id="schemeMinistry"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Benefits</label
-            >
-            <input
-              type="text"
-              id="schemeBenefits"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div class="md:col-span-2">
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Required Documents (Comma Separated)</label
-            >
-            <input
-              type="text"
-              id="schemeDocuments"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              placeholder="Aadhaar Card, Bank Passbook"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Min Age</label
-            >
-            <input
-              type="number"
-              id="schemeMinAge"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Max Age</label
-            >
-            <input
-              type="number"
-              id="schemeMaxAge"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Gender</label
-            >
-            <select
-              id="schemeGender"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            >
-              <option value="all">All</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >State Tier Scope*</label
-            >
-            <select
-              id="schemeState"
-              required
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            >
-              <option value="central">Central / Nationwide</option>
-              <!-- 28 States -->
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
-              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-              <option value="Assam">Assam</option>
-              <option value="Bihar">Bihar</option>
-              <option value="Chhattisgarh">Chhattisgarh</option>
-              <option value="Goa">Goa</option>
-              <option value="Gujarat">Gujarat</option>
-              <option value="Haryana">Haryana</option>
-              <option value="Himachal Pradesh">Himachal Pradesh</option>
-              <option value="Jharkhand">Jharkhand</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Kerala">Kerala</option>
-              <option value="Madhya Pradesh">Madhya Pradesh</option>
-              <option value="Maharashtra">Maharashtra</option>
-              <option value="Manipur">Manipur</option>
-              <option value="Meghalaya">Meghalaya</option>
-              <option value="Mizoram">Mizoram</option>
-              <option value="Nagaland">Nagaland</option>
-              <option value="Odisha">Odisha</option>
-              <option value="Punjab">Punjab</option>
-              <option value="Rajasthan">Rajasthan</option>
-              <option value="Sikkim">Sikkim</option>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Telangana">Telangana</option>
-              <option value="Tripura">Tripura</option>
-              <option value="Uttar Pradesh">Uttar Pradesh</option>
-              <option value="Uttarakhand">Uttarakhand</option>
-              <option value="West Bengal">West Bengal</option>
-              <!-- Union Territories -->
-              <option value="Andaman and Nicobar Islands">
-                Andaman and Nicobar Islands
-              </option>
-              <option value="Chandigarh">Chandigarh</option>
-              <option value="Dadra and Nagar Haveli and Daman and Diu">
-                Dadra and Nagar Haveli and Daman and Diu
-              </option>
-              <option value="Delhi">Delhi</option>
-              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-              <option value="Ladakh">Ladakh</option>
-              <option value="Lakshadweep">Lakshadweep</option>
-              <option value="Puducherry">Puducherry</option>
-            </select>
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Castes</label
-            >
-            <input
-              type="text"
-              id="schemeCaste"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-              value="all"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Max Income Ceiling</label
-            >
-            <input
-              type="number"
-              id="schemeMaxIncome"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div class="md:col-span-2">
-            <label
-              class="block text-xs font-bold uppercase text-on-surface-variant mb-1"
-              >Official Portal URL</label
-            >
-            <input
-              type="url"
-              id="schemeOfficialLink"
-              class="w-full rounded-lg border-outline-variant text-sm min-h-[44px]"
-            />
-          </div>
-          <div
-            class="md:col-span-2 flex items-center gap-3 bg-surface-container-low p-3 rounded-xl border border-outline-variant/60"
-          >
-            <input
-              type="checkbox"
-              id="schemeRequiresDisability"
-              class="rounded text-primary focus:ring-primary w-5 h-5"
-            />
-            <label
-              for="schemeRequiresDisability"
-              class="text-xs font-semibold text-primary"
-              >Requires disability classification</label
-            >
-          </div>
-          <div class="md:col-span-2 border-t pt-4 flex gap-4 justify-end">
-            <button
-              type="button"
-              onclick="resetSchemeForm()"
-              class="bg-gray-100 text-gray-700 font-bold px-6 py-3 rounded-lg"
-            >
-              Clear / Reset
-            </button>
-            <button
-              type="submit"
-              id="formSubmitActionButton"
-              class="bg-primary text-white font-bold px-8 py-3 rounded-lg hover:bg-primary-container transition-colors shadow"
-            >
-              Publish Scheme Entry 🚀
-            </button>
-          </div>
-        </form>
-      </div>
     </main>
 
-    <!-- UNIVERSAL AI ASSISTANT OVERLAY PORTAL -->
-    <div class="fixed bottom-6 right-6 z-[90] flex flex-col items-end">
-      <div
-        id="sarthiWorkspacePanel"
-        class="w-80 md:w-96 h-[400px] bg-white rounded-2xl border border-outline-variant shadow-xl flex flex-col mb-4 hidden overflow-hidden transition-all"
-      >
-        <div
-          class="bg-primary p-4 text-white flex justify-between items-center text-xs font-bold"
-        >
-          <span class="flex items-center gap-2">
-            <img
-              src="icon.jpeg"
-              alt="Yojana Mitra"
-              class="w-5 h-5 rounded-full object-cover ring-1 ring-white/40"
-            />
-            <span>Sarthi AI Assistant (Admin Console)</span>
-          </span>
-          <button
-            onclick="toggleSarthiPanel(false)"
-            class="opacity-80 hover:opacity-100"
-          >
-            <span class="material-symbols-outlined text-sm">close</span>
-          </button>
-        </div>
-        <div
-          id="sarthiChatConsoleStream"
-          class="flex-grow p-4 overflow-y-auto space-y-3 bg-surface-container-low text-xs"
-        ></div>
-        <div class="p-3 border-t bg-white flex gap-2 items-center">
-          <input
-            type="text"
-            id="sarthiQueryConsoleInput"
-            class="flex-grow rounded-lg border-outline-variant text-xs min-h-[40px] focus:ring-primary"
-            placeholder="Ask structural query parameters..."
-            onkeypress="handleSarthiKeyPress(event)"
-          />
-          <button
-            onclick="
-              startAdminVoiceRecognition(
-                'sarthiQueryConsoleInput',
-                'sarthiSendActionBtn',
-              )
-            "
-            class="p-2 hover:bg-surface-container-low rounded-full text-on-surface-variant flex items-center justify-center transition-colors"
-          >
-            <span
-              id="mic-icon-sarthiQueryConsoleInput"
-              class="material-symbols-outlined text-lg"
-              >mic</span
-            >
-          </button>
-          <button
-            id="sarthiSendActionBtn"
-            onclick="processSarthiQueryTransmission()"
-            class="bg-primary text-white h-9 w-9 rounded-lg flex items-center justify-center hover:bg-primary-container shrink-0"
-          >
-            <span class="material-symbols-outlined text-sm">send</span>
-          </button>
-        </div>
-      </div>
-      <button
-        onclick="toggleSarthiPanel(true)"
-        class="w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center ring-4 ring-primary/20 hover:scale-105 transition-all overflow-hidden"
-      >
-        <img
-          src="icon.jpeg"
-          alt="Yojana Mitra Logo"
-          class="w-full h-full object-cover"
-        />
-      </button>
-    </div>
-
-    <footer
-      class="bg-surface-container-low py-4 text-center text-[11px] text-on-surface-variant border-t"
-    >
-      Authorized personnel operations explicitly protected.
-    </footer>
-
-    <script src="js/lang.js"></script>
-    <script src="js/sarthi.js"></script>
     <script>
-      let globalCachedSchemesList = [];
-
       document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem("yojana_admin_token")) {
-          switchViewLayouts(true);
-          fetchSchemesRegistryList();
-        }
+        checkAdminSession();
       });
 
-      // Fetches schemes to populate the selection dropdown
-      async function fetchSchemesRegistryList() {
-        try {
-          const response = await fetch("/api/schemes?category=all");
-          const data = await response.json();
-          if (response.ok && data.schemes) {
-            globalCachedSchemesList = data.schemes;
-            const dropdown = document.getElementById("schemeSelectionDropdown");
+      function checkAdminSession() {
+        const token = localStorage.getItem("yojana_admin_token");
+        const loginCard = document.getElementById("adminLoginCard");
+        const workspace = document.getElementById("adminWorkspace");
+        const signOutBtn = document.getElementById("adminSignOutBtn");
 
-            // Clear out everything except the baseline "New Scheme" option
-            dropdown.innerHTML =
-              '<option value="NEW_SCHEME">-- Add New Scheme Entry --</option>';
-
-            data.schemes.forEach((scheme) => {
-              const opt = document.createElement("option");
-              opt.value = scheme.id;
-              opt.innerText = `${scheme.name} (${scheme.id})`;
-              dropdown.appendChild(opt);
-            });
-          }
-        } catch (err) {
-          console.error("Error sync matching scheme master list indexes:", err);
-        }
-      }
-
-      // Dynamic field mapping injection matrix
-      function loadExistingSchemeDataForEditing() {
-        const selectedId = document.getElementById(
-          "schemeSelectionDropdown",
-        ).value;
-        const submitBtn = document.getElementById("formSubmitActionButton");
-        const actionTitle = document.getElementById("panelActionTitle");
-        const idField = document.getElementById("schemeId");
-
-        if (selectedId === "NEW_SCHEME") {
-          resetSchemeForm();
-          return;
-        }
-
-        const targetData = globalCachedSchemesList.find(
-          (s) => s.id === selectedId,
-        );
-        if (!targetData) return;
-
-        // Populate fields
-        idField.value = targetData.id;
-        idField.setAttribute("readonly", true); // Freeze primary identifier keys
-        idField.classList.add("bg-gray-100", "cursor-not-allowed");
-
-        document.getElementById("schemeName").value = targetData.name || "";
-        document.getElementById("schemeHindiName").value =
-          targetData.hindiName || "";
-        document.getElementById("schemeCategory").value =
-          targetData.category || "farming";
-        document.getElementById("schemeDescription").value =
-          targetData.description || "";
-        document.getElementById("schemeMinistry").value =
-          targetData.ministry || "";
-        document.getElementById("schemeBenefits").value =
-          targetData.benefits || "";
-
-        // Formats input document loops cleanly
-        if (Array.isArray(targetData.requiredDocuments)) {
-          document.getElementById("schemeDocuments").value =
-            targetData.requiredDocuments.join(", ");
+        if (token) {
+          if (loginCard) loginCard.classList.add("hidden");
+          if (workspace) workspace.classList.remove("hidden");
+          if (signOutBtn) signOutBtn.classList.remove("hidden");
         } else {
-          document.getElementById("schemeDocuments").value =
-            targetData.requiredDocuments || "";
-        }
-
-        document.getElementById("schemeMinAge").value = targetData.minAge || "";
-        document.getElementById("schemeMaxAge").value = targetData.maxAge || "";
-        document.getElementById("schemeGender").value =
-          targetData.gender || "all";
-        document.getElementById("schemeState").value =
-          targetData.state || "central";
-        document.getElementById("schemeCaste").value =
-          targetData.caste || "all";
-        document.getElementById("schemeMaxIncome").value =
-          targetData.maxIncome || "";
-        document.getElementById("schemeOfficialLink").value =
-          targetData.officialLink || "";
-        document.getElementById("schemeRequiresDisability").checked =
-          !!targetData.requiresDisability;
-
-        // Visual indicator shift mapping
-        actionTitle.innerHTML = `<span class="material-symbols-outlined text-secondary-container">edit_note</span> Edit Existing Government Welfare Scheme`;
-        submitBtn.innerText = "Save Scheme Modifications 💾";
-        submitBtn.className =
-          "bg-secondary text-white font-bold px-8 py-3 rounded-lg hover:bg-on-secondary-container transition-colors shadow";
-      }
-
-      function startAdminVoiceRecognition(inputId, triggerBtnId) {
-        const SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) return;
-        const recognition = new SpeechRecognition();
-        const micIcon = document.getElementById(`mic-icon-${inputId}`);
-        const targetInput = document.getElementById(inputId);
-
-        recognition.onstart = () => {
-          if (micIcon)
-            micIcon.className =
-              "material-symbols-outlined text-lg text-red-600 animate-pulse";
-        };
-        recognition.onend = () => {
-          if (micIcon)
-            micIcon.className =
-              "material-symbols-outlined text-lg text-on-surface-variant";
-        };
-        recognition.onresult = (event) => {
-          if (targetInput) {
-            targetInput.value = event.results[0][0].transcript;
-            setTimeout(() => {
-              document.getElementById(triggerBtnId).click();
-            }, 400);
-          }
-        };
-        recognition.start();
-      }
-
-      function switchViewLayouts(authenticated) {
-        if (authenticated) {
-          document.getElementById("adminAuthCard").classList.add("hidden");
-          document
-            .getElementById("adminDashboardPanel")
-            .classList.remove("hidden");
-          document.getElementById("adminSignOutBtn").classList.remove("hidden");
-        } else {
-          document.getElementById("adminAuthCard").classList.remove("hidden");
-          document
-            .getElementById("adminDashboardPanel")
-            .classList.add("hidden");
-          document.getElementById("adminSignOutBtn").classList.add("hidden");
+          if (loginCard) loginCard.classList.remove("hidden");
+          if (workspace) workspace.classList.add("hidden");
+          if (signOutBtn) signOutBtn.classList.add("hidden");
         }
       }
 
       async function executeAdminLogin(event) {
         event.preventDefault();
+        const alertBanner = document.getElementById("adminLoginAlert");
         const credential = document
-          .getElementById("adminCredentialField")
+          .getElementById("adminCredential")
           .value.trim();
-        const password = document.getElementById("adminPasswordField").value;
-        const banner = document.getElementById("adminAlertBanner");
+        const password = document.getElementById("adminPassword").value;
+
         try {
           const response = await fetch("/api/auth/admin/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ credential, password }),
           });
+
           const output = await response.json();
+
           if (!response.ok) {
-            banner.innerText = output.error || "Access Denied.";
-            banner.className =
-              "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
-            banner.classList.remove("hidden");
+            alertBanner.innerText = output.error || "Authentication failed.";
+            alertBanner.className =
+              "p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+            alertBanner.classList.remove("hidden");
             return;
           }
+
           localStorage.setItem(
             "yojana_admin_token",
             JSON.stringify(output.adminDetails),
           );
-          switchViewLayouts(true);
-          fetchSchemesRegistryList();
+          checkAdminSession();
         } catch (err) {
-          banner.innerText = "Connection error.";
-          banner.classList.remove("hidden");
+          alertBanner.innerText =
+            "Network connection error logging into admin panel.";
+          alertBanner.className =
+            "p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+          alertBanner.classList.remove("hidden");
         }
       }
 
-      async function submitSchemeFormToRegistry(event) {
+      async function executeAddScheme(event) {
         event.preventDefault();
-        const banner = document.getElementById("schemeFormAlertBanner");
-        const selectedId = document.getElementById(
-          "schemeSelectionDropdown",
-        ).value;
+        const alertBanner = document.getElementById("addSchemeAlert");
+        if (alertBanner) alertBanner.classList.add("hidden");
 
+        const docs = document.getElementById("schemeDocuments")?.value;
         const payload = {
-          id: document.getElementById("schemeId").value,
-          name: document.getElementById("schemeName").value,
-          hindiName: document.getElementById("schemeHindiName").value,
+          name: document.getElementById("schemeName").value.trim(),
+          hindiName:
+            document.getElementById("schemeHindiName")?.value.trim() || "",
           category: document.getElementById("schemeCategory").value,
-          description: document.getElementById("schemeDescription").value,
-          ministry: document.getElementById("schemeMinistry").value,
-          benefits: document.getElementById("schemeBenefits").value,
-          requiredDocuments: document.getElementById("schemeDocuments").value,
-          minAge: document.getElementById("schemeMinAge").value,
-          maxAge: document.getElementById("schemeMaxAge").value,
-          gender: document.getElementById("schemeGender").value,
+          ministry: document.getElementById("schemeMinistry").value.trim(),
+          description: document
+            .getElementById("schemeDescription")
+            .value.trim(),
+          benefits: document.getElementById("schemeBenefits").value.trim(),
+          requiredDocuments: docs
+            ? docs
+                .split(",")
+                .map((d) => d.trim())
+                .filter(Boolean)
+            : ["Aadhaar Card"],
+          officialLink: document
+            .getElementById("schemeOfficialLink")
+            .value.trim(),
           state: document.getElementById("schemeState").value,
-          caste: document.getElementById("schemeCaste").value,
-          maxIncome: document.getElementById("schemeMaxIncome").value,
-          requiresDisability: document.getElementById(
-            "schemeRequiresDisability",
-          ).checked,
-          officialLink: document.getElementById("schemeOfficialLink").value,
+          gender: document.getElementById("schemeGender").value,
+          caste: ["all"],
+          minAge: null,
+          maxAge: null,
+          maxIncome: null,
+          requiresDisability: false,
         };
 
-        // Determine target endpoint action dynamically based on active framework modes
-        const targetEndpoint =
-          selectedId === "NEW_SCHEME"
-            ? "/api/admin/schemes/add"
-            : "/api/admin/schemes/update";
-
         try {
-          const response = await fetch(targetEndpoint, {
+          const response = await fetch("/api/admin/schemes/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
+
           const output = await response.json();
-          if (!response.ok) {
-            banner.innerText =
-              output.error ||
-              "Failed to sync modifications onto database tables.";
-            banner.className =
-              "mb-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
-            banner.classList.remove("hidden");
-            return;
+
+          if (response.ok) {
+            alertBanner.innerText =
+              output.message || "Scheme published successfully!";
+            alertBanner.className =
+              "p-3 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200";
+            alertBanner.classList.remove("hidden");
+            event.target.reset();
+          } else {
+            alertBanner.innerText = output.error || "Failed to publish scheme.";
+            alertBanner.className =
+              "p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+            alertBanner.classList.remove("hidden");
           }
-
-          banner.innerText =
-            selectedId === "NEW_SCHEME"
-              ? "Success! New scheme entry published."
-              : "Success! Scheme entry records updated successfully.";
-          banner.className =
-            "mb-4 p-3 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200";
-          banner.classList.remove("hidden");
-
-          resetSchemeForm();
-          fetchSchemesRegistryList();
-          window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (err) {
-          banner.innerText = "Network database synchronization error.";
-          banner.classList.remove("hidden");
+          alertBanner.innerText =
+            "Network connection error publishing scheme. Please check if server is running.";
+          alertBanner.className =
+            "p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200";
+          alertBanner.classList.remove("hidden");
         }
       }
-
-      function resetSchemeForm() {
-        document.getElementById("addSchemeDataForm").reset();
-        document
-          .getElementById("schemeFormAlertBanner")
-          .classList.add("hidden");
-
-        const idField = document.getElementById("schemeId");
-        idField.removeAttribute("readonly");
-        idField.classList.remove("bg-gray-100", "cursor-not-allowed");
-
-        document.getElementById("panelActionTitle").innerHTML =
-          `<span class="material-symbols-outlined text-secondary-container">playlist_add</span> Deploy New Government Welfare Scheme`;
-
-        const submitBtn = document.getElementById("formSubmitActionButton");
-        submitBtn.innerText = "Publish Scheme Entry 🚀";
-        submitBtn.className =
-          "bg-primary text-white font-bold px-8 py-3 rounded-lg hover:bg-primary-container transition-colors shadow";
-
-        document.getElementById("schemeSelectionDropdown").value = "NEW_SCHEME";
-      }
-
       function executeAdminSignOut() {
         localStorage.removeItem("yojana_admin_token");
-        switchViewLayouts(false);
-        resetSchemeForm();
+        checkAdminSession();
       }
     </script>
   </body>

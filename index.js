@@ -91,29 +91,63 @@ const pendingRegistrationsMap = new Map();
 // -------------------------------------------------------------
 
 // API: Serve filtered global schemes list
+// -------------------------------------------------------------
+// SERVE & FILTER GLOBAL SCHEMES CATALOG
+// -------------------------------------------------------------
 app.get("/api/schemes", (req, res) => {
-  const { category, search } = req.query; // cite: 16
-  let filtered = [...SCHEMES_DATA]; // cite: 16
+  try {
+    const { category, state, gender, search } = req.query;
+    let filtered = [...SCHEMES_DATA];
 
-  if (category && category !== "all") {
-    // cite: 17
-    filtered = filtered.filter(
-      (s) => s.category === String(category).toLowerCase(),
-    ); // cite: 17
-  }
+    // 1. Filter by Category
+    if (category && category !== "all") {
+      const cleanCategory = String(category).toLowerCase().trim();
+      filtered = filtered.filter(
+        (s) => String(s.category).toLowerCase().trim() === cleanCategory,
+      );
+    }
 
-  if (search) {
-    // cite: 19
-    const query = String(search).toLowerCase(); // cite: 19
-    filtered = filtered.filter(
-      (s) =>
-        s.name.toLowerCase().includes(query) ||
-        (s.hindiName && s.hindiName.includes(query)) ||
-        s.description.toLowerCase().includes(query) ||
-        s.ministry.toLowerCase().includes(query),
-    ); // cite: 19
+    // 2. Filter by State / Region
+    if (state && state !== "all") {
+      const cleanState = String(state).toLowerCase().trim();
+      filtered = filtered.filter((s) => {
+        const sState = String(s.state || "central")
+          .toLowerCase()
+          .trim();
+        return (
+          sState === "central" || sState === "all" || sState === cleanState
+        );
+      });
+    }
+
+    // 3. Filter by Gender
+    if (gender && gender !== "all") {
+      const cleanGender = String(gender).toLowerCase().trim();
+      filtered = filtered.filter((s) => {
+        const sGender = String(s.gender || "all")
+          .toLowerCase()
+          .trim();
+        return sGender === "all" || sGender === cleanGender;
+      });
+    }
+
+    // 4. Search Query (Matches Name, Hindi Name, Ministry, Description)
+    if (search && String(search).trim() !== "") {
+      const query = String(search).toLowerCase().trim();
+      filtered = filtered.filter(
+        (s) =>
+          (s.name && s.name.toLowerCase().includes(query)) ||
+          (s.hindiName && s.hindiName.toLowerCase().includes(query)) ||
+          (s.description && s.description.toLowerCase().includes(query)) ||
+          (s.ministry && s.ministry.toLowerCase().includes(query)),
+      );
+    }
+
+    return res.json({ schemes: filtered, totalCount: filtered.length });
+  } catch (error) {
+    console.error("[Get Schemes API Error]:", error);
+    return res.status(500).json({ error: "Failed to fetch schemes catalog." });
   }
-  res.json({ schemes: filtered }); // cite: 21
 });
 
 // API: Bulletproof Zero-Crash AI Assistant Endpoint with Built-In Local Search Fallback
@@ -383,11 +417,9 @@ app.post("/api/auth/user/register/verify", async (req, res) => {
       String(pendingRegistration.correctToken) !==
       String(verificationToken).trim()
     ) {
-      return res
-        .status(400)
-        .json({
-          error: "Invalid OTP code entered. Please check and try again.",
-        });
+      return res.status(400).json({
+        error: "Invalid OTP code entered. Please check and try again.",
+      });
     }
 
     // OTP Valid & Within 3 Minutes -> Create User Records
@@ -512,71 +544,47 @@ app.post("/api/auth/user/login", async (req, res) => {
 // -------------------------------------------------------------
 app.post("/api/auth/admin/login", async (req, res) => {
   try {
-    const { credential, password } = req.body; // cite: 113
+    const { credential, password } = req.body;
     if (!credential || !password) {
-      // cite: 114
       return res
         .status(400)
-        .json({ error: "Credential and password are required parameters." }); // cite: 114
+        .json({ error: "Credential and password are required." });
     }
 
-    // Master Fail-Safe Validation Guard Structure
-    // Directly checks against master credentials or falls back to database records safely
-    const isMasterAdmin =
-      credential === "superadmin" ||
-      credential === "admin@yojanabasket.gov.in" ||
-      credential === "9999999999"; // cite: 69
+    const cleanCredential = String(credential).trim().toLowerCase();
 
-    if (isMasterAdmin && password === "Admin@Yojana2026") {
-      // cite: 68
-      return res.json({
-        message: "Welcome to Administrative Session", // cite: 121
-        adminDetails: {
-          username: "superadmin", // cite: 69
-          emailId: "admin@yojanabasket.gov.in", // cite: 69
-          mobileNumber: "9999999999", // cite: 69
-          role: "SUPER_ADMIN", // cite: 69
-        },
-      });
+    const adminRecord = await prisma.adminLogin.findFirst({
+      where: {
+        OR: [
+          { username: { equals: cleanCredential, mode: "insensitive" } },
+          { emailId: { equals: cleanCredential, mode: "insensitive" } },
+          { mobileNumber: cleanCredential },
+        ],
+      },
+    });
+
+    if (!adminRecord) {
+      return res
+        .status(401)
+        .json({ error: "Invalid administrative credentials." });
     }
 
-    // Secondary Database Lookup Pipeline Fallback
-    try {
-      const adminRecord = await prisma.adminLogin.findFirst({
-        where: {
-          OR: [
-            { username: credential },
-            { emailId: credential },
-            { mobileNumber: credential },
-          ],
-        }, // cite: 116
-      });
-
-      if (
-        adminRecord &&
-        (await bcrypt.compare(password, adminRecord.password))
-      ) {
-        // cite: 119
-        delete adminRecord.password; // cite: 121
-        return res.json({
-          message: "Welcome to Administrative Session", // cite: 121
-          adminDetails: adminRecord, // cite: 121
-        });
-      }
-    } catch (dbErr) {
-      console.warn(
-        "[YojanaBasket] Admin DB entity trace unavailable, verified via master override token.",
-      );
+    const validPassword = await bcrypt.compare(password, adminRecord.password);
+    if (!validPassword) {
+      return res
+        .status(401)
+        .json({ error: "Invalid administrative credentials." });
     }
 
-    return res
-      .status(401)
-      .json({ error: "Invalid administrative privileges." }); // cite: 117
+    delete adminRecord.password;
+
+    return res.json({
+      message: "Admin authentication successful!",
+      adminDetails: adminRecord,
+    });
   } catch (error) {
-    res.status(500).json({
-      error: "Admin authentication process failed",
-      details: error.message,
-    }); // cite: 122
+    console.error("[Admin Login Error]:", error);
+    return res.status(500).json({ error: "Server authentication error." });
   }
 });
 
@@ -737,6 +745,93 @@ app.post("/api/schemes/recommend", async (req, res) => {
       details: error.message,
     });
   }
+});
+// -------------------------------------------------------------
+// ADMIN SCHEME ADD ENDPOINT (SAFE FILE WRITER)
+// -------------------------------------------------------------
+app.post("/api/admin/schemes/add", async (req, res) => {
+  try {
+    const schemeData = req.body;
+
+    if (
+      !schemeData ||
+      !schemeData.name ||
+      !schemeData.category ||
+      !schemeData.description
+    ) {
+      return res.status(400).json({
+        error: "Scheme Name, Category, and Description are required.",
+      });
+    }
+
+    // Auto-generate unique ID/slug if not provided
+    if (!schemeData.id) {
+      schemeData.id = schemeData.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+    }
+
+    // Ensure array properties exist
+    if (!schemeData.requiredDocuments)
+      schemeData.requiredDocuments = ["Aadhaar Card"];
+    if (!schemeData.caste) schemeData.caste = ["all"];
+
+    // 1. Add to active in-memory schemes list
+    if (typeof SCHEMES_DATA !== "undefined" && Array.isArray(SCHEMES_DATA)) {
+      SCHEMES_DATA.unshift(schemeData);
+    } else {
+      SCHEMES_DATA = [schemeData];
+    }
+
+    // 2. Determine physical JSON file path to persist
+    const possiblePaths = [
+      path.join(__dirname, "src/data/schemes.json"),
+      path.join(__dirname, "schemes.json"),
+      path.join(process.cwd(), "src/data/schemes.json"),
+      path.join(process.cwd(), "schemes.json"),
+    ];
+
+    let targetPath = possiblePaths.find((p) => fs.existsSync(p));
+
+    // Fallback if file doesn't exist yet
+    if (!targetPath) {
+      targetPath = path.join(__dirname, "schemes.json");
+    }
+
+    // Write updated array back to disk
+    fs.writeFileSync(targetPath, JSON.stringify(SCHEMES_DATA, null, 2), "utf8");
+    console.log(
+      `[Admin Portal]: New scheme '${schemeData.name}' published to ${targetPath}`,
+    );
+
+    return res.status(201).json({
+      message: `Scheme '${schemeData.name}' published successfully!`,
+      scheme: schemeData,
+    });
+  } catch (error) {
+    console.error("[Add Scheme Error]:", error);
+    return res.status(500).json({
+      error: "Server failed to save new scheme entry.",
+      details: error.message,
+    });
+  }
+});
+
+// -------------------------------------------------------------
+// 4. ADMIN FETCH CONTACT INQUIRIES ENDPOINT
+// -------------------------------------------------------------
+app.get("/api/admin/contact-messages", async (req, res) => {
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return res.json({ success: true, messages });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch contact inquiries." });
+  }
 }); // -------------------------------------------------------------
 // SECURE ADMIN CONSOLE: ADD NEW SCHEME TO THE DATA CATALOG
 // -------------------------------------------------------------
@@ -830,44 +925,22 @@ app.post("/api/admin/schemes/update", async (req, res) => {
 // -------------------------------------------------------------
 async function seedDefaultData() {
   try {
-    console.log("Checking and seeding default user credentials...");
-
-    // Seed default user profile
-    const defaultUser = await prisma.userProfile.upsert({
-      where: { email: "krankit2007@gmail.com" },
-      update: {},
+    // Seed default Admin credentials
+    const adminPasswordHash = await bcrypt.hash("Admin@Yojana2026", 10);
+    await prisma.adminLogin.upsert({
+      where: { username: "superadmin" },
+      update: { password: adminPasswordHash },
       create: {
-        id: "seeded-user-id-ankit-2026",
-        name: "Ankit Kumar",
-        email: "krankit2007@gmail.com",
-        age: 25,
-        gender: "Male",
-        state: "Bihar",
-        caste: "OBC",
-        annualIncome: 150000,
-        occupation: "Student",
-        disability: false,
+        username: "superadmin",
+        emailId: "admin@yojanabasket.gov.in",
+        mobileNumber: "9999999999",
+        password: adminPasswordHash,
+        role: "SUPER_ADMIN",
       },
     });
-
-    // Hash default password "Ankit@2026"
-    const defaultPasswordHash = await bcrypt.hash("Ankit@2026", 10);
-
-    await prisma.userLogin.upsert({
-      where: { userId: defaultUser.id },
-      update: {},
-      create: {
-        userId: defaultUser.id,
-        username: "ankit_kumar",
-        emailId: "krankit2007@gmail.com",
-        mobileNumber: "9876543210",
-        password: defaultPasswordHash,
-      },
-    });
-
-    console.log("Pre-seeded default user 'ankit_kumar' ready!");
+    console.log("✅ Admin account 'superadmin' verified in database!");
   } catch (err) {
-    console.warn("Database seeding non-blocking warning:", err.message);
+    console.warn("⚠️ Admin seeding warning:", err.message);
   }
 }
 
